@@ -1,16 +1,7 @@
 "use client";
 
 import Image from "next/image";
-
-const NAV = [
-  "お問い合せ",
-  "採用情報",
-  "公式オンラインストア",
-  "店舗情報",
-  "メニュー",
-  "お知らせ",
-  "平壌亭について",
-];
+import { HEADER_NAV_LINKS } from "@/app/lib/navLinks";
 
 const LINE_BTNS = [
   { label: "亀岡店", width: 185 },
@@ -78,10 +69,10 @@ export default function HeroSection({ onOpenModal }: { onOpenModal: () => void }
             {/* 縦書きナビ: ul width=293 → (587-293)/2=147 → x=147 に自動配置 */}
             <nav>
               <ul style={{ display: "flex", listStyle: "none", width: 293, justifyContent: "space-between" }}>
-                {NAV.map((label) => (
+                {HEADER_NAV_LINKS.map(({ label, href }) => (
                   <li key={label}>
                     <p style={{ fontFamily: "sans-serif", fontSize: 16, fontWeight: 700, color: "#ffffff", textAlign: "center", lineHeight: "20px", margin: 0 }}>·</p>
-                    <a href={label === "平壌亭について" ? "/about" : "#"} style={{
+                    <a href={href} style={{
                       display: "block",
                       writingMode: "vertical-rl" as const,
                       fontFamily: mincho,
