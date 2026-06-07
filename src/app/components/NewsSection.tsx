@@ -2,19 +2,11 @@
 
 import Image from "next/image";
 import { useRef } from "react";
+import { NEWS_DATA as NEWS } from "@/app/lib/newsData";
 
 const mincho = "'Shippori Mincho', serif";
 const sans = "'Noto Sans JP', sans-serif";
 const display = "'Cormorant Garamond', serif";
-
-const NEW_TAG = { label: "NEW", color: "#da3425" };
-
-const NEWS = [
-  { img: "/images/news1.jpg", date: "2026.05.1", title: "ゴールデンウィーク期間の営業について", tags: [NEW_TAG, { label: "お知らせ", color: "#e18e3b" }] },
-  { img: "/images/news2.jpg", date: "2026.05.1", title: "春の特選和牛コース登場！期間限定のご案内", tags: [NEW_TAG, { label: "ブログ", color: "#2563a0" }, { label: "亀岡店", color: "#16871d" }] },
-  { img: "/images/news3.jpg", date: "2026.05.1", title: "特別プランのご予約受付開始", tags: [] },
-  { img: "/images/news4.jpg", date: "2026.05.1", title: "スタッフ募集中 詳しくは", tags: [{ label: "お知らせ", color: "#e18e3b" }] },
-];
 
 const CARD_WIDTH = 340;
 const GAP = 55;

@@ -1,8 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
-import ReserveModal from "./ReserveModal";
 
 const NAV = [
   "お問い合せ",
@@ -24,9 +22,7 @@ const LINE_BTNS = [
 const mincho = "'Shippori Mincho', serif";
 const sans = "'Noto Sans JP', sans-serif";
 
-export default function HeroSection() {
-  const [open, setOpen] = useState(false);
-
+export default function HeroSection({ onOpenModal }: { onOpenModal: () => void }) {
   return (
     <>
       {/* section全体をflex-rowで左右カラムに分割 */}
@@ -85,7 +81,7 @@ export default function HeroSection() {
                 {NAV.map((label) => (
                   <li key={label}>
                     <p style={{ fontFamily: "sans-serif", fontSize: 16, fontWeight: 700, color: "#ffffff", textAlign: "center", lineHeight: "20px", margin: 0 }}>·</p>
-                    <a href="#" style={{
+                    <a href={label === "平壌亭について" ? "/about" : "#"} style={{
                       display: "block",
                       writingMode: "vertical-rl" as const,
                       fontFamily: mincho,
@@ -104,7 +100,7 @@ export default function HeroSection() {
 
             {/* 予約ボタン: width=171 → (587-171)/2=208 → x=208 に自動配置 */}
             <button
-              onClick={() => setOpen(true)}
+              onClick={onOpenModal}
               style={{
                 width: 171,
                 height: 50,
@@ -153,7 +149,6 @@ export default function HeroSection() {
         </div>
       </div>
 
-      <ReserveModal open={open} onClose={() => setOpen(false)} />
     </>
   );
 }

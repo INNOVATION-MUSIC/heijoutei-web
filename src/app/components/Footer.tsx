@@ -1,21 +1,13 @@
 "use client";
 import Image from "next/image";
+import { NAV_LINKS as NAV_DEFS, SECTION_LINKS } from "@/app/lib/navLinks";
 
 const mincho = "'Shippori Mincho', serif";
 const sans = "'Noto Sans JP', sans-serif";
 
-const NAV_LINKS = [
-  { label: "お知らせ", top: 135 },
-  { label: "平壌亭について", top: 173 },
-  { label: "メニュー", top: 211 },
-  { label: "店舗一覧", top: 249 },
-  { label: "ご予約", top: 287 },
-  { label: "公式オンラインストア", top: 325 },
-  { label: "採用情報", top: 363 },
-  { label: "お問い合せ", top: 401 },
-];
+const NAV_LINKS = NAV_DEFS.map((item, i) => ({ ...item, top: 135 + i * 38 }));
 
-export default function Footer() {
+export default function Footer({ onOpenModal }: { onOpenModal: () => void }) {
   return (
     <footer className="relative overflow-hidden bg-[#0a0a0a]" style={{ width: 1440, height: 600 }}>
       {/* ロゴ */}
@@ -32,8 +24,8 @@ export default function Footer() {
       </p>
 
       {/* ナビゲーションリンク */}
-      {NAV_LINKS.map(({ label, top }) => (
-        <a key={label} href="#" className="absolute" style={{
+      {NAV_LINKS.map(({ label, href, top }) => (
+        <a key={label} href={href} className="absolute" style={{
           left: 809, top, width: 220, height: 30,
           fontFamily: mincho, fontSize: 13, letterSpacing: "0.15em",
           color: "rgba(235,229,219,0.75)", textDecoration: "none",
@@ -44,14 +36,14 @@ export default function Footer() {
       ))}
 
       {/* ご予約ボタン */}
-      <a href="#" className="absolute flex items-center overflow-hidden" style={{ left: 1128, top: 147, width: 171, height: 50, borderRadius: 25, border: "1px solid rgba(221,168,63,0.6)", textDecoration: "none" }}>
+      <button onClick={onOpenModal} className="absolute flex items-center overflow-hidden" style={{ left: 1128, top: 147, width: 171, height: 50, borderRadius: 25, border: "1px solid rgba(221,168,63,0.6)", background: "transparent", cursor: "pointer" }}>
         <span className="absolute" style={{ left: 22, top: 11, fontFamily: "sans-serif", fontSize: 16, color: "#ffffff" }}>·</span>
         <span className="absolute" style={{ left: 35, top: 15, fontFamily: mincho, fontSize: 12, letterSpacing: "0.083em", color: "#ffffff" }}>ご予約</span>
         <span className="absolute" style={{ left: 82, top: 15, fontFamily: sans, fontSize: 12, fontWeight: 700, letterSpacing: "0.125em", color: "#ebe5db" }}>Reserve</span>
-      </a>
+      </button>
 
       {/* テイクアウトボタン */}
-      <a href="#" className="absolute flex items-center overflow-hidden" style={{ left: 1128, top: 237, width: 171, height: 50, borderRadius: 25, border: "1px solid rgba(221,168,63,0.6)", textDecoration: "none" }}>
+      <a href={SECTION_LINKS.takeout} className="absolute flex items-center overflow-hidden" style={{ left: 1128, top: 237, width: 171, height: 50, borderRadius: 25, border: "1px solid rgba(221,168,63,0.6)", textDecoration: "none" }}>
         <span className="absolute" style={{ left: 22, top: 11, fontFamily: "sans-serif", fontSize: 16, color: "#ffffff" }}>·</span>
         <span className="absolute" style={{ left: 35, top: 15, fontFamily: mincho, fontSize: 12, letterSpacing: "0.083em", color: "#ffffff" }}>ご注文</span>
         <span className="absolute" style={{ left: 88, top: 15, fontFamily: sans, fontSize: 12, fontWeight: 700, letterSpacing: "0.125em", color: "#ebe5db" }}>Takeout</span>

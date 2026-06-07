@@ -12,6 +12,17 @@ export const NAV_LINKS = [
 
 export type NavLink = (typeof NAV_LINKS)[number];
 
+// 下層ページ共通ヘッダーのナビ（Figmaの左→右の並び順・「ご予約」はボタンで別途）
+export const HEADER_NAV_LINKS = [
+  { label: "お問い合せ",         href: "/contact" },
+  { label: "採用情報",           href: "/recruit" },
+  { label: "公式オンラインストア", href: "/online-shop" },
+  { label: "店舗情報",           href: "/store" },
+  { label: "メニュー",           href: "/menu" },
+  { label: "お知らせ",           href: "/news" },
+  { label: "平壌亭について",     href: "/about" },
+] as const;
+
 // セクション別ボタンリンク
 export const SECTION_LINKS = {
   news:    "/news",
