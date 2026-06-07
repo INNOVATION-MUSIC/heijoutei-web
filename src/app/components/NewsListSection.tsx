@@ -3,16 +3,13 @@
 import { useEffect, useRef } from "react";
 import Image from "next/image";
 import PageHeader from "./PageHeader";
-import { NEWS_LIST_DATA as LIST } from "@/app/lib/newsData";
+import { NEWS_LIST_DATA as LIST, type NewsListItem } from "@/app/lib/newsData";
 
 const mincho = "'Shippori Mincho', serif";
 const sans = "'Noto Sans JP', sans-serif";
 const display = "'Cormorant Garamond', serif";
 
 const CARD_WIDTH = 340;
-
-type Tag = { label: string; color: string };
-type NewsListItem = { img: string; date: string; title: string; tags: Tag[] };
 
 /**
  * 1 枚のニュースカード。マウント時（＝画面に現れた時）に Web Animations API で
@@ -37,7 +34,7 @@ function NewsCard({ item, delay }: { item: NewsListItem; delay: number }) {
   }, [delay]);
 
   return (
-    <a ref={ref} href="#" style={{ width: CARD_WIDTH, display: "flex", flexDirection: "column", gap: 21, textDecoration: "none" }}>
+    <a ref={ref} href={`/news/${item.id}`} style={{ width: CARD_WIDTH, display: "flex", flexDirection: "column", gap: 21, textDecoration: "none" }}>
       <div style={{ position: "relative", width: CARD_WIDTH, height: 340, overflow: "hidden", background: "#4d2914" }}>
         <Image src={item.img} alt={item.title} fill className="object-cover" sizes="340px" />
       </div>
