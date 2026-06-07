@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import ReserveModal from "./ReserveModal";
+import { SECTION_LINKS } from "@/app/lib/navLinks";
 
 const mincho = "'Shippori Mincho', serif";
 
@@ -42,7 +43,7 @@ export default function StickyButton() {
           予約する
           <ArrowIcon />
         </button>
-        <a href="#" style={btnStyle}>
+        <a href={SECTION_LINKS.takeout} style={btnStyle}>
           テイクアウト
           <ArrowIcon />
         </a>

@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import { SECTION_LINKS } from "@/app/lib/navLinks";
 
 const mincho = "'Shippori Mincho', serif";
 const sans = "'Noto Sans JP', sans-serif";
@@ -30,7 +31,7 @@ export default function CtaSection() {
         <p style={{ fontFamily: sans, fontWeight: 300, fontSize: 9, letterSpacing: "2.5px", color: "rgba(217,184,107,0.5)", textTransform: "uppercase" as const }}>Takeout order</p>
         <p style={{ fontFamily: mincho, fontWeight: 800, fontSize: 22, letterSpacing: "2px", color: "#ebe5db", paddingTop: 10 }}>テイクアウトのご注文</p>
         <div style={{ paddingTop: 28 }}>
-          <a href="#" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, width: 171, height: 50, borderRadius: 25, border: "1px solid rgba(221,168,63,0.6)", textDecoration: "none" }}>
+          <a href={SECTION_LINKS.takeout} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, width: 171, height: 50, borderRadius: 25, border: "1px solid rgba(221,168,63,0.6)", textDecoration: "none" }}>
             <span style={{ fontFamily: "sans-serif", fontSize: 16, color: "#fff" }}>·</span>
             <span style={{ fontFamily: mincho, fontSize: 12, letterSpacing: "1px", color: "#fff" }}>ご注文</span>
             <span style={{ fontFamily: sans, fontWeight: 700, fontSize: 12, letterSpacing: "1.5px", color: "#ebe5db" }}>Takeout</span>
