@@ -1,116 +1,172 @@
 import Image from "next/image";
+import SpButton from "./SpButton";
+import { SECTION_LINKS } from "@/app/lib/navLinks";
 
 const mincho = "'Shippori Mincho', serif";
 const display = "'Cormorant Garamond', serif";
 const sans = "'Noto Sans JP', sans-serif";
 
-function MapBadge({ href }: { href: string }) {
+function PhoneIcon({ size = 20 }: { size?: number }) {
   return (
-    <a href={href} target="_blank" rel="noopener noreferrer"
-      style={{ display: "inline-block", padding: "2px 8px", border: "1px solid rgba(255,255,255,0.28)", fontFamily: sans, fontSize: 9, color: "rgba(235,229,219,0.7)", textDecoration: "none", letterSpacing: "0.1em", flexShrink: 0 }}>
-      MAP
-    </a>
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}>
+      <path
+        d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.47 11.47 0 003.58.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.47 11.47 0 00.57 3.58 1 1 0 01-.25 1.01l-2.2 2.2z"
+        fill="#d9b86b"
+      />
+    </svg>
   );
 }
 
 export default function StoreSectionSP() {
   return (
-    <section className="relative overflow-hidden bg-[#0a0a0a]" style={{ width: 390, height: 1899 }}>
-      {/* ラベル 店舗 */}
-      <div className="absolute overflow-hidden" style={{ left: 22, top: 46, width: 44, height: 65, border: "1px solid rgba(255,255,255,0.3)" }}>
-        <p className="absolute" style={{ left: 15, top: 8, fontFamily: mincho, fontSize: 12, letterSpacing: "0.083em", color: "#fff", writingMode: "vertical-rl" as const }}>店舗</p>
+    <section
+      style={{
+        width: 390,
+        height: 1899,
+        background: "#0a0a0a",
+        display: "flex",
+        flexDirection: "column",
+        paddingTop: 33,
+        paddingBottom: 50,
+      }}
+    >
+      {/* ラベル + タイトル */}
+      <div style={{ display: "flex", alignItems: "flex-start", paddingLeft: 40, gap: 28, flexShrink: 0 }}>
+        <div
+          style={{
+            width: 44, height: 85,
+            border: "1px solid rgba(255,255,255,0.3)",
+            overflow: "hidden", flexShrink: 0,
+            display: "flex", justifyContent: "center", alignItems: "center",
+          }}
+        >
+          <p style={{ fontFamily: mincho, fontSize: 12, letterSpacing: "5px", color: "#fff", writingMode: "vertical-rl" as const, margin: 0 }}>
+            店舗
+          </p>
+        </div>
+        <p style={{ fontFamily: display, fontSize: 48, letterSpacing: "-1px", color: "#ebe5db", lineHeight: "normal", paddingTop: 20 }}>
+          StoreInfo
+        </p>
       </div>
-      <p className="absolute" style={{ left: 74, top: 36, fontFamily: display, fontSize: 60, fontStyle: "italic", letterSpacing: "-1px", color: "#ebe5db", lineHeight: "normal" }}>StoreInfo</p>
+
+      {/* gap: 159 - (33+85) = 41px */}
+      <div style={{ height: 41, flexShrink: 0 }} />
 
       {/* イントロテキスト */}
-      <p className="absolute" style={{ left: 22, top: 148, width: 346, fontFamily: mincho, fontSize: 12, letterSpacing: "0.1em", color: "rgba(235,229,219,0.65)", lineHeight: "28px" }}>
-        各店にてランチからご夕食まで、各種宴会・記念日・ご接待などご特別なお席にも対応していただきます。亀岡・園部・福知山での観光はぜひ焼肉平壌亭へ、焼肉宴会で楽しいひと時をお過ごしください。
+      <p
+        style={{
+          paddingLeft: 40, paddingRight: 40,
+          fontFamily: mincho, fontSize: 12,
+          letterSpacing: "0.1em", color: "rgba(235,229,219,0.85)",
+          lineHeight: "32px", flexShrink: 0,
+        }}
+      >
+        各店くつろげるお席をご用意して、各種ご宴会・記念日・ご接待などのご利用にも対応させていただきます。
+        <br />
+        亀岡・園部・福知山での焼肉はぜひ焼肉平壤亭へ焼肉宴会で楽しいひと時をお過ごしください。
       </p>
 
-      {/* ━━━━ 亀岡店 ━━━━ */}
-      <div className="absolute overflow-hidden bg-[#2e1c12]" style={{ left: 0, top: 266, width: 390, height: 220 }}>
-        <Image src="/images/store_kameoka.jpg" alt="平壌亭 亀岡店" fill className="object-cover" sizes="390px" />
-      </div>
-      <div className="absolute bg-[#131210]" style={{ left: 0, top: 486, width: 390, padding: "24px 22px 28px" }}>
-        <p style={{ fontFamily: sans, fontSize: 8, letterSpacing: "0.5em", color: "rgba(235,229,219,0.3)", marginBottom: 8, textTransform: "uppercase" as const }}>Heijohtei / Kameoka</p>
-        <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 10 }}>
-          <p style={{ fontFamily: mincho, fontSize: 18, color: "#ebe5db" }}>平壌亭　亀岡店</p>
-          <MapBadge href="https://maps.google.com/?q=京都府亀岡市篠町浄法寺中村３５-５" />
+      {/* gap */}
+      <div style={{ height: 30, flexShrink: 0 }} />
+
+      {/* ━━━ 亀岡店 (大カード) ━━━ */}
+      <div style={{ marginLeft: 20, marginRight: 20, background: "#171717", overflow: "hidden", flexShrink: 0 }}>
+        <div style={{ position: "relative", width: 350, height: 320, overflow: "hidden", background: "#1c110a" }}>
+          <Image src="/images/store_kameoka.jpg" alt="平壌亭 亀岡店" fill className="object-cover" sizes="350px" />
         </div>
-        <a href="tel:0771-23-8410" style={{ display: "block", fontFamily: mincho, fontSize: 20, color: "#d9b86b", textDecoration: "none", marginBottom: 10, letterSpacing: "0.05em" }}>
-          0771-23-8410
-        </a>
-        <p style={{ fontFamily: mincho, fontSize: 11, color: "rgba(235,229,219,0.6)", lineHeight: "22px", marginBottom: 6 }}>
-          京都府亀岡市篠町浄法寺中村３５-５<br />
-          30台駐車場完備！山陰本線亀岡駅よりマイクロバス送迎あり
-        </p>
-        <p style={{ fontFamily: mincho, fontSize: 11, color: "rgba(235,229,219,0.6)", lineHeight: "22px", marginBottom: 6 }}>
-          月〜日　11:30〜14:30（料理L.O. 14:00）<br />
-          　　　　16:00〜22:30（料理L.O. 22:00）
-        </p>
-        <p style={{ fontFamily: mincho, fontSize: 11, color: "rgba(235,229,219,0.45)" }}>定休日　火曜</p>
-      </div>
-
-      {/* ━━━━ 園部店 ━━━━ */}
-      <div className="absolute overflow-hidden bg-[#2e1c12]" style={{ left: 0, top: 784, width: 390, height: 160 }}>
-        <Image src="/images/store_sonobe.jpg" alt="平壌亭 園部店" fill className="object-cover" sizes="390px" />
-      </div>
-      <div className="absolute bg-[#131210]" style={{ left: 0, top: 944, width: 390, padding: "20px 22px 24px" }}>
-        <p style={{ fontFamily: sans, fontSize: 8, letterSpacing: "0.5em", color: "rgba(235,229,219,0.3)", marginBottom: 6, textTransform: "uppercase" as const }}>Heijohtei / Sonobe</p>
-        <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 8 }}>
-          <p style={{ fontFamily: mincho, fontSize: 16, color: "#ebe5db" }}>平壌亭　園部店</p>
-          <MapBadge href="https://maps.google.com/?q=京都府南丹市園部町上木崎町坪ノ内26-5" />
+        <div style={{ padding: "28px 27px 24px" }}>
+          <p style={{ fontFamily: sans, fontSize: 10, fontWeight: 300, letterSpacing: "3px", color: "rgba(217,184,107,0.6)", marginBottom: 14 }}>
+            HEIJOHTEI　KAMEOKA
+          </p>
+          <div style={{ width: 32, height: 1, backgroundColor: "rgba(217,184,107,0.45)", marginBottom: 12 }} />
+          <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 14 }}>
+            <p style={{ fontFamily: mincho, fontSize: 26, fontWeight: 800, letterSpacing: "2px", color: "#fff" }}>
+              平壞亭　亀岡店
+            </p>
+            <a
+              href="https://maps.google.com/?q=京都府亀岡市篠町浄法寺中村３５-５"
+              target="_blank" rel="noopener noreferrer"
+              style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 50, height: 20, borderRadius: 25, border: "1px solid rgba(221,168,63,0.6)", textDecoration: "none", flexShrink: 0 }}
+            >
+              <span style={{ fontFamily: sans, fontSize: 10, color: "#fff", letterSpacing: "1px" }}>MAP</span>
+            </a>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+            <PhoneIcon size={26} />
+            <a href="tel:0771-23-8410" style={{ fontFamily: sans, fontSize: 22, fontWeight: 700, color: "#d9b86b", textDecoration: "none", letterSpacing: "0.5px" }}>
+              0771-23-8410
+            </a>
+          </div>
+          <p style={{ fontFamily: sans, fontSize: 12, fontWeight: 300, color: "#fff", lineHeight: "22px", letterSpacing: "0.5px", marginBottom: 8 }}>
+            京都府亀岡市篠町浄法寺中村３５-５
+          </p>
+          <p style={{ fontFamily: sans, fontSize: 12, fontWeight: 300, color: "#fff", lineHeight: "22px", letterSpacing: "0.5px", marginBottom: 8 }}>
+            30台駐車場完備/8名様よりマイクロバス送迎あり
+          </p>
+          <p style={{ fontFamily: sans, fontSize: 12, fontWeight: 300, color: "#fff", lineHeight: "22px", letterSpacing: "0.5px", marginBottom: 8 }}>
+            月、水〜日、祝日、祝前日: 11:30〜14:30（料理L.O. 14:00 ドリンクL.O. 14:00）
+            <br />16:00〜22:30（料理L.O. 22:00 ドリンクL.O. 22:00）
+          </p>
+          <p style={{ fontFamily: sans, fontSize: 12, fontWeight: 300, color: "#fff", lineHeight: "22px", letterSpacing: "0.5px" }}>
+            定休日 火曜
+          </p>
         </div>
-        <a href="tel:0771-68-1760" style={{ display: "block", fontFamily: mincho, fontSize: 18, color: "#d9b86b", textDecoration: "none", marginBottom: 8 }}>0771-68-1760</a>
-        <p style={{ fontFamily: mincho, fontSize: 11, color: "rgba(235,229,219,0.55)", lineHeight: "22px" }}>
-          京都府南丹市園部町上木崎町坪ノ内26-5　定休日 火曜
-        </p>
       </div>
 
-      {/* ━━━━ 福知山店 ━━━━ */}
-      <div className="absolute overflow-hidden bg-[#2e1c12]" style={{ left: 0, top: 1124, width: 390, height: 160 }}>
-        <Image src="/images/store_fukuchiyama.jpg" alt="平壌亭 福知山店" fill className="object-cover" sizes="390px" />
-      </div>
-      <div className="absolute bg-[#131210]" style={{ left: 0, top: 1284, width: 390, padding: "20px 22px 24px" }}>
-        <p style={{ fontFamily: sans, fontSize: 8, letterSpacing: "0.5em", color: "rgba(235,229,219,0.3)", marginBottom: 6, textTransform: "uppercase" as const }}>Heijohtei / Fukuchiyama</p>
-        <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 8 }}>
-          <p style={{ fontFamily: mincho, fontSize: 16, color: "#ebe5db" }}>平壌亭　福知山店</p>
-          <MapBadge href="https://maps.google.com/?q=京都府福知山市字堀2303の２" />
+      {/* gap */}
+      <div style={{ height: 30, flexShrink: 0 }} />
+
+      {/* ━━━ 小カード共通 ━━━ */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 20, paddingLeft: 20, paddingRight: 20, flexShrink: 0 }}>
+        {[
+          { mapImg: "/images/store_sonobe_map.jpg",     subEn: "HEIJOHTEI　SONOBE",     name: "平壞亭　園部店",   tel: "0771-68-1760" },
+          { mapImg: "/images/store_fukuchiyama_map.jpg", subEn: "HEIJOHTEI　FUKUCHIYAMA", name: "平壞亭　福知山店", tel: "0773-24-2322" },
+          { mapImg: "/images/store_yurano_map.jpg",     subEn: "YAKINIKU YURANO",         name: "焼肉　ゆらの",    tel: "0773-45-8429" },
+        ].map((s) => (
+          <div key={s.name} style={{ height: 120, background: "#171717", display: "flex", overflow: "hidden" }}>
+            <div style={{ width: 130, height: 120, overflow: "hidden", background: "#1c110a", flexShrink: 0, position: "relative" }}>
+              <Image src={s.mapImg} alt={s.name} fill className="object-cover" sizes="130px" />
+            </div>
+            <div style={{ padding: "17px 0 0 20px", flex: 1 }}>
+              <p style={{ fontFamily: sans, fontSize: 10, fontWeight: 300, letterSpacing: "3px", color: "rgba(217,184,107,0.6)", marginBottom: 6 }}>
+                {s.subEn}
+              </p>
+              <div style={{ width: 32, height: 1, backgroundColor: "rgba(217,184,107,0.45)", marginBottom: 8 }} />
+              <p style={{ fontFamily: mincho, fontSize: 18, fontWeight: 800, letterSpacing: "2px", color: "#fff", marginBottom: 8 }}>
+                {s.name}
+              </p>
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <PhoneIcon size={20} />
+                <a href={`tel:${s.tel}`} style={{ fontFamily: sans, fontSize: 18, fontWeight: 700, color: "#d9b86b", textDecoration: "none", letterSpacing: "0.5px" }}>
+                  {s.tel}
+                </a>
+              </div>
+            </div>
+          </div>
+        ))}
+
+        {/* Coming Soon */}
+        <div style={{ height: 110, background: "#171717", display: "flex", overflow: "hidden" }}>
+          <div style={{ width: 130, height: 110, background: "#2b2b2b", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <p style={{ fontFamily: sans, fontSize: 10, fontWeight: 300, color: "rgba(255,255,255,0.8)", letterSpacing: "1px" }}>
+              Coming Soon
+            </p>
+          </div>
+          <div style={{ padding: "27px 0 0 20px" }}>
+            <p style={{ fontFamily: sans, fontSize: 10, fontWeight: 300, letterSpacing: "3px", color: "rgba(217,184,107,0.6)", marginBottom: 8 }}>
+              HEIJOHTEI
+            </p>
+            <div style={{ width: 32, height: 1, backgroundColor: "rgba(217,184,107,0.45)", marginBottom: 10 }} />
+            <p style={{ fontFamily: mincho, fontSize: 18, fontWeight: 800, letterSpacing: "2px", color: "#fff" }}>
+              ヘイジョウテイ
+            </p>
+          </div>
         </div>
-        <a href="tel:0773-24-2322" style={{ display: "block", fontFamily: mincho, fontSize: 18, color: "#d9b86b", textDecoration: "none", marginBottom: 8 }}>0773-24-2322</a>
-        <p style={{ fontFamily: mincho, fontSize: 11, color: "rgba(235,229,219,0.55)", lineHeight: "22px" }}>
-          京都府福知山市字堀2303の２　定休日 火曜
-        </p>
       </div>
 
-      {/* ━━━━ 焼肉ゆらの ━━━━ */}
-      <div className="absolute overflow-hidden bg-[#2e1c12]" style={{ left: 0, top: 1464, width: 390, height: 160 }}>
-        <Image src="/images/store_yurano.jpg" alt="焼肉ゆらの" fill className="object-cover" sizes="390px" />
-      </div>
-      <div className="absolute bg-[#131210]" style={{ left: 0, top: 1624, width: 390, padding: "20px 22px 24px" }}>
-        <p style={{ fontFamily: sans, fontSize: 8, letterSpacing: "0.5em", color: "rgba(235,229,219,0.3)", marginBottom: 6, textTransform: "uppercase" as const }}>Yakiniku / Yurano</p>
-        <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 8 }}>
-          <p style={{ fontFamily: mincho, fontSize: 16, color: "#ebe5db" }}>焼肉ゆらの</p>
-          <MapBadge href="https://maps.google.com/?q=京都府福知山堀今岡６番地ゆらのガーデン内" />
-        </div>
-        <a href="tel:0773-45-8429" style={{ display: "block", fontFamily: mincho, fontSize: 18, color: "#d9b86b", textDecoration: "none", marginBottom: 8 }}>0773-45-8429</a>
-        <p style={{ fontFamily: mincho, fontSize: 11, color: "rgba(235,229,219,0.55)", lineHeight: "22px" }}>
-          京都府福知山堀今岡６番地ゆらのガーデン内　定休日 火曜
-        </p>
-      </div>
+      <div style={{ height: 50, flexShrink: 0 }} />
 
-      {/* ━━━━ ヘイジョウテイ（Coming Soon） ━━━━ */}
-      <div className="absolute bg-[#0f0e0c] flex items-center justify-center" style={{ left: 0, top: 1744, width: 390, height: 80 }}>
-        <p style={{ fontFamily: sans, fontSize: 8, letterSpacing: "0.5em", color: "rgba(235,229,219,0.25)", textTransform: "uppercase" as const, marginRight: 18 }}>Heijohtei</p>
-        <p style={{ fontFamily: mincho, fontSize: 15, color: "rgba(235,229,219,0.45)", marginRight: 18 }}>ヘイジョウテイ</p>
-        <p style={{ fontFamily: display, fontSize: 13, fontStyle: "italic", color: "rgba(217,184,107,0.45)" }}>Coming Soon</p>
-      </div>
-
-      {/* 店舗一覧ボタン */}
-      <a href="#" className="absolute flex items-center overflow-hidden" style={{ left: 132, top: 1846, width: 126, height: 50, borderRadius: 25, border: "1px solid rgba(221,168,63,0.6)", textDecoration: "none" }}>
-        <span className="absolute" style={{ left: 18, top: 11, fontFamily: "sans-serif", fontSize: 16, color: "#ffffff" }}>·</span>
-        <span className="absolute" style={{ left: 30, top: 15, fontFamily: mincho, fontSize: 12, letterSpacing: "0.083em", color: "#ffffff" }}>店舗一覧</span>
-      </a>
+      <SpButton href={SECTION_LINKS.store} label="店舗一覧" />
     </section>
   );
 }

@@ -2,16 +2,12 @@
 
 import Image from "next/image";
 import { useEffect, useRef } from "react";
+import { MENU_PHOTOS } from "@/app/lib/menuPhotos";
 
 const mincho = "'Shippori Mincho', serif";
 const sans = "'Noto Sans JP', sans-serif";
 
-const PHOTOS = [
-  { src: "/images/cuisine1.jpg" },
-  { src: "/images/cuisine2.jpg" },
-  { src: "/images/cuisine3.jpg" },
-  { src: "/images/cuisine4.jpg" },
-];
+const PHOTOS = MENU_PHOTOS;
 
 const CARD_WIDTH = 400;
 const GAP = 50;

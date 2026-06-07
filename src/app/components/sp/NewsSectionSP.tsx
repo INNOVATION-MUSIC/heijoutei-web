@@ -1,63 +1,271 @@
+"use client";
+
 import Image from "next/image";
+import { useRef } from "react";
+import { SECTION_LINKS } from "@/app/lib/navLinks";
+import SpButton from "./SpButton";
+import { NEWS_DATA } from "@/app/lib/newsData";
 
 const mincho = "'Shippori Mincho', serif";
 const display = "'Cormorant Garamond', serif";
 const sans = "'Noto Sans JP', sans-serif";
 
-const NEWS = [
-  { img: "/images/news1.jpg", date: "2026.05.1", title: "ゴールデンウィーク期間の営業について", tags: [{ label: "お知らせ", color: "#e18e3b" }] },
-  { img: "/images/news2.jpg", date: "2026.05.1", title: "春の特選和牛コース登場！期間限定のご案内", tags: [{ label: "ブログ", color: "#da3425" }, { label: "亀岡店", color: "#16871d" }] },
-];
+const CARD_WIDTH = 260;
+const GAP = 21;
+const CARD_STEP = CARD_WIDTH + GAP;
+const CARD_SET_WIDTH = CARD_STEP * NEWS_DATA.length;
+
+const easeInOut = (t: number) =>
+  t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
 
 export default function NewsSectionSP() {
+  const trackRef = useRef<HTMLDivElement>(null);
+  const posRef = useRef(0);
+  const animating = useRef(false);
+
+  const animateTo = (from: number, to: number, onComplete?: () => void) => {
+    const duration = 450;
+    const startTime = performance.now();
+    animating.current = true;
+
+    const frame = (now: number) => {
+      const progress = Math.min((now - startTime) / duration, 1);
+      const current = from + (to - from) * easeInOut(progress);
+      if (trackRef.current) {
+        trackRef.current.style.transform = `translateX(-${current}px)`;
+      }
+      if (progress < 1) {
+        requestAnimationFrame(frame);
+      } else {
+        posRef.current = to;
+        animating.current = false;
+        onComplete?.();
+      }
+    };
+    requestAnimationFrame(frame);
+  };
+
+  const handleArrow = (dir: "left" | "right") => {
+    if (animating.current) return;
+    const currentCard = Math.round(posRef.current / CARD_STEP);
+    const targetCard = dir === "right" ? currentCard - 1 : currentCard + 1;
+    const to = targetCard * CARD_STEP;
+
+    if (to < 0) {
+      const from = CARD_SET_WIDTH;
+      posRef.current = from;
+      if (trackRef.current)
+        trackRef.current.style.transform = `translateX(-${from}px)`;
+      animateTo(from, CARD_SET_WIDTH - CARD_STEP);
+    } else if (to >= CARD_SET_WIDTH) {
+      animateTo(posRef.current, to, () => {
+        posRef.current = 0;
+        if (trackRef.current)
+          trackRef.current.style.transform = `translateX(0)`;
+      });
+    } else {
+      animateTo(posRef.current, to);
+    }
+  };
+
   return (
-    <section className="relative overflow-hidden bg-[#0a0a0a]" style={{ width: 390, height: 844 }}>
-      {/* ぼかし背景 */}
-      <div className="absolute overflow-hidden bg-[rgba(77,41,20,0.2)]" style={{ left: 0, top: 68, width: 390, height: 720 }}>
-        <div className="absolute" style={{ left: -100, top: -500, width: 1200, height: 1200, filter: "blur(25px)", opacity: 0.5 }}>
-          <Image src="/images/news_bg.jpg" alt="" fill className="object-cover" sizes="1200px" />
+    <section
+      style={{
+        position: "relative",
+        overflow: "hidden",
+        width: 390,
+        height: 801,
+        background: "#0a0a0a",
+        display: "flex",
+        flexDirection: "column",
+        paddingTop: 53,
+        paddingBottom: 50,
+      }}
+    >
+      {/* 背景: 物理的に重なる要素なので absolute 許容 */}
+      <div style={{ position: "absolute", inset: 0, background: "rgba(77,41,20,0.2)", overflow: "hidden" }}>
+        <Image
+          src="/images/news_bg.jpg"
+          alt=""
+          fill
+          className="object-cover"
+          style={{ filter: "blur(25px)", opacity: 0.5 }}
+          sizes="390px"
+        />
+      </div>
+      <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.5)" }} />
+
+      {/* ラベル + タイトル */}
+      <div
+        style={{
+          position: "relative",
+          display: "flex",
+          alignItems: "flex-start",
+          paddingLeft: 40,
+          gap: 28,
+          flexShrink: 0,
+        }}
+      >
+        <div
+          style={{
+            width: 44,
+            height: 85,
+            border: "1px solid rgba(255,255,255,0.3)",
+            overflow: "hidden",
+            flexShrink: 0,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <p
+            style={{
+              fontFamily: mincho,
+              fontSize: 12,
+              letterSpacing: "5px",
+              color: "#fff",
+              writingMode: "vertical-rl" as const,
+              margin: 0,
+            }}
+          >
+            お知らせ
+          </p>
         </div>
-        <div className="absolute inset-0 bg-black/50" />
+        <p
+          style={{
+            fontFamily: display,
+            fontSize: 48,
+            letterSpacing: "-1px",
+            color: "#ebe5db",
+            lineHeight: "normal",
+            paddingTop: 40,
+          }}
+        >
+          News
+        </p>
       </div>
 
-      {/* ラベル */}
-      <div className="absolute overflow-hidden" style={{ left: 22, top: 62, width: 44, height: 85, border: "1px solid rgba(255,255,255,0.3)" }}>
-        <p className="absolute" style={{ left: 15, top: 14, fontFamily: mincho, fontSize: 12, letterSpacing: "0.083em", color: "#fff", writingMode: "vertical-rl" as const }}>お知らせ</p>
-      </div>
-
-      {/* News タイトル */}
-      <p className="absolute" style={{ left: 76, top: 52, fontFamily: display, fontSize: 60, fontStyle: "italic", letterSpacing: "-1px", color: "#ebe5db", lineHeight: "normal" }}>News</p>
+      {/* ラベル底〜矢印上 */}
+      <div style={{ height: 74, flexShrink: 0 }} />
 
       {/* ナビ矢印 */}
-      <p className="absolute" style={{ left: 22, top: 200, fontFamily: sans, fontSize: 18, color: "rgba(255,255,255,0.5)", cursor: "pointer" }}>←</p>
-      <p className="absolute" style={{ right: 22, top: 200, fontFamily: sans, fontSize: 18, color: "rgba(255,255,255,0.5)", cursor: "pointer" }}>→</p>
+      <div
+        style={{
+          position: "relative",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          paddingLeft: 40,
+          paddingRight: 40,
+          flexShrink: 0,
+        }}
+      >
+        <button
+          aria-label="前へ"
+          onClick={() => handleArrow("left")}
+          style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
+        >
+          <img
+            src="/images/news_arrow_l.svg"
+            alt="←"
+            style={{ width: 31, height: 14, filter: "brightness(0) invert(1)" }}
+          />
+        </button>
+        <button
+          aria-label="次へ"
+          onClick={() => handleArrow("right")}
+          style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
+        >
+          <img
+            src="/images/news_arrow_r.svg"
+            alt="→"
+            style={{ width: 31, height: 14, filter: "brightness(0) invert(1)" }}
+          />
+        </button>
+      </div>
 
-      {/* ニュースカード (メイン表示) */}
-      <a href="#" className="absolute" style={{ left: 22, top: 228, width: 346, textDecoration: "none" }}>
-        {/* 写真 */}
-        <div className="overflow-hidden bg-[#4d2914]" style={{ width: 346, height: 260 }}>
-          <Image src={NEWS[0].img} alt={NEWS[0].title} fill className="object-cover" sizes="346px" />
-        </div>
-        {/* メタ情報 */}
-        <p style={{ fontFamily: sans, fontSize: 11, fontWeight: 300, letterSpacing: "0.083em", color: "#948f85", marginTop: 12 }}>{NEWS[0].date}</p>
-        <div style={{ display: "flex", gap: 6, marginTop: 6, flexWrap: "wrap" as const }}>
-          {NEWS[0].tags.map((tag, ti) => (
-            <span key={ti} style={{ display: "inline-block", padding: "2px 8px", backgroundColor: tag.color, fontFamily: mincho, fontSize: 10, color: "#fff" }}>
-              {tag.label}
-            </span>
+      {/* 矢印底〜カード上 */}
+      <div style={{ height: 52, flexShrink: 0 }} />
+
+      {/* カードスライダー */}
+      <div style={{ position: "relative", flexShrink: 0, overflow: "hidden" }}>
+        <div
+          ref={trackRef}
+          style={{
+            display: "flex",
+            paddingLeft: 40,
+            gap: GAP,
+            width: "max-content",
+          }}
+        >
+          {[...NEWS_DATA, ...NEWS_DATA].map((item, i) => (
+            <div key={i} style={{ flexShrink: 0, width: CARD_WIDTH }}>
+              <div
+                style={{
+                  width: CARD_WIDTH,
+                  height: 260,
+                  overflow: "hidden",
+                  background: "#4d2914",
+                  position: "relative",
+                }}
+              >
+                <Image src={item.img} alt={item.title} fill className="object-cover" sizes="260px" />
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 12, flexWrap: "wrap" as const }}>
+                {/* NEWタグは日付の左 */}
+                {item.tags.filter(t => t.label === "NEW").map((tag) => (
+                  <span
+                    key={tag.label}
+                    style={{
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      width: 44, height: 18,
+                      backgroundColor: tag.color,
+                      fontFamily: mincho, fontSize: 10, fontWeight: 500, color: "#fff",
+                    }}
+                  >
+                    {tag.label}
+                  </span>
+                ))}
+                {/* 日付 */}
+                <p style={{ fontFamily: sans, fontSize: 12, fontWeight: 300, letterSpacing: "0.083em", color: "#948f85", margin: 0 }}>
+                  {item.date}
+                </p>
+                {/* その他のタグは丸み付き */}
+                {item.tags.filter(t => t.label !== "NEW").map((tag) => (
+                  <span
+                    key={tag.label}
+                    style={{
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      padding: "2px 8px", height: 18,
+                      backgroundColor: tag.color,
+                      borderRadius: 10,
+                      fontFamily: mincho, fontSize: 10, fontWeight: 500, color: "#fff",
+                    }}
+                  >
+                    {tag.label}
+                  </span>
+                ))}
+              </div>
+              <p
+                style={{
+                  fontFamily: mincho,
+                  fontSize: 15,
+                  letterSpacing: "0.1em",
+                  color: "#ebe5db",
+                  lineHeight: "1.7",
+                  marginTop: 8,
+                }}
+              >
+                {item.title}
+              </p>
+            </div>
           ))}
         </div>
-        {/* タイトル */}
-        <p style={{ fontFamily: mincho, fontSize: 14, fontWeight: 400, letterSpacing: "0.1em", color: "#ebe5db", lineHeight: "1.7", marginTop: 8, width: 300 }}>
-          {NEWS[0].title}
-        </p>
-      </a>
+      </div>
 
-      {/* お知らせ一覧ボタン */}
-      <a href="#" className="absolute flex items-center overflow-hidden" style={{ left: 108, top: 701, width: 174, height: 50, borderRadius: 25, border: "1px solid rgba(221,168,63,0.6)", textDecoration: "none" }}>
-        <span className="absolute" style={{ left: 22, top: 11, fontFamily: "sans-serif", fontSize: 16, color: "#fff" }}>·</span>
-        <span className="absolute" style={{ left: 35, top: 15, fontFamily: mincho, fontSize: 12, letterSpacing: "0.083em", color: "#fff" }}>お知らせ一覧</span>
-      </a>
+      <div style={{ height: 50, flexShrink: 0 }} />
+
+      <SpButton href={SECTION_LINKS.news} label="お知らせ一覧" />
     </section>
   );
 }
