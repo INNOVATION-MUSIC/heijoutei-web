@@ -10,7 +10,7 @@ export default function OnlineSection() {
 
       {/* 右側 写真 */}
       <div className="absolute overflow-hidden" style={{ left: 740, top: 0, width: 700, height: 750, background: "#2e1c12" }}>
-        <Image src="/images/online_main.jpg" alt="オンラインショップ" fill className="object-cover" sizes="700px" />
+        <Image src="/images/online_main.webp" alt="オンラインショップ" fill className="object-cover" sizes="700px" />
         <div className="absolute inset-0" style={{ background: "linear-gradient(to right, #0d0a0a 0%, rgba(13,10,10,0.5) 30%, transparent 65%)" }} />
       </div>
 

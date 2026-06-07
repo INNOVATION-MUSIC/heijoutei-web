@@ -99,6 +99,19 @@ const sans = "'Noto Sans JP', sans-serif";   // サブテキスト・英字
 
 ---
 
+## 画像（最重要・以後のルール）
+
+- **画像は基本すべてWebPで出力する**。新規画像を `public/images/` に追加する際は、jpg/pngのまま置かず**必ずWebPに変換してから**配置し、コード参照も `/images/xxx.webp` にする
+- 変換方法（sharpインストール済み / jpg品質82・png品質88・透過アルファ保持）:
+  ```bash
+  node -e "require('sharp')('public/images/foo.jpg').webp({quality:82,effort:6}).toFile('public/images/foo.webp')"
+  # もしくは cwebp -q 82 public/images/foo.jpg -o public/images/foo.webp
+  ```
+- 例外（WebP化しないもの）: SVG（ベクター）・動画（mp4等）・favicon
+- 既存の `public/images/` は全WebP化済み（2026-06-07）
+
+---
+
 ## 開発コマンド
 ```bash
 npm run dev    # 開発サーバー起動

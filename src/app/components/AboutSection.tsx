@@ -25,7 +25,7 @@ export default function AboutSection({ onOpenModal }: { onOpenModal: () => void 
         <div style={{ display: "flex", gap: 49, alignItems: "flex-start", paddingTop: 17 }}>
           {/* 縦書きラベル「平壌亭について」 */}
           <div style={{ width: 44, height: 144, border: "1px solid rgba(255,255,255,0.3)", display: "flex", justifyContent: "center", alignItems: "center" }}>
-            <span style={{ writingMode: "vertical-rl" as const, whiteSpace: "nowrap", fontFamily: mincho, fontSize: 12, letterSpacing: "3px", color: "#fff", lineHeight: 1 }}>
+            <span style={{ writingMode: "vertical-rl" as const, whiteSpace: "nowrap", fontFamily: mincho, fontSize: 12, letterSpacing: "8px", color: "#fff", lineHeight: 1 }}>
               平壌亭について
             </span>
           </div>
@@ -35,7 +35,7 @@ export default function AboutSection({ onOpenModal }: { onOpenModal: () => void 
 
         {/* 右: ヒーロー画像（820×320, 黒オーバーレイ0.4） */}
         <div style={{ position: "relative", width: 820, height: 320, overflow: "hidden", flexShrink: 0, background: "#472914" }}>
-          <Image src="/images/about_hero.jpg" alt="黒毛和牛" fill className="object-cover" style={{ objectPosition: "center 35%" }} sizes="820px" />
+          <Image src="/images/about_hero.webp" alt="黒毛和牛" fill className="object-cover" style={{ objectPosition: "center 35%" }} sizes="820px" />
           <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.4)" }} />
         </div>
       </div>
@@ -66,14 +66,14 @@ export default function AboutSection({ onOpenModal }: { onOpenModal: () => void 
           肉本来の旨みを最大限に引き出します。
         </p>
         <div style={{ position: "relative", width: 746, height: 504, overflow: "hidden", background: "#472914", flexShrink: 0 }}>
-          <Image src="/images/about_cut.png" alt="職人がカットする黒毛和牛" fill className="object-cover" sizes="746px" />
+          <Image src="/images/about_cut.webp" alt="職人がカットする黒毛和牛" fill className="object-cover" sizes="746px" />
         </div>
       </div>
 
       {/* 座敷写真（左）+ テキスト2（右） */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", paddingTop: 243, paddingRight: 162 }}>
         <div style={{ position: "relative", width: 600, height: 715, overflow: "hidden", background: "#472914", flexShrink: 0 }}>
-          <Image src="/images/about_zashiki.jpg" alt="店内のテーブル席" fill className="object-cover" sizes="600px" />
+          <Image src="/images/about_zashiki.webp" alt="店内のテーブル席" fill className="object-cover" sizes="600px" />
         </div>
         <p style={{ fontFamily: mincho, fontSize: 18, fontWeight: 400, letterSpacing: "6px", lineHeight: "50px", color: "#ebe5db", margin: 0, textAlign: "left" }}>
           炎が肉を包み、香ばしい煙が立ち上る瞬間。<br />
@@ -89,7 +89,7 @@ export default function AboutSection({ onOpenModal }: { onOpenModal: () => void 
       {/* 店舗内観写真（右下） */}
       <div style={{ display: "flex", justifyContent: "flex-end", paddingTop: 0 }}>
         <div style={{ position: "relative", width: 531, height: 715, overflow: "hidden", background: "#472914", flexShrink: 0 }}>
-          <Image src="/images/about_interior.png" alt="店舗内観" fill className="object-cover" sizes="531px" />
+          <Image src="/images/about_interior.webp" alt="店舗内観" fill className="object-cover" sizes="531px" />
         </div>
       </div>
 

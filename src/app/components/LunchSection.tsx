@@ -9,15 +9,15 @@ export default function LunchSection() {
     <section className="relative bg-[#0a0a0a] overflow-hidden" style={{ width: 1440, height: 1000 }}>
       {/* メイン写真 */}
       <div className="absolute overflow-hidden bg-[#2e1c12]" style={{ left: 739, top: 81, width: 700, height: 450 }}>
-        <Image src="/images/lunch_main.jpg" alt="ランチ" fill className="object-cover" sizes="700px" />
+        <Image src="/images/lunch_main.webp" alt="ランチ" fill className="object-cover" sizes="700px" />
       </div>
       {/* サブ写真 1 */}
       <div className="absolute overflow-hidden bg-[#241a14]" style={{ left: 739, top: 550, width: 384, height: 276 }}>
-        <Image src="/images/lunch_sub1.jpg" alt="" fill className="object-cover" sizes="384px" />
+        <Image src="/images/lunch_sub1.webp" alt="" fill className="object-cover" sizes="384px" />
       </div>
       {/* サブ写真 2 */}
       <div className="absolute overflow-hidden bg-[#241a14]" style={{ left: 1143, top: 550, width: 297, height: 276 }}>
-        <Image src="/images/lunch_sub2.jpg" alt="" fill className="object-cover" sizes="297px" />
+        <Image src="/images/lunch_sub2.webp" alt="" fill className="object-cover" sizes="297px" />
       </div>
 
       {/* ラベル */}

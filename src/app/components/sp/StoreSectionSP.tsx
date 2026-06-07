@@ -72,7 +72,7 @@ export default function StoreSectionSP() {
       {/* ━━━ 亀岡店 (大カード) ━━━ */}
       <div style={{ marginLeft: 20, marginRight: 20, background: "#171717", overflow: "hidden", flexShrink: 0 }}>
         <div style={{ position: "relative", width: 350, height: 320, overflow: "hidden", background: "#1c110a" }}>
-          <Image src="/images/store_kameoka.jpg" alt="平壌亭 亀岡店" fill className="object-cover" sizes="350px" />
+          <Image src="/images/store_kameoka.webp" alt="平壌亭 亀岡店" fill className="object-cover" sizes="350px" />
         </div>
         <div style={{ padding: "28px 27px 24px" }}>
           <p style={{ fontFamily: sans, fontSize: 10, fontWeight: 300, letterSpacing: "3px", color: "rgba(217,184,107,0.6)", marginBottom: 14 }}>
@@ -119,9 +119,9 @@ export default function StoreSectionSP() {
       {/* ━━━ 小カード共通 ━━━ */}
       <div style={{ display: "flex", flexDirection: "column", gap: 20, paddingLeft: 20, paddingRight: 20, flexShrink: 0 }}>
         {[
-          { mapImg: "/images/store_sonobe_map.jpg",     subEn: "HEIJOHTEI　SONOBE",     name: "平壞亭　園部店",   tel: "0771-68-1760" },
-          { mapImg: "/images/store_fukuchiyama_map.jpg", subEn: "HEIJOHTEI　FUKUCHIYAMA", name: "平壞亭　福知山店", tel: "0773-24-2322" },
-          { mapImg: "/images/store_yurano_map.jpg",     subEn: "YAKINIKU YURANO",         name: "焼肉　ゆらの",    tel: "0773-45-8429" },
+          { mapImg: "/images/store_sonobe_map.webp",     subEn: "HEIJOHTEI　SONOBE",     name: "平壞亭　園部店",   tel: "0771-68-1760" },
+          { mapImg: "/images/store_fukuchiyama_map.webp", subEn: "HEIJOHTEI　FUKUCHIYAMA", name: "平壞亭　福知山店", tel: "0773-24-2322" },
+          { mapImg: "/images/store_yurano_map.webp",     subEn: "YAKINIKU YURANO",         name: "焼肉　ゆらの",    tel: "0773-45-8429" },
         ].map((s) => (
           <div key={s.name} style={{ height: 120, background: "#171717", display: "flex", overflow: "hidden" }}>
             <div style={{ width: 130, height: 120, overflow: "hidden", background: "#1c110a", flexShrink: 0, position: "relative" }}>

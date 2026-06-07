@@ -22,10 +22,10 @@ export default function LunchSectionSP() {
     >
       {/* サブ写真1・2: 特定位置に配置する構図のため absolute 許容 */}
       <div style={{ position: "absolute", left: 0, top: 675, width: 238, height: 160, overflow: "hidden", background: "#241a14" }}>
-        <Image src="/images/lunch_sub1.jpg" alt="" fill className="object-cover" sizes="238px" />
+        <Image src="/images/lunch_sub1.webp" alt="" fill className="object-cover" sizes="238px" />
       </div>
       <div style={{ position: "absolute", left: 161, top: 865, width: 229, height: 186, overflow: "hidden", background: "#241a14" }}>
-        <Image src="/images/lunch_sub2.jpg" alt="" fill className="object-cover" sizes="229px" />
+        <Image src="/images/lunch_sub2.webp" alt="" fill className="object-cover" sizes="229px" />
       </div>
 
       {/* ラベル + タイトル */}
@@ -52,7 +52,7 @@ export default function LunchSectionSP() {
 
       {/* メイン写真: w=358, h=194 */}
       <div style={{ width: 358, height: 194, overflow: "hidden", background: "#2e1c12", flexShrink: 0, position: "relative" }}>
-        <Image src="/images/lunch_main.jpg" alt="ランチ" fill className="object-cover" sizes="358px" />
+        <Image src="/images/lunch_main.webp" alt="ランチ" fill className="object-cover" sizes="358px" />
       </div>
 
       {/* gap: 384 - (167+194) = 23px */}

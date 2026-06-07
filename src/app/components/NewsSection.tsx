@@ -70,7 +70,7 @@ export default function NewsSection() {
       {/* ブラー背景 */}
       <div className="absolute overflow-hidden bg-[rgba(77,41,20,0.2)]" style={{ left: 0, top: 0, width: 1440, height: 1000 }}>
         <div className="absolute" style={{ left: -126, top: -837, width: 2589, height: 2556, filter: "blur(25px)" }}>
-          <Image src="/images/news1.jpg" alt="" fill className="object-cover" sizes="2589px" />
+          <Image src="/images/news1.webp" alt="" fill className="object-cover" sizes="2589px" />
         </div>
         <div className="absolute inset-0 bg-black/50" />
       </div>

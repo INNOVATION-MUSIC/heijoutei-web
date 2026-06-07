@@ -106,7 +106,7 @@ export default function StoreSection() {
         {/* 亀岡店（全幅大カード） */}
         <div style={{ display: "flex", height: 350 }}>
           <div style={{ width: 742, height: 350, position: "relative", overflow: "hidden", background: "#1c110a", flexShrink: 0 }}>
-            <Image src="/images/store_kameoka.jpg" alt="平壌亭 亀岡店" fill className="object-cover" sizes="742px" />
+            <Image src="/images/store_kameoka.webp" alt="平壌亭 亀岡店" fill className="object-cover" sizes="742px" />
           </div>
           <InfoPanel
             enLabel={"HEIJOHTEI  KAMEOKA"}
@@ -130,7 +130,7 @@ export default function StoreSection() {
         <div style={{ display: "flex", gap: 40, height: 280 }}>
           <div style={{ width: 650, display: "flex", flexShrink: 0 }}>
             <div style={{ width: 280, height: 280, position: "relative", overflow: "hidden", background: "#1c110a", flexShrink: 0 }}>
-              <Image src="/images/store_sonobe_map.jpg" alt="平壌亭 園部店" fill className="object-cover" sizes="280px" />
+              <Image src="/images/store_sonobe_map.webp" alt="平壌亭 園部店" fill className="object-cover" sizes="280px" />
             </div>
             <InfoPanel
               enLabel={"HEIJOHTEI  SONOBE"}
@@ -146,7 +146,7 @@ export default function StoreSection() {
           </div>
           <div style={{ width: 650, display: "flex", flexShrink: 0 }}>
             <div style={{ width: 280, height: 280, position: "relative", overflow: "hidden", background: "#1c110a", flexShrink: 0 }}>
-              <Image src="/images/store_fukuchiyama_map.jpg" alt="平壌亭 福知山店" fill className="object-cover" sizes="280px" />
+              <Image src="/images/store_fukuchiyama_map.webp" alt="平壌亭 福知山店" fill className="object-cover" sizes="280px" />
             </div>
             <InfoPanel
               enLabel={"HEIJOHTEI  FUKUCHIYAMA"}
@@ -166,7 +166,7 @@ export default function StoreSection() {
         <div style={{ display: "flex", gap: 40, height: 280 }}>
           <div style={{ width: 650, display: "flex", flexShrink: 0 }}>
             <div style={{ width: 280, height: 280, position: "relative", overflow: "hidden", background: "#1c110a", flexShrink: 0 }}>
-              <Image src="/images/store_yurano.jpg" alt="焼肉ゆらの" fill className="object-cover" sizes="280px" />
+              <Image src="/images/store_yurano.webp" alt="焼肉ゆらの" fill className="object-cover" sizes="280px" />
             </div>
             <InfoPanel
               enLabel="YAKINIKU YURANO"

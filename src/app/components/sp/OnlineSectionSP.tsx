@@ -84,7 +84,7 @@ export default function OnlineSectionSP() {
           position: "relative",
         }}
       >
-        <Image src="/images/online_main.jpg" alt="オンラインショップ" fill className="object-cover" sizes="390px" />
+        <Image src="/images/online_main.webp" alt="オンラインショップ" fill className="object-cover" sizes="390px" />
       </div>
 
       {/* gap: 804 - 765 = 39px */}

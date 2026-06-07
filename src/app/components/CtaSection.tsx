@@ -9,7 +9,7 @@ export default function CtaSection() {
     <section className="relative overflow-hidden" style={{ width: 1440, height: 620 }}>
       {/* 背景写真 */}
       <div className="absolute inset-0 overflow-hidden bg-black">
-        <Image src="/images/cta.jpg" alt="" fill className="object-cover" sizes="1440px" />
+        <Image src="/images/cta.webp" alt="" fill className="object-cover" sizes="1440px" />
         <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.75)" }} />
       </div>
 

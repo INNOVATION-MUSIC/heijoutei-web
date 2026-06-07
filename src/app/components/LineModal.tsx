@@ -148,7 +148,7 @@ export default function LineModal({ open, onClose }: Props) {
               {/* LINEアイコン: Figma size=23×23 */}
               <div style={{ position: "relative", width: 23, height: 23, flexShrink: 0 }}>
                 <Image
-                  src="/images/line_icon.png"
+                  src="/images/line_icon.webp"
                   alt="LINE"
                   fill
                   className="object-contain"

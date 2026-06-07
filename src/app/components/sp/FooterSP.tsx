@@ -22,7 +22,7 @@ export default function FooterSP({ onOpenModal }: { onOpenModal: () => void }) {
       {/* ロゴ: Figma w=212 h=111 */}
       <div style={{ position: "relative", width: 212, height: 111, flexShrink: 0 }}>
         <Image
-          src="/images/footer_logo.png"
+          src="/images/footer_logo.webp"
           alt="焼肉平壌亭"
           fill
           className="object-contain"

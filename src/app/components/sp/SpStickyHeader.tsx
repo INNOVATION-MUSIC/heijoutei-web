@@ -86,7 +86,7 @@ export default function SpStickyHeader({ onOpenMenu }: Props) {
           }}
         >
           <Image
-            src="/images/footer_logo.png"
+            src="/images/footer_logo.webp"
             alt="焼肉平壌亭"
             fill
             className="object-contain"

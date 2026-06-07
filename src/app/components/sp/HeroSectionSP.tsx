@@ -39,7 +39,7 @@ export default function HeroSectionSP({ onOpenModal, onOpenLineModal }: Props) {
           }}
         >
           <Image
-            src="/images/hero_meat.jpg"
+            src="/images/hero_meat.webp"
             alt="焼肉平壌亭"
             fill
             className="object-cover"
@@ -215,7 +215,7 @@ export default function HeroSectionSP({ onOpenModal, onOpenLineModal }: Props) {
         >
           <div style={{ position: "relative", width: 23, height: 23, flexShrink: 0 }}>
             <Image
-              src="/images/line_icon.png"
+              src="/images/line_icon.webp"
               alt="LINE"
               fill
               className="object-contain"

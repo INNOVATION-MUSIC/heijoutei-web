@@ -85,7 +85,7 @@ export default function NewsSectionSP() {
       {/* 背景: 物理的に重なる要素なので absolute 許容 */}
       <div style={{ position: "absolute", inset: 0, background: "rgba(77,41,20,0.2)", overflow: "hidden" }}>
         <Image
-          src="/images/news_bg.jpg"
+          src="/images/news_bg.webp"
           alt=""
           fill
           className="object-cover"

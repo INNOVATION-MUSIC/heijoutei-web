@@ -90,7 +90,7 @@ export default function KodawariSectionSP() {
         {/* 背景画像 */}
         <div style={{ position: "absolute", inset: 0, overflow: "hidden", background: "#472914" }}>
           <Image
-            src="/images/kodawari_bg.jpg"
+            src="/images/kodawari_bg.webp"
             alt=""
             fill
             className="object-cover"

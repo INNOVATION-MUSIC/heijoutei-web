@@ -18,7 +18,7 @@ export default function CtaSectionSP() {
     >
       {/* 背景写真: Figma に合わせ top:8 からスタート */}
       <div style={{ position: "absolute", left: 0, top: 8, width: 390, height: 663, overflow: "hidden", background: "#1a0c05" }}>
-        <Image src="/images/cta.jpg" alt="" fill className="object-cover" sizes="390px" />
+        <Image src="/images/cta.webp" alt="" fill className="object-cover" sizes="390px" />
         <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.75)" }} />
       </div>
 

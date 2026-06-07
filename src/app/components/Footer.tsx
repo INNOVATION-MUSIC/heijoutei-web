@@ -12,7 +12,7 @@ export default function Footer({ onOpenModal }: { onOpenModal: () => void }) {
     <footer className="relative overflow-hidden bg-[#0a0a0a]" style={{ width: 1440, height: 600 }}>
       {/* ロゴ */}
       <div className="absolute" style={{ left: 175, top: 90, width: 260, height: 148 }}>
-        <Image src="/images/footer_logo.png" alt="焼肉平壌亭" fill className="object-contain" sizes="260px" />
+        <Image src="/images/footer_logo.webp" alt="焼肉平壌亭" fill className="object-contain" sizes="260px" />
       </div>
 
       {/* キャッチコピー */}
