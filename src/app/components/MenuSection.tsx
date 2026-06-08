@@ -3,9 +3,9 @@
 import Image from "next/image";
 import { useEffect, useRef } from "react";
 import { MENU_PHOTOS } from "@/app/lib/menuPhotos";
+import OutlineButton from "./OutlineButton";
 
 const mincho = "'Shippori Mincho', serif";
-const sans = "'Noto Sans JP', sans-serif";
 
 const PHOTOS = MENU_PHOTOS;
 
@@ -54,11 +54,9 @@ export default function MenuSection() {
       </p>
 
       {/* メニューボタン */}
-      <a href="#" className="absolute flex items-center overflow-hidden" style={{ left: 206, top: 424, width: 171, height: 50, borderRadius: 25, border: "1px solid rgba(221,168,63,0.6)", textDecoration: "none" }}>
-        <span className="absolute" style={{ left: 22, top: 11, fontFamily: "sans-serif", fontSize: 16, color: "#fff" }}>·</span>
-        <span className="absolute" style={{ left: 35, top: 15, fontFamily: mincho, fontSize: 12, letterSpacing: "0.083em", color: "#fff" }}>メニュー</span>
-        <span className="absolute" style={{ left: 105, top: 15, fontFamily: sans, fontSize: 12, fontWeight: 700, letterSpacing: "0.125em", color: "#ebe5db" }}>Menu</span>
-      </a>
+      <div className="absolute" style={{ left: 206, top: 424 }}>
+        <OutlineButton jp="メニュー" en="Menu" href="#" />
+      </div>
 
       {/* 料理写真 自動横スクロール */}
       <div className="absolute" style={{ top: 538, left: 0, width: 1440, overflow: "hidden" }}>

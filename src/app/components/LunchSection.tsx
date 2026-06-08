@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import OutlineButton from "./OutlineButton";
 
 const mincho = "'Shippori Mincho', serif";
 const display = "'Cormorant Garamond', serif";
@@ -37,10 +38,9 @@ export default function LunchSection() {
       </p>
 
       {/* ランチメニューボタン */}
-      <a href="#" className="absolute flex items-center overflow-hidden" style={{ left: 206, top: 615, width: 172, height: 50, borderRadius: 25, border: "1px solid rgba(221,168,63,0.6)", textDecoration: "none" }}>
-        <span className="absolute" style={{ left: 32, top: 11, fontFamily: "sans-serif", fontSize: 16, color: "#fff" }}>·</span>
-        <span className="absolute" style={{ left: 45, top: 15, fontFamily: mincho, fontSize: 12, letterSpacing: "0.083em", color: "#fff" }}>ランチメニュー</span>
-      </a>
+      <div className="absolute" style={{ left: 206, top: 615 }}>
+        <OutlineButton jp="ランチメニュー" href="#" width={172} padL={32} />
+      </div>
     </section>
   );
 }

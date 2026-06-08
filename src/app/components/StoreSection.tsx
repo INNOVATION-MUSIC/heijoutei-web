@@ -2,6 +2,7 @@
 import { type ReactNode } from "react";
 import Image from "next/image";
 import { SECTION_LINKS } from "@/app/lib/navLinks";
+import OutlineButton from "./OutlineButton";
 
 const mincho = "'Shippori Mincho', serif";
 const display = "'Cormorant Garamond', serif";
@@ -202,23 +203,7 @@ export default function StoreSection() {
 
       {/* ━━━ 店舗一覧ボタン ━━━ */}
       <div style={{ display: "flex", justifyContent: "center", paddingTop: 63, paddingBottom: 206 }}>
-        <a
-          href={SECTION_LINKS.store}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 8,
-            width: 142,
-            height: 50,
-            borderRadius: 25,
-            border: "1px solid rgba(221,168,63,0.6)",
-            textDecoration: "none",
-          }}
-        >
-          <span style={{ fontFamily: sans, fontSize: 16, color: "#fff" }}>·</span>
-          <span style={{ fontFamily: mincho, fontSize: 12, letterSpacing: "1px", color: "#fff" }}>店舗一覧</span>
-        </a>
+        <OutlineButton jp="店舗一覧" href={SECTION_LINKS.store} width={142} align="center" />
       </div>
     </section>
   );

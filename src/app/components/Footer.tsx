@@ -1,6 +1,7 @@
 "use client";
 import Image from "next/image";
 import { NAV_LINKS as NAV_DEFS, SECTION_LINKS } from "@/app/lib/navLinks";
+import OutlineButton from "./OutlineButton";
 
 const mincho = "'Shippori Mincho', serif";
 const sans = "'Noto Sans JP', sans-serif";
@@ -35,19 +36,15 @@ export default function Footer({ onOpenModal }: { onOpenModal: () => void }) {
         </a>
       ))}
 
-      {/* ご予約ボタン */}
-      <button onClick={onOpenModal} className="absolute flex items-center overflow-hidden" style={{ left: 1128, top: 147, width: 171, height: 50, borderRadius: 25, border: "1px solid rgba(221,168,63,0.6)", background: "transparent", cursor: "pointer" }}>
-        <span className="absolute" style={{ left: 22, top: 11, fontFamily: "sans-serif", fontSize: 16, color: "#ffffff" }}>·</span>
-        <span className="absolute" style={{ left: 35, top: 15, fontFamily: mincho, fontSize: 12, letterSpacing: "0.083em", color: "#ffffff" }}>ご予約</span>
-        <span className="absolute" style={{ left: 82, top: 15, fontFamily: sans, fontSize: 12, fontWeight: 700, letterSpacing: "0.125em", color: "#ebe5db" }}>Reserve</span>
-      </button>
+      {/* ご予約ボタン（共通 OutlineButton） */}
+      <div className="absolute" style={{ left: 1128, top: 147 }}>
+        <OutlineButton jp="ご予約" en="Reserve" onClick={onOpenModal} />
+      </div>
 
-      {/* テイクアウトボタン */}
-      <a href={SECTION_LINKS.takeout} className="absolute flex items-center overflow-hidden" style={{ left: 1128, top: 237, width: 171, height: 50, borderRadius: 25, border: "1px solid rgba(221,168,63,0.6)", textDecoration: "none" }}>
-        <span className="absolute" style={{ left: 22, top: 11, fontFamily: "sans-serif", fontSize: 16, color: "#ffffff" }}>·</span>
-        <span className="absolute" style={{ left: 35, top: 15, fontFamily: mincho, fontSize: 12, letterSpacing: "0.083em", color: "#ffffff" }}>ご注文</span>
-        <span className="absolute" style={{ left: 88, top: 15, fontFamily: sans, fontSize: 12, fontWeight: 700, letterSpacing: "0.125em", color: "#ebe5db" }}>Takeout</span>
-      </a>
+      {/* テイクアウトボタン（共通 OutlineButton） */}
+      <div className="absolute" style={{ left: 1128, top: 237 }}>
+        <OutlineButton jp="ご注文" en="Takeout" href={SECTION_LINKS.takeout} />
+      </div>
 
       {/* 区切り線 */}
       <div className="absolute" style={{ left: 0, top: 543, width: 1440, height: 1, backgroundColor: "rgba(255,255,255,0.08)" }} />

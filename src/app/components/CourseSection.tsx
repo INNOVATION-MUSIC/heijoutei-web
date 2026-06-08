@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import OutlineButton from "./OutlineButton";
 
 const mincho = "'Shippori Mincho', serif";
 const display = "'Cormorant Garamond', serif";
@@ -51,24 +52,7 @@ export default function CourseSection() {
           </div>
           <p style={{ fontFamily: display, fontSize: 80, letterSpacing: "-1px", color: "#ebe5db", lineHeight: "normal" }}>Course</p>
           <div style={{ flex: 1 }} />
-          <a
-            href="#"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              width: 172,
-              height: 50,
-              borderRadius: 25,
-              border: "1px solid rgba(221,168,63,0.6)",
-              textDecoration: "none",
-              gap: 8,
-              flexShrink: 0,
-            }}
-          >
-            <span style={{ fontFamily: "sans-serif", fontSize: 16, color: "#fff" }}>·</span>
-            <span style={{ fontFamily: mincho, fontSize: 12, letterSpacing: "0.083em", color: "#fff" }}>コースメニュー</span>
-          </a>
+          <OutlineButton jp="コースメニュー" href="#" width={172} align="center" />
         </div>
         {/* 説明文（paddingLeftでタイトル左端に揃える: 44+69=113） */}
         <p

@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import OutlineButton from "./OutlineButton";
 
 const mincho = "'Shippori Mincho', serif";
 const display = "'Cormorant Garamond', serif";
@@ -34,10 +35,9 @@ export default function OnlineSection() {
       </p>
 
       {/* ボタン */}
-      <a href="#" className="absolute" style={{ left: 179, top: 480, width: 199, height: 50, borderRadius: 25, border: "1px solid rgba(221,168,63,0.6)", textDecoration: "none", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-        <span style={{ fontFamily: "sans-serif", fontSize: 16, color: "#fff" }}>·</span>
-        <span style={{ fontFamily: mincho, fontSize: 12, fontWeight: 400, letterSpacing: "1px", color: "#fff" }}>オンラインショップ</span>
-      </a>
+      <div className="absolute" style={{ left: 179, top: 480 }}>
+        <OutlineButton jp="オンラインショップ" href="#" width={199} align="center" />
+      </div>
 
     </section>
   );

@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import PageHeader from "../PageHeader";
+import CommonOutlineButton from "../OutlineButton";
 
 const mincho = "'Shippori Mincho', serif";
 const sans = "'Noto Sans JP', sans-serif";
@@ -137,30 +138,9 @@ export function RedButton({ label, onClick, disabled, width = 210 }: { label: st
   );
 }
 
-/* ─────────── ゴールド枠ボタン（戻る・トップページへ等） ─────────── */
+/* ─────────── ゴールド枠ボタン（共通 OutlineButton のラッパー・label/en API 維持） ─────────── */
 export function OutlineButton({ label, en, onClick, href, width = 172 }: { label: string; en?: string; onClick?: () => void; href?: string; width?: number }) {
-  const inner = (
-    <>
-      <span style={{ fontFamily: "sans-serif", fontSize: 16, color: "#fff", lineHeight: 1 }}>·</span>
-      <span style={{ fontFamily: mincho, fontSize: 12, letterSpacing: "0.083em", color: "#fff", whiteSpace: "nowrap" }}>{label}</span>
-      {en && <span style={{ fontFamily: sans, fontSize: 12, fontWeight: 700, letterSpacing: "0.125em", color: "#ebe5db", whiteSpace: "nowrap" }}>{en}</span>}
-    </>
-  );
-  const style: React.CSSProperties = {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-    width,
-    height: 50,
-    borderRadius: 25,
-    border: `1px solid ${GOLD_BORDER}`,
-    background: "transparent",
-    cursor: "pointer",
-    textDecoration: "none",
-  };
-  if (href) return <a href={href} style={style}>{inner}</a>;
-  return <button onClick={onClick} style={style}>{inner}</button>;
+  return <CommonOutlineButton jp={label} en={en} onClick={onClick} href={href} width={width} align="center" />;
 }
 
 export { mincho, sans, display };

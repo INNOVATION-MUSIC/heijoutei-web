@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import PageHeader from "../PageHeader";
+import CommonOutlineButton from "../OutlineButton";
 
 const mincho = "'Shippori Mincho', serif";
 const sans = "'Noto Sans JP', sans-serif";
@@ -34,30 +35,9 @@ export function ContactHeader({ onOpenModal }: { onOpenModal: () => void }) {
   );
 }
 
-/* ─────────── ゴールド枠ボタン（確認画面へ・送信する・トップページへ等） ─────────── */
+/* ─────────── ゴールド枠ボタン（共通 OutlineButton のラッパー・label/disabled API 維持） ─────────── */
 export function OutlineButton({ label, onClick, href, disabled, width = 172 }: { label: string; onClick?: () => void; href?: string; disabled?: boolean; width?: number }) {
-  const inner = (
-    <>
-      <span style={{ fontFamily: "sans-serif", fontSize: 16, color: "#fff", lineHeight: 1 }}>·</span>
-      <span style={{ fontFamily: mincho, fontSize: 13, letterSpacing: "0.083em", color: "#fff", whiteSpace: "nowrap" }}>{label}</span>
-    </>
-  );
-  const style: React.CSSProperties = {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-    width,
-    height: 50,
-    borderRadius: 25,
-    border: `1px solid ${GOLD_BORDER}`,
-    background: "transparent",
-    opacity: disabled ? 0.4 : 1,
-    cursor: disabled ? "not-allowed" : "pointer",
-    textDecoration: "none",
-  };
-  if (href) return <a href={href} style={style}>{inner}</a>;
-  return <button onClick={onClick} disabled={disabled} style={style}>{inner}</button>;
+  return <CommonOutlineButton jp={label} onClick={onClick} href={href} disabled={disabled} width={width} align="center" />;
 }
 
 export { mincho, sans, display };

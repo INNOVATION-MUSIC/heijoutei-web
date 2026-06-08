@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useRef } from "react";
 import { NEWS_DATA as NEWS } from "@/app/lib/newsData";
 import { SECTION_LINKS } from "@/app/lib/navLinks";
+import OutlineButton from "./OutlineButton";
 
 const mincho = "'Shippori Mincho', serif";
 const sans = "'Noto Sans JP', sans-serif";
@@ -84,10 +85,7 @@ export default function NewsSection() {
           </div>
           <p style={{ fontFamily: display, fontSize: 80, letterSpacing: "-1px", color: "#ebe5db", lineHeight: "normal" }}>News</p>
         </div>
-        <a href={SECTION_LINKS.news} style={{ display: "flex", alignItems: "center", gap: 8, paddingLeft: 32, width: 162, height: 50, borderRadius: 25, border: "1px solid rgba(221,168,63,0.6)", textDecoration: "none", flexShrink: 0 }}>
-          <span style={{ fontFamily: "sans-serif", fontSize: 16, color: "#fff" }}>·</span>
-          <span style={{ fontFamily: mincho, fontSize: 12, letterSpacing: "0.083em", color: "#fff" }}>お知らせ一覧</span>
-        </a>
+        <OutlineButton jp="お知らせ一覧" href={SECTION_LINKS.news} width={162} padL={32} />
       </div>
 
       {/* 左矢印 */}

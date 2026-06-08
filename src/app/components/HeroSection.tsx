@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { HEADER_NAV_LINKS } from "@/app/lib/navLinks";
+import OutlineButton from "./OutlineButton";
 
 const LINE_BTNS = [
   { label: "亀岡店", width: 185 },
@@ -90,25 +91,7 @@ export default function HeroSection({ onOpenModal }: { onOpenModal: () => void }
             </nav>
 
             {/* 予約ボタン: width=171 → (587-171)/2=208 → x=208 に自動配置 */}
-            <button
-              onClick={onOpenModal}
-              style={{
-                width: 171,
-                height: 50,
-                borderRadius: 25,
-                border: "1px solid rgba(221,168,63,0.6)",
-                background: "transparent",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-                paddingLeft: 22,
-              }}
-            >
-              <span style={{ fontFamily: "sans-serif", fontSize: 16, color: "#ffffff", lineHeight: "1" }}>·</span>
-              <span style={{ fontFamily: mincho, fontSize: 12, fontWeight: 400, letterSpacing: "0.083em", color: "#ffffff" }}>ご予約</span>
-              <span style={{ fontFamily: sans, fontSize: 12, fontWeight: 700, letterSpacing: "0.125em", color: "#ebe5db", whiteSpace: "nowrap" }}>Reserve</span>
-            </button>
+            <OutlineButton jp="ご予約" en="Reserve" onClick={onOpenModal} />
           </div>
         </div>
 

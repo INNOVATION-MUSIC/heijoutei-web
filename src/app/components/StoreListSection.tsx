@@ -3,6 +3,7 @@
 import { type ReactNode } from "react";
 import Image from "next/image";
 import PageHeader from "./PageHeader";
+import OutlineButton from "./OutlineButton";
 
 const mincho = "'Shippori Mincho', serif";
 const display = "'Cormorant Garamond', serif";
@@ -117,25 +118,7 @@ function MapBadge({ address }: { address: string }) {
 
 /** 店舗詳細ボタン（119×40・右下配置）。詳細ページ未実装のため href="#"。 */
 function DetailButton() {
-  return (
-    <a
-      href="#"
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: 8,
-        width: 119,
-        height: 40,
-        borderRadius: 25,
-        border: "1px solid rgba(221,168,63,0.6)",
-        textDecoration: "none",
-        paddingLeft: 22,
-      }}
-    >
-      <span style={{ fontFamily: "sans-serif", fontSize: 16, color: "#fff", lineHeight: "1" }}>·</span>
-      <span style={{ fontFamily: mincho, fontSize: 12, letterSpacing: "1px", color: "#fff" }}>店舗詳細</span>
-    </a>
-  );
+  return <OutlineButton jp="店舗詳細" href="#" width={119} height={40} />;
 }
 
 /** 店舗カード（1340×350）。左=写真742×350 / 右=情報パネル。 */

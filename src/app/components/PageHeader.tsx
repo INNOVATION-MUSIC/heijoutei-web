@@ -2,9 +2,9 @@
 
 import Image from "next/image";
 import { HEADER_NAV_LINKS } from "@/app/lib/navLinks";
+import OutlineButton from "./OutlineButton";
 
 const mincho = "'Shippori Mincho', serif";
-const sans = "'Noto Sans JP', sans-serif";
 
 /**
  * 下層ページ共通ヘッダー。
@@ -58,27 +58,9 @@ export default function PageHeader({ onOpenModal }: { onOpenModal: () => void })
         <Image src="/images/logo.webp" alt="焼肉平壌亭" fill className="object-contain" sizes="139px" priority />
       </div>
 
-      {/* 右: ご予約ボタン（171×50） */}
+      {/* 右: ご予約ボタン（171×50・共通 OutlineButton） */}
       <div style={{ flex: 1, display: "flex", justifyContent: "flex-end", paddingTop: 12 }}>
-        <button
-          onClick={onOpenModal}
-          style={{
-            width: 171,
-            height: 50,
-            borderRadius: 25,
-            border: "1px solid rgba(221,168,63,0.6)",
-            background: "transparent",
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
-            paddingLeft: 22,
-          }}
-        >
-          <span style={{ fontFamily: "sans-serif", fontSize: 16, color: "#fff", lineHeight: "1" }}>·</span>
-          <span style={{ fontFamily: mincho, fontSize: 12, fontWeight: 400, letterSpacing: "0.083em", color: "#fff" }}>ご予約</span>
-          <span style={{ fontFamily: sans, fontSize: 12, fontWeight: 700, letterSpacing: "0.125em", color: "#ebe5db", whiteSpace: "nowrap" }}>Reserve</span>
-        </button>
+        <OutlineButton jp="ご予約" en="Reserve" onClick={onOpenModal} />
       </div>
     </header>
   );

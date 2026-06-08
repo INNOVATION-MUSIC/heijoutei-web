@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import Image from "next/image";
 import PageHeader from "./PageHeader";
+import OutlineButton from "./OutlineButton";
 import { NEWS_LIST_DATA as LIST, type NewsListItem } from "@/app/lib/newsData";
 
 const mincho = "'Shippori Mincho', serif";
@@ -108,13 +109,7 @@ export default function NewsListSection({ onOpenModal, height, visibleCount, has
       {/* もっと見るボタン（未表示の項目が残っている場合のみ） */}
       {hasMore && (
         <div style={{ display: "flex", justifyContent: "center", paddingTop: 140 }}>
-          <button
-            onClick={onShowMore}
-            style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, width: 151, height: 50, borderRadius: 25, border: "1px solid rgba(221,168,63,0.6)", background: "transparent", cursor: "pointer" }}
-          >
-            <span style={{ fontFamily: "sans-serif", fontSize: 16, color: "#fff", lineHeight: 1 }}>·</span>
-            <span style={{ fontFamily: mincho, fontSize: 12, letterSpacing: "0.083em", color: "#fff" }}>もっと見る</span>
-          </button>
+          <OutlineButton jp="もっと見る" onClick={onShowMore} width={151} align="center" />
         </div>
       )}
 
