@@ -1,6 +1,7 @@
 "use client";
 import { type ReactNode } from "react";
 import Image from "next/image";
+import { SECTION_LINKS } from "@/app/lib/navLinks";
 
 const mincho = "'Shippori Mincho', serif";
 const display = "'Cormorant Garamond', serif";
@@ -202,7 +203,7 @@ export default function StoreSection() {
       {/* ━━━ 店舗一覧ボタン ━━━ */}
       <div style={{ display: "flex", justifyContent: "center", paddingTop: 63, paddingBottom: 206 }}>
         <a
-          href="#"
+          href={SECTION_LINKS.store}
           style={{
             display: "flex",
             alignItems: "center",
