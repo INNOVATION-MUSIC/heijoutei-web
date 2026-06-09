@@ -1,6 +1,6 @@
 "use client";
 
-import { TakeoutHeader, TakeoutStepper, RedButton, mincho } from "./TakeoutShared";
+import { TakeoutHeader, TakeoutStepper, RedButton, mincho, sans } from "./TakeoutShared";
 import {
   WEEKDAY_LABELS,
   formatJpDate,
@@ -48,52 +48,8 @@ export default function Step1DateTime(p: Props) {
     <div style={{ display: "flex", flexDirection: "column", width: 1440, height: p.height, background: "#0a0a0a", overflow: "hidden" }}>
       <TakeoutHeader onOpenModal={p.onOpenModal} />
 
-      {/* 受取店舗タブ */}
-      <div style={{ paddingLeft: 50, paddingRight: 50, paddingTop: 178 }}>
-        <div style={{ width: 1340 }}>
-          <div style={{ display: "flex" }}>
-            {p.stores.map((s) => {
-              const active = s.id === p.store.id;
-              return (
-                <button
-                  key={s.id}
-                  onClick={() => p.onSelectStore(s)}
-                  style={{
-                    width: 268,
-                    height: 80,
-                    background: "transparent",
-                    border: "none",
-                    cursor: "pointer",
-                    fontFamily: mincho,
-                    fontSize: 18,
-                    letterSpacing: "0.08em",
-                    color: active ? "#ebe5db" : "rgba(235,229,219,0.45)",
-                  }}
-                >
-                  {s.name}
-                </button>
-              );
-            })}
-          </div>
-          {/* 下線トラック + アクティブ位置 */}
-          <div style={{ position: "relative", width: 1340, height: 2, background: "rgba(235,229,219,0.15)" }}>
-            <div
-              style={{
-                position: "absolute",
-                top: 0,
-                left: p.stores.findIndex((s) => s.id === p.store.id) * 268,
-                width: 268,
-                height: 2,
-                background: GOLD_BAR,
-                transition: "left 0.25s ease",
-              }}
-            />
-          </div>
-        </div>
-      </div>
-
       {/* ステッパー */}
-      <div style={{ paddingTop: 66 }}>
+      <div style={{ paddingTop: 120 }}>
         <TakeoutStepper current={1} />
       </div>
 
@@ -114,17 +70,23 @@ export default function Step1DateTime(p: Props) {
         </div>
       </div>
 
+      {/* 1. 店舗を選択 */}
+      <div style={{ display: "flex", alignItems: "center", paddingLeft: 140, paddingTop: 74 }}>
+        <p style={{ margin: 0, width: 211, fontFamily: mincho, fontSize: 18, letterSpacing: "0.06em", color: "#ebe5db" }}>1. 店舗を選択</p>
+        <StoreSelect stores={p.stores} store={p.store} onSelectStore={p.onSelectStore} />
+      </div>
+
       {/* 受取日 + 受取時間 */}
-      <div style={{ display: "flex", gap: 40, paddingLeft: 140, paddingRight: 60, paddingTop: 60 }}>
-        {/* 1. 受取希望日 */}
+      <div style={{ display: "flex", gap: 40, paddingLeft: 140, paddingRight: 60, paddingTop: 50 }}>
+        {/* 2. 受取希望日 */}
         <div style={{ width: 620, display: "flex", flexDirection: "column", gap: 24 }}>
-          <p style={{ margin: 0, fontFamily: mincho, fontSize: 18, letterSpacing: "0.06em", color: "#ebe5db" }}>1. 受取希望日を選択</p>
+          <p style={{ margin: 0, fontFamily: mincho, fontSize: 18, letterSpacing: "0.06em", color: "#ebe5db" }}>2. 受取希望日を選択</p>
           <Calendar {...p} />
         </div>
 
-        {/* 2. 受取時間 */}
+        {/* 3. 受取時間 */}
         <div style={{ width: 580, display: "flex", flexDirection: "column", gap: 24 }}>
-          <p style={{ margin: 0, fontFamily: mincho, fontSize: 18, letterSpacing: "0.06em", color: "#ebe5db" }}>2. 受取時間を選択</p>
+          <p style={{ margin: 0, fontFamily: mincho, fontSize: 18, letterSpacing: "0.06em", color: "#ebe5db" }}>3. 受取時間を選択</p>
           <TimeGrid dateIso={p.dateIso} time={p.time} onSelectTime={p.onSelectTime} />
         </div>
       </div>
@@ -138,6 +100,42 @@ export default function Step1DateTime(p: Props) {
       </div>
 
       <div style={{ flex: 1 }} />
+    </div>
+  );
+}
+
+/* ─────────── 店舗セレクト ─────────── */
+function StoreSelect({ stores, store, onSelectStore }: { stores: TakeoutStore[]; store: TakeoutStore; onSelectStore: (s: TakeoutStore) => void }) {
+  return (
+    <div style={{ position: "relative", width: 242 }}>
+      <select
+        value={store.id}
+        onChange={(e) => {
+          const next = stores.find((s) => String(s.id) === e.target.value);
+          if (next) onSelectStore(next);
+        }}
+        style={{
+          width: "100%",
+          height: 52,
+          background: PANEL,
+          border: "1px solid rgba(235,229,219,0.15)",
+          borderRadius: 4,
+          padding: "0 36px 0 16px",
+          fontFamily: sans,
+          fontSize: 14,
+          color: "#ebe5db",
+          outline: "none",
+          appearance: "none",
+          WebkitAppearance: "none",
+          cursor: "pointer",
+        }}
+      >
+        {stores.map((s) => (
+          <option key={s.id} value={s.id} style={{ background: PANEL, color: "#ebe5db" }}>{s.name}</option>
+        ))}
+      </select>
+      {/* ▼ */}
+      <span style={{ position: "absolute", right: 16, top: "50%", transform: "translateY(-50%)", pointerEvents: "none", fontSize: 10, color: "rgba(235,229,219,0.7)" }}>▼</span>
     </div>
   );
 }

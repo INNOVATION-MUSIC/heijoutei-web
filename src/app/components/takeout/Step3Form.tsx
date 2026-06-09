@@ -73,7 +73,7 @@ export default function Step3Form(p: Props) {
       {/* ボタン */}
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 20, paddingTop: 38 }}>
         <RedButton label="確認画面へ進む" onClick={p.onNext} disabled={!valid} width={210} />
-        <OutlineButton label="メニューへ戻る" onClick={p.onBack} width={172} />
+        <OutlineButton label="メニューへ戻る" onClick={p.onBack} width={210} />
       </div>
 
       <div style={{ flex: 1 }} />
