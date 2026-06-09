@@ -183,12 +183,14 @@ export default function StoreSection() {
             />
           </div>
           <div style={{ width: 650, display: "flex", flexShrink: 0 }}>
-            <div style={{ width: 280, height: 280, background: "#2b2b2b", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-              <p style={{ fontFamily: sans, fontWeight: 300, fontSize: 14, color: "rgba(255,255,255,0.8)", letterSpacing: "1px" }}>Coming Soon</p>
+            <div style={{ width: 280, height: 280, background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <div style={{ width: 212, height: 212, position: "relative", flexShrink: 0 }}>
+                <Image src="/images/store_kopu29.webp" alt="KOPU29" fill className="object-contain" sizes="212px" />
+              </div>
             </div>
             <InfoPanel
-              enLabel={"HEIJOHTEI "}
-              name="ヘイジョウテイ"
+              enLabel={"KOPUNIKU"}
+              name="KOPU29"
               address="京都府亀岡市篠町浄法寺中村34-6"
               phone="0771-20-1960"
               access="JR嵯峨野線「亀岡」駅から徒歩15分"

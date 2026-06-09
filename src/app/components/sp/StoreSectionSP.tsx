@@ -145,21 +145,27 @@ export default function StoreSectionSP() {
           </div>
         ))}
 
-        {/* Coming Soon */}
-        <div style={{ height: 110, background: "#171717", display: "flex", overflow: "hidden" }}>
-          <div style={{ width: 130, height: 110, background: "#2b2b2b", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <p style={{ fontFamily: sans, fontSize: 10, fontWeight: 300, color: "rgba(255,255,255,0.8)", letterSpacing: "1px" }}>
-              Coming Soon
-            </p>
+        {/* KOPU29 */}
+        <div style={{ height: 120, background: "#171717", display: "flex", overflow: "hidden" }}>
+          <div style={{ width: 130, height: 120, background: "#fff", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <div style={{ width: 96, height: 96, position: "relative", flexShrink: 0 }}>
+              <Image src="/images/store_kopu29.webp" alt="KOPU29" fill className="object-contain" sizes="96px" />
+            </div>
           </div>
-          <div style={{ padding: "27px 0 0 20px" }}>
-            <p style={{ fontFamily: sans, fontSize: 10, fontWeight: 300, letterSpacing: "3px", color: "rgba(217,184,107,0.6)", marginBottom: 8 }}>
-              HEIJOHTEI
+          <div style={{ padding: "17px 0 0 20px", flex: 1 }}>
+            <p style={{ fontFamily: sans, fontSize: 10, fontWeight: 300, letterSpacing: "3px", color: "rgba(217,184,107,0.6)", marginBottom: 6 }}>
+              KOPUNIKU
             </p>
-            <div style={{ width: 32, height: 1, backgroundColor: "rgba(217,184,107,0.45)", marginBottom: 10 }} />
-            <p style={{ fontFamily: mincho, fontSize: 18, fontWeight: 800, letterSpacing: "2px", color: "#fff" }}>
-              ヘイジョウテイ
+            <div style={{ width: 32, height: 1, backgroundColor: "rgba(217,184,107,0.45)", marginBottom: 8 }} />
+            <p style={{ fontFamily: mincho, fontSize: 18, fontWeight: 800, letterSpacing: "2px", color: "#fff", marginBottom: 8 }}>
+              KOPU29
             </p>
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <PhoneIcon size={20} />
+              <a href="tel:0771-20-1960" style={{ fontFamily: sans, fontSize: 18, fontWeight: 700, color: "#d9b86b", textDecoration: "none", letterSpacing: "0.5px" }}>
+                0771-20-1960
+              </a>
+            </div>
           </div>
         </div>
       </div>
