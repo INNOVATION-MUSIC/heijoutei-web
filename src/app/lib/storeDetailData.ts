@@ -86,8 +86,8 @@ export const STORE_DETAILS: StoreDetail[] = [
   },
   {
     slug: "heijohtei",
-    enLabel: "HEIJOHTEI",
-    name: "ヘイジョウテイ",
+    enLabel: "KOPUNIKU",
+    name: "KOPU29",
     photos: ["/images/about_zashiki.webp", "/images/about_interior.webp", "/images/about_cut.webp", "/images/hero_meat.webp"],
     address: "京都府亀岡市篠町浄法寺中村34-6",
     phone: "0771-20-1960",

@@ -20,6 +20,7 @@ type Store = {
   hours: ReactNode;
   closed: string;
   img?: string; // 未指定は Coming Soon
+  logo?: string; // 白背景にロゴを contain 表示（KOPU29 など写真がない店舗）
 };
 
 const STORES: Store[] = [
@@ -74,14 +75,14 @@ const STORES: Store[] = [
   },
   {
     slug: "heijohtei",
-    enLabel: "HEIJOHTEI",
-    name: "ヘイジョウテイ",
+    enLabel: "KOPUNIKU",
+    name: "KOPU29",
     address: "京都府亀岡市篠町浄法寺中村34-6",
     phone: "0771-20-1960",
     access: "JR嵯峨野線「亀岡」駅から徒歩15分",
     hours: <p style={{ lineHeight: "22px" }}>月、水〜日、祝日、祝前日: 16:00〜22:30</p>,
     closed: "定休日 火曜",
-    // img なし → Coming Soon
+    logo: "/images/store_kopu29.webp", // 写真未提供のため白背景にロゴ表示（トップ StoreInfo と統一）
   },
 ];
 
@@ -131,8 +132,14 @@ function DetailButton({ slug }: { slug: string }) {
 function StoreCard({ store }: { store: Store }) {
   return (
     <div style={{ display: "flex", width: 1340, height: 350 }}>
-      {/* 写真 or Coming Soon */}
-      {store.img ? (
+      {/* 写真 / ロゴ（白背景）/ Coming Soon */}
+      {store.logo ? (
+        <div style={{ width: 742, height: 350, background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+          <div style={{ width: 280, height: 280, position: "relative", flexShrink: 0 }}>
+            <Image src={store.logo} alt={store.name} fill className="object-contain" sizes="280px" />
+          </div>
+        </div>
+      ) : store.img ? (
         <div style={{ width: 742, height: 350, position: "relative", overflow: "hidden", background: "#1c110a", flexShrink: 0 }}>
           <Image src={store.img} alt={store.name} fill className="object-cover" sizes="742px" />
         </div>
