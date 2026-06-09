@@ -12,8 +12,8 @@ const DESIGN_PC = 1440;
 
 // セクション縦寸（Figma「店舗一覧（詳細）」162:879 準拠）
 const HEADER = 153;
-const HERO = 134 + 500; // ヒーロー帯 paddingTop + 写真高（写真が最も高い）
-const BUTTONS = 84 + 50; // ボタン行 paddingTop + ボタン高
+const HERO = 134 + 500 + 24 + 20; // ヒーロー帯 paddingTop + 写真高 + アロー行(gap24 + 高20)
+const BUTTONS = 40 + 50; // ボタン行 paddingTop（アロー行分 84→40）+ ボタン高
 const TABLE_TOP = 88; // テーブル上余白
 const ROW_GAP = 36;
 const MAP_TOP = 62; // テーブル → 地図 余白
