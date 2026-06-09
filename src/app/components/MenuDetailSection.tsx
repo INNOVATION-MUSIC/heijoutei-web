@@ -1,7 +1,7 @@
 "use client";
 
 import { MENU_CATEGORIES, type MenuCategory, type MenuItem } from "@/app/lib/menuData";
-import { MenuHeading, StoreTabs, ItemCard, mincho, sans, GOLD } from "./MenuShared";
+import { MenuHeading, StoreTabs, ItemCard, BackToMenuButton, mincho, sans, GOLD } from "./MenuShared";
 
 /* ─────────── カテゴリ切替タブ（2行・現在カテゴリは金で点灯・リロードせず切替） ─────────── */
 function CategoryNav({ current, onSelect }: { current: string; onSelect: (slug: string) => void }) {
@@ -87,6 +87,7 @@ export default function MenuDetailSection({
       </div>
 
       <div style={{ flex: 1 }} />
+      <BackToMenuButton />
     </section>
   );
 }
