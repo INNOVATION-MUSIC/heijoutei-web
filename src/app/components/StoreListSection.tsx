@@ -11,6 +11,7 @@ const sans = "'Noto Sans JP', sans-serif";
 
 /* ━━━ 店舗データ ━━━ */
 type Store = {
+  slug: string; // 詳細ページ /store/[slug] と対応
   enLabel: string;
   name: string;
   address: string;
@@ -23,6 +24,7 @@ type Store = {
 
 const STORES: Store[] = [
   {
+    slug: "kameoka",
     enLabel: "HEIJOHTEI  KAMEOKA",
     name: "平壌亭  亀岡店",
     address: "京都府亀岡市篠町浄法寺中村３５-５",
@@ -38,6 +40,7 @@ const STORES: Store[] = [
     img: "/images/storelist_kameoka.webp",
   },
   {
+    slug: "sonobe",
     enLabel: "HEIJOHTEI  SONOBE",
     name: "平壌亭  園部店",
     address: "京都府南丹市園部町上木崎町坪ノ内26-5",
@@ -48,6 +51,7 @@ const STORES: Store[] = [
     img: "/images/storelist_sonobe.webp",
   },
   {
+    slug: "fukuchiyama",
     enLabel: "HEIJOHTEI  FUKUCHIYAMA",
     name: "平壌亭  福知山店",
     address: "京都府福知山市字堀2303の２",
@@ -58,6 +62,7 @@ const STORES: Store[] = [
     img: "/images/storelist_fukuchiyama.webp",
   },
   {
+    slug: "yurano",
     enLabel: "YAKINIKU  YURANO",
     name: "焼肉ゆらの",
     address: "京都府福知山堀今岡６番地ゆらのガーデン内",
@@ -68,6 +73,7 @@ const STORES: Store[] = [
     img: "/images/storelist_yurano.webp",
   },
   {
+    slug: "heijohtei",
     enLabel: "HEIJOHTEI",
     name: "ヘイジョウテイ",
     address: "京都府亀岡市篠町浄法寺中村34-6",
@@ -116,9 +122,9 @@ function MapBadge({ address }: { address: string }) {
   );
 }
 
-/** 店舗詳細ボタン（119×40・右下配置）。詳細ページ未実装のため href="#"。 */
-function DetailButton() {
-  return <OutlineButton jp="店舗詳細" href="#" width={119} height={40} />;
+/** 店舗詳細ボタン（119×40・右下配置）。/store/[slug] へ遷移。 */
+function DetailButton({ slug }: { slug: string }) {
+  return <OutlineButton jp="店舗詳細" href={`/store/${slug}`} width={119} height={40} />;
 }
 
 /** 店舗カード（1340×350）。左=写真742×350 / 右=情報パネル。 */
@@ -157,7 +163,7 @@ function StoreCard({ store }: { store: Store }) {
         </div>
         {/* 店舗詳細ボタン（右下） */}
         <div style={{ flex: 1, display: "flex", alignItems: "flex-end", justifyContent: "flex-end" }}>
-          <DetailButton />
+          <DetailButton slug={store.slug} />
         </div>
       </div>
     </div>

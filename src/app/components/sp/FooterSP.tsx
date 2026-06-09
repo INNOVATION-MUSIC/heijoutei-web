@@ -19,8 +19,8 @@ export default function FooterSP({ onOpenModal }: { onOpenModal: () => void }) {
         paddingTop: 82,
       }}
     >
-      {/* ロゴ: Figma w=212 h=111 */}
-      <div style={{ position: "relative", width: 212, height: 111, flexShrink: 0 }}>
+      {/* ロゴ: Figma w=212 h=111（クリックでトップへ） */}
+      <a href="/" aria-label="トップへ" style={{ display: "block", position: "relative", width: 212, height: 111, flexShrink: 0 }}>
         <Image
           src="/images/footer_logo.webp"
           alt="焼肉平壌亭"
@@ -28,7 +28,7 @@ export default function FooterSP({ onOpenModal }: { onOpenModal: () => void }) {
           className="object-contain"
           sizes="212px"
         />
-      </div>
+      </a>
 
       {/* キャッチコピー */}
       <div

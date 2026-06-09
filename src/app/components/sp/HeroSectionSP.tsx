@@ -1,10 +1,13 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import { SECTION_LINKS } from "@/app/lib/navLinks";
 
 const mincho = "'Shippori Mincho', serif";
 const sans = "'Noto Sans JP', sans-serif";
+const LINE_BORDER = "rgba(57,176,61,0.6)"; // LINE ボタンのボーダー色
+const LINE_GREEN = "#06C755"; // LINE 公式ブランドカラー（ホバー塗りつぶし）
 
 interface Props {
   onOpenModal: () => void;
@@ -12,6 +15,7 @@ interface Props {
 }
 
 export default function HeroSectionSP({ onOpenModal, onOpenLineModal }: Props) {
+  const [lineHover, setLineHover] = useState(false);
   return (
     <section
       style={{
@@ -188,6 +192,8 @@ export default function HeroSectionSP({ onOpenModal, onOpenLineModal }: Props) {
       {/* LINE バー */}
       <button
         onClick={onOpenLineModal}
+        onMouseEnter={() => setLineHover(true)}
+        onMouseLeave={() => setLineHover(false)}
         style={{
           height: 70,
           background: "#273528",
@@ -200,17 +206,19 @@ export default function HeroSectionSP({ onOpenModal, onOpenLineModal }: Props) {
           flexShrink: 0,
         }}
       >
-        {/* Figma: 240×40 の緑ボーダーボタン枠 */}
+        {/* Figma: 240×40 の緑ボーダーボタン枠（ホバーで緑塗りつぶし・テキスト白） */}
         <div
           style={{
             width: 240,
             height: 40,
             borderRadius: 25,
-            border: "1px solid rgba(57,176,61,0.6)",
+            border: `1px solid ${LINE_BORDER}`,
+            background: lineHover ? LINE_GREEN : "transparent",
             display: "flex",
             alignItems: "center",
             paddingLeft: 17,
             gap: 9,
+            transition: "background-color 0.3s ease",
           }}
         >
           <div style={{ position: "relative", width: 23, height: 23, flexShrink: 0 }}>
@@ -228,8 +236,9 @@ export default function HeroSectionSP({ onOpenModal, onOpenLineModal }: Props) {
               fontSize: 13,
               fontWeight: 700,
               letterSpacing: "2px",
-              color: "#ebe5db",
+              color: lineHover ? "#fff" : "#ebe5db",
               margin: 0,
+              transition: "color 0.3s ease",
             }}
           >
             LINE登録でお得情報GET

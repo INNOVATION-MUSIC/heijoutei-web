@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import { HEADER_NAV_LINKS } from "@/app/lib/navLinks";
 import OutlineButton from "./OutlineButton";
@@ -13,6 +14,41 @@ const LINE_BTNS = [
 
 const mincho = "'Shippori Mincho', serif";
 const sans = "'Noto Sans JP', sans-serif";
+const LINE_BORDER = "rgba(57,176,61,0.6)"; // LINE ボタンのボーダー色
+const LINE_GREEN = "#06C755"; // LINE 公式ブランドカラー（ホバー塗りつぶし）
+
+/** LINE バーの友だち追加ボタン。
+ *  ホバーで枠色（緑）に塗りつぶし・テキストを白/太字に（詳細ページと同方式）。 */
+function LineBarButton({ label, width }: { label: string; width: number }) {
+  const [hover, setHover] = useState(false);
+  return (
+    <a
+      href="#"
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        paddingLeft: 16,
+        paddingRight: 14,
+        width,
+        height: 40,
+        borderRadius: 25,
+        border: `1px solid ${LINE_BORDER}`,
+        background: hover ? LINE_GREEN : "transparent",
+        textDecoration: "none",
+        transition: "background-color 0.3s ease",
+      }}
+    >
+      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <Image src="/images/line_icon.webp" width={23} height={23} alt="LINE" />
+        <span style={{ fontFamily: mincho, fontSize: 12, fontWeight: hover ? 700 : 400, letterSpacing: "0.083em", color: "#ffffff", transition: "font-weight 0.3s ease" }}>{label}</span>
+      </div>
+      <span style={{ fontFamily: sans, fontSize: 12, fontWeight: 700, letterSpacing: "0.125em", color: hover ? "#fff" : "#ebe5db", whiteSpace: "nowrap", transition: "color 0.3s ease" }}>友だち追加</span>
+    </a>
+  );
+}
 
 export default function HeroSection({ onOpenModal }: { onOpenModal: () => void }) {
   return (
@@ -58,10 +94,10 @@ export default function HeroSection({ onOpenModal }: { onOpenModal: () => void }
               </p>
             </div>
 
-            {/* ロゴ: width=247 → (587-247)/2=170 → x=170 に自動配置 */}
-            <div style={{ position: "relative", width: 247, height: 129 }}>
+            {/* ロゴ: width=247 → (587-247)/2=170 → x=170 に自動配置（クリックでトップへ） */}
+            <a href="/" aria-label="トップへ" style={{ display: "block", position: "relative", width: 247, height: 129 }}>
               <Image src="/images/logo.webp" alt="焼肉平壌亭" fill className="object-contain" sizes="247px" />
-            </div>
+            </a>
           </div>
 
           {/* 下グループ: ナビ + 予約ボタン */}
@@ -112,13 +148,7 @@ export default function HeroSection({ onOpenModal }: { onOpenModal: () => void }
         </p>
         <div style={{ display: "flex", gap: 30 }}>
           {LINE_BTNS.map(({ label, width }) => (
-            <a key={label} href="#" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingLeft: 16, paddingRight: 14, width, height: 40, borderRadius: 25, border: "1px solid rgba(57,176,61,0.6)", textDecoration: "none" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <Image src="/images/line_icon.webp" width={23} height={23} alt="LINE" />
-                <span style={{ fontFamily: mincho, fontSize: 12, fontWeight: 400, letterSpacing: "0.083em", color: "#ffffff" }}>{label}</span>
-              </div>
-              <span style={{ fontFamily: sans, fontSize: 12, fontWeight: 700, letterSpacing: "0.125em", color: "#ebe5db", whiteSpace: "nowrap" }}>友だち追加</span>
-            </a>
+            <LineBarButton key={label} label={label} width={width} />
           ))}
         </div>
       </div>

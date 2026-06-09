@@ -75,9 +75,12 @@ export default function SpStickyHeader({ onOpenMenu }: Props) {
           transition: `height ${EASING}, padding-top ${EASING}`,
         }}
       >
-        {/* ロゴ */}
-        <div
+        {/* ロゴ（クリックでトップへ） */}
+        <a
+          href="/"
+          aria-label="トップへ"
           style={{
+            display: "block",
             position: "relative",
             width: logoW,
             height: logoH,
@@ -92,7 +95,7 @@ export default function SpStickyHeader({ onOpenMenu }: Props) {
             className="object-contain"
             sizes="168px"
           />
-        </div>
+        </a>
 
         {/* ハンバーガーボタン */}
         <button

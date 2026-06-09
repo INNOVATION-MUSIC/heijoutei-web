@@ -41,7 +41,7 @@ export default function KodawariSection() {
       {/* こだわり 2: 哲学テキスト */}
       <section className="relative overflow-hidden bg-[#0d0a0a]" style={{ width: 1440, height: 920 }}>
         <div className="absolute overflow-hidden bg-[#472914]" style={{ left: 0, top: -42, width: 1440, height: 962 }}>
-          <Image src="/images/kodawari_bg.webp" alt="" fill className="object-cover" sizes="1440px" style={{ objectPosition: "right center" }} />
+          <Image src="/images/kodawari_cut.webp" alt="" fill className="object-cover" sizes="1440px" style={{ objectPosition: "right center" }} />
         </div>
         <div className="absolute inset-0 bg-black/70" />
         <p className="absolute text-center" style={{

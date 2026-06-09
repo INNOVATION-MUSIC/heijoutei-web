@@ -53,10 +53,10 @@ export default function PageHeader({ onOpenModal }: { onOpenModal: () => void })
         </nav>
       </div>
 
-      {/* 中央: ロゴ（139×73） */}
-      <div style={{ position: "relative", width: 139, height: 73, flexShrink: 0 }}>
+      {/* 中央: ロゴ（139×73・クリックでトップへ） */}
+      <a href="/" aria-label="トップへ" style={{ position: "relative", width: 139, height: 73, flexShrink: 0, display: "block" }}>
         <Image src="/images/logo.webp" alt="焼肉平壌亭" fill className="object-contain" sizes="139px" priority />
-      </div>
+      </a>
 
       {/* 右: ご予約ボタン（171×50・共通 OutlineButton） */}
       <div style={{ flex: 1, display: "flex", justifyContent: "flex-end", paddingTop: 12 }}>
