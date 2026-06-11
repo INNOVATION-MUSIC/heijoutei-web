@@ -98,4 +98,3 @@
 | ID | テスト項目 | 前提条件 | 操作手順 | 期待結果 | 優先度 | 備考 |
 |----|-----------|----------|----------|----------|--------|------|
 | MENU-REG-001 | 'use server' 同期 export ビルド失敗の回避 | — | `npm run build` を実行 | `generateSlug`/`defaultTimeLabels` 等の同期ヘルパーが `src/lib/slug.ts`・`src/lib/takeout-times.ts` に分離され、ビルドが成功する（Turbopack エラーなし） | 高 | ミスリスト 2026-06-11。'use server' は全 export が async 必須 |
-</content>

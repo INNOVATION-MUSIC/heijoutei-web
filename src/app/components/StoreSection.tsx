@@ -87,12 +87,10 @@ export default function StoreSection() {
 
       {/* ━━━ ヘッダー ━━━ */}
       <div style={{ paddingLeft: 66, display: "flex", flexDirection: "column", gap: 24, paddingBottom: 70 }}>
-        <div style={{ display: "flex", alignItems: "flex-start", gap: 69 }}>
-          {/* 店舗ラベルボックス（タイトルより10px低い位置） */}
-          <div style={{ paddingTop: 10, flexShrink: 0 }}>
-            <div style={{ width: 44, height: 85, border: "1px solid rgba(255,255,255,0.3)", display: "flex", justifyContent: "center", alignItems: "center" }}>
-              <p style={{ fontFamily: mincho, fontSize: 12, letterSpacing: "1px", color: "#fff", writingMode: "vertical-rl" as const, lineHeight: "22px" }}>店舗</p>
-            </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 69 }}>
+          {/* 店舗ラベルボックス */}
+          <div style={{ boxSizing: "border-box", width: 44, height: 94, padding: "8px 7px", border: "1px solid rgba(255,255,255,0.3)", overflow: "hidden", flexShrink: 0, display: "flex", justifyContent: "center", alignItems: "center" }}>
+            <span style={{ margin: 0, fontFamily: mincho, fontSize: 12, letterSpacing: "7px", lineHeight: "1", color: "#fff", writingMode: "vertical-rl" as const, whiteSpace: "nowrap", transform: "translateY(4px)" }}>店舗</span>
           </div>
           <p style={{ fontFamily: display, fontSize: 80, letterSpacing: "-1px", color: "#ebe5db", lineHeight: "normal" }}>StoreInfo</p>
         </div>

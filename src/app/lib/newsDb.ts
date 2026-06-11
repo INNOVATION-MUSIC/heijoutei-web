@@ -1,5 +1,15 @@
 import { createStaticClient } from "@/lib/supabase/static";
-import { NEWS_LIST_DATA, NEWS_DATA, type NewsListItem, type NewsItem, type Tag } from "./newsData";
+import { NEWS_LIST_DATA, NEWS_DATA, NEWS_TAG_NEW, type NewsListItem, type NewsItem, type Tag } from "./newsData";
+
+// NEW タグは「公開日時から2週間」だけ自動表示する（DB に手動 NEW タグは持たせない）。
+const NEW_TAG_LABEL = "NEW";
+const TWO_WEEKS_MS = 14 * 24 * 60 * 60 * 1000;
+function isNew(publishedAt: string | null): boolean {
+  if (!publishedAt) return false;
+  const t = new Date(publishedAt).getTime();
+  if (Number.isNaN(t)) return false;
+  return Date.now() - t <= TWO_WEEKS_MS;
+}
 
 // published_at(ISO) → フロント表示の日付文字列 "YYYY.MM.D"（例: 2026.05.1）
 function formatDate(iso: string | null): string {
@@ -27,10 +37,13 @@ type NewsRow = {
 };
 
 function toItem(row: NewsRow): NewsListItem {
-  const tags: Tag[] = (row.news_tags ?? [])
+  const dbTags: Tag[] = (row.news_tags ?? [])
     .slice()
     .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
-    .map((t) => ({ label: t.label, color: t.color }));
+    .map((t) => ({ label: t.label, color: t.color }))
+    .filter((t) => t.label !== NEW_TAG_LABEL); // NEW は公開日時から自動付与するため手動分は除外
+  // 公開から2週間以内は先頭に NEW を自動付与
+  const tags: Tag[] = isNew(row.published_at) ? [NEWS_TAG_NEW, ...dbTags] : dbTags;
   const img = row.thumbnail_url || `/images/newslist${row.slug}.webp`;
   return {
     id: row.slug,
@@ -82,7 +95,7 @@ export async function fetchTopNews(limit = 5): Promise<NewsItem[]> {
   try {
     const list = await fetchNewsList();
     if (!list || list.length === 0) return NEWS_DATA;
-    return list.slice(0, limit).map(({ img, date, title, tags }) => ({ img, date, title, tags }));
+    return list.slice(0, limit).map(({ id, img, date, title, tags }) => ({ id, img, date, title, tags }));
   } catch {
     return NEWS_DATA;
   }

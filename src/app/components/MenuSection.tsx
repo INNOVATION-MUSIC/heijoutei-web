@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useRef } from "react";
 import { MENU_PHOTOS } from "@/app/lib/menuPhotos";
 import OutlineButton from "./OutlineButton";
+import { SECTION_LINKS } from "@/app/lib/navLinks";
 
 const mincho = "'Shippori Mincho', serif";
 
@@ -38,8 +39,8 @@ export default function MenuSection() {
     <section className="relative bg-[#0a0a0a] overflow-hidden" style={{ width: 1440, height: 1120 }}>
       {/* ラベル + Cuisine タイトル */}
       <div className="absolute" style={{ left: 93, top: 140, display: "flex", alignItems: "center", gap: 69 }}>
-        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", width: 44, height: 85, border: "1px solid rgba(255,255,255,0.3)", flexShrink: 0, overflow: "hidden" }}>
-          <p style={{ margin: 0, fontFamily: mincho, fontSize: 12, letterSpacing: "7px", lineHeight: "1", color: "#fff", writingMode: "vertical-rl" as const, transform: "translateY(4px)" }}>おすすめ</p>
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", boxSizing: "border-box", width: 44, height: 94, padding: "8px 7px", border: "1px solid rgba(255,255,255,0.3)", flexShrink: 0, overflow: "hidden" }}>
+          <p style={{ margin: 0, fontFamily: mincho, fontSize: 12, letterSpacing: "7px", lineHeight: "1", color: "#fff", writingMode: "vertical-rl" as const, whiteSpace: "nowrap", transform: "translateY(4px)" }}>おすすめ</p>
         </div>
         <p style={{ fontFamily: mincho, fontSize: 80, letterSpacing: "-1px", color: "#ebe5db", lineHeight: "normal" }}>Cuisine</p>
       </div>
@@ -55,7 +56,7 @@ export default function MenuSection() {
 
       {/* メニューボタン */}
       <div className="absolute" style={{ left: 206, top: 424 }}>
-        <OutlineButton jp="メニュー" en="Menu" href="#" />
+        <OutlineButton jp="メニュー" en="Menu" href={SECTION_LINKS.menu} />
       </div>
 
       {/* 料理写真 自動横スクロール */}

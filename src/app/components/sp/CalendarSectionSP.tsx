@@ -193,8 +193,10 @@ export default function CalendarSectionSP({ months }: { months?: BusinessMonth[]
       >
         <div
           style={{
+            boxSizing: "border-box",
             width: 44,
-            height: 85,
+            height: 94,
+            padding: "8px 7px",
             border: "1px solid rgba(255,255,255,0.3)",
             overflow: "hidden",
             flexShrink: 0,
@@ -205,12 +207,15 @@ export default function CalendarSectionSP({ months }: { months?: BusinessMonth[]
         >
           <p
             style={{
+              margin: 0,
               fontFamily: mincho,
               fontSize: 12,
-              letterSpacing: "11px",
+              letterSpacing: "7px",
+              lineHeight: "1",
               color: "#fff",
               writingMode: "vertical-rl" as const,
-              margin: 0,
+              whiteSpace: "nowrap",
+              transform: "translateY(4px)",
             }}
           >
             営業日

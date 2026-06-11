@@ -45,4 +45,3 @@
 | USER-007 | ユーザー削除 | admin でログイン | 既存ユーザーを削除 | `auth.admin.deleteUser` で削除・一覧から消える | 中 |
 | USER-008 | editor が操作（権限なし） | editor でログイン | create/update/delete を実行 | `{ error: '権限がありません（管理者のみ）' }`。DB 変更なし | 高 |
 | USER-009 | 未認証で操作 | ログアウト状態 | create/update/delete を実行 | `{ error: '認証が必要です' }` | 高 |
-</content>

@@ -41,4 +41,3 @@
 |----|-----------|----------|----------|----------|--------|------|
 | AUTH-REG-001 | 管理画面の余白崩れ（Tailwind v4） | ログイン状態 | `/admin` および各管理ページを表示 | padding/margin/space/gap/角丸/グリッドが正しく効き、要素が詰まって表示されない | 高 | ミスリスト 2026-06-11。原因＝`globals.css` のレイヤー外 `*{margin:0;padding:0}` が Tailwind v4 ユーティリティを上書き。リセットを `@layer base{}` 内に移して解消 |
 | AUTH-REG-002 | 未ログイン redirect の無限ループ回避 | ログアウト状態 | `/admin` → ログインページへ redirect 後、`/admin/login` がさらに redirect しないことを確認 | `/admin/login` で停止しループしない（login は `(protected)` 外） | 高 | layout.tsx コメント参照 |
-</content>

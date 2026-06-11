@@ -1,6 +1,7 @@
 "use client";
 import Image from "next/image";
 import OutlineButton from "./OutlineButton";
+import { SECTION_LINKS } from "@/app/lib/navLinks";
 
 const mincho = "'Shippori Mincho', serif";
 const display = "'Cormorant Garamond', serif";
@@ -22,8 +23,8 @@ export default function LunchSection() {
       </div>
 
       {/* ラベル */}
-      <div className="absolute flex items-center justify-center" style={{ left: 93, top: 125, width: 44, height: 85, border: "1px solid rgba(255,255,255,0.3)" }}>
-        <p style={{ fontFamily: mincho, fontSize: 12, letterSpacing: "0.083em", color: "#fff", writingMode: "vertical-rl" as const }}>ランチ</p>
+      <div className="absolute flex items-center justify-center" style={{ left: 93, top: 125, boxSizing: "border-box", width: 44, height: 94, padding: "8px 7px", border: "1px solid rgba(255,255,255,0.3)", overflow: "hidden" }}>
+        <p style={{ margin: 0, fontFamily: mincho, fontSize: 12, letterSpacing: "7px", lineHeight: "1", color: "#fff", writingMode: "vertical-rl" as const, whiteSpace: "nowrap", transform: "translateY(4px)" }}>ランチ</p>
       </div>
 
       {/* Lunch タイトル */}
@@ -39,7 +40,7 @@ export default function LunchSection() {
 
       {/* ランチメニューボタン */}
       <div className="absolute" style={{ left: 206, top: 615 }}>
-        <OutlineButton jp="ランチメニュー" href="#" width={172} padL={32} />
+        <OutlineButton jp="ランチメニュー" href={SECTION_LINKS.lunch} width={172} padL={32} />
       </div>
     </section>
   );

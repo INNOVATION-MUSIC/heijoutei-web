@@ -85,4 +85,3 @@
 | BCAL-005 | 曜日一括設定 | ログイン状態 | 「毎週○曜日を定休日に」で一括設定 | 当月の該当曜日が全て upsert される（`bulkSetWeekday`） | 中 |
 | BCAL-006 | ステータス境界（4種） | ログイン状態 | open/closed/special_closed/limited を各々保存 | CHECK 制約内の値はすべて保存できる | 低 |
 | BCAL-007 | 未認証でアクション | ログアウト状態 | `saveBusinessDay`/`deleteBusinessDay`/`bulkSetWeekday` を呼ぶ | `{ error: '認証が必要です' }` | 高 |
-</content>

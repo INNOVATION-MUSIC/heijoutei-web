@@ -33,7 +33,7 @@ export default async function AdminDashboard() {
     adminSupabase.from('takeout_orders').select('total_price').eq('pickup_date', today),
     adminSupabase.from('takeout_orders').select('id, customer_name, total_price, pickup_date, is_read, created_at').order('created_at', { ascending: false }).limit(5),
     adminSupabase.from('contact_messages').select('id, name, subject, is_read, created_at').order('created_at', { ascending: false }).limit(3),
-    adminSupabase.from('news').select('id, title, is_published, published_at').order('created_at', { ascending: false }).limit(5),
+    adminSupabase.from('news').select('id, title, is_published, published_at, news_tags(label, color, sort_order)').order('created_at', { ascending: false }).limit(5),
   ])
 
   const todayTotal = (todayOrderRows ?? []).reduce((sum, o) => sum + o.total_price, 0)
@@ -97,17 +97,43 @@ export default async function AdminDashboard() {
           <h2 className="text-sm font-semibold text-[#ebe5db]">最近のお知らせ</h2>
           <Link href="/admin/news" className="text-xs text-[#d9b86b] hover:underline">すべて見る</Link>
         </div>
-        <ul className="space-y-2">
-          {(recentNews ?? []).map((n) => (
-            <li key={n.id} className="flex items-center gap-2 text-sm">
-              <span className="flex-1 truncate text-[#ebe5db]">{n.title}</span>
-              {n.is_published ? (
-                <span className="rounded-full bg-green-900/30 px-2 py-0.5 text-xs text-green-400">公開</span>
-              ) : (
-                <span className="rounded-full bg-yellow-900/30 px-2 py-0.5 text-xs text-yellow-400">下書き</span>
-              )}
-            </li>
-          ))}
+        <ul className="space-y-1">
+          {(recentNews ?? []).map((n) => {
+            const tags = [...(n.news_tags ?? [])].sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
+            const publishedDate = n.published_at
+              ? new Date(n.published_at).toLocaleDateString('ja-JP', { timeZone: 'Asia/Tokyo', year: 'numeric', month: '2-digit', day: '2-digit' })
+              : null
+            return (
+              <li key={n.id}>
+                <Link
+                  href={`/admin/news/${n.id}/edit`}
+                  className="flex items-center gap-3 rounded-lg px-2 py-1.5 text-sm transition-colors hover:bg-white/5"
+                >
+                  <span className="w-[88px] shrink-0 text-xs text-[#9a9aa8]">{publishedDate ?? '—'}</span>
+                  <span className="w-16 shrink-0">
+                    {n.is_published ? (
+                      <span className="rounded-full bg-green-900/30 px-2 py-0.5 text-xs text-green-400">公開</span>
+                    ) : (
+                      <span className="rounded-full bg-yellow-900/30 px-2 py-0.5 text-xs text-yellow-400">下書き</span>
+                    )}
+                  </span>
+                  {/* タグ列は固定幅。タグが無い行でも幅を確保してタイトル左端を揃える */}
+                  <span className="hidden w-28 shrink-0 items-center gap-1 overflow-hidden sm:flex">
+                    {tags.map((t) => (
+                      <span
+                        key={t.label}
+                        className="shrink-0 rounded px-1.5 py-0.5 text-[10px] leading-none"
+                        style={{ color: t.color, border: `1px solid ${t.color}55` }}
+                      >
+                        {t.label}
+                      </span>
+                    ))}
+                  </span>
+                  <span className="min-w-0 flex-1 truncate text-[#ebe5db]">{n.title}</span>
+                </Link>
+              </li>
+            )
+          })}
           {(!recentNews || recentNews.length === 0) && <li className="text-sm text-[#6f6f80]">お知らせはまだありません</li>}
         </ul>
       </div>

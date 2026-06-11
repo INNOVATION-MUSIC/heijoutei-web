@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 
@@ -30,11 +31,8 @@ export default function AdminLoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#0a0a0f]">
       <div className="w-full max-w-sm rounded-xl border border-[#23232e] bg-[#14141a] p-8">
-        <div className="mb-6">
-          <h1 className="text-xl font-bold text-[#ebe5db]">
-            <span className="text-[#d9b86b]">平壌亭</span> CMS
-          </h1>
-          <p className="mt-1 text-sm text-[#6f6f80]">管理画面ログイン</p>
+        <div className="mb-6 flex flex-col items-center">
+          <Image src="/images/logo.webp" alt="焼肉平壌亭" width={168} height={88} className="object-contain" priority />
         </div>
 
         {error && (

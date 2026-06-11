@@ -1,6 +1,7 @@
 "use client";
 import Image from "next/image";
 import OutlineButton from "./OutlineButton";
+import { SECTION_LINKS } from "@/app/lib/navLinks";
 import type { TopCourse } from "@/app/lib/courseDb";
 
 const mincho = "'Shippori Mincho', serif";
@@ -43,20 +44,23 @@ export default function CourseSection({ courses }: { courses?: TopCourse[] } = {
         <div style={{ display: "flex", alignItems: "flex-end", gap: 69 }}>
           <div
             style={{
+              boxSizing: "border-box",
               width: 44,
-              height: 85,
+              height: 94,
+              padding: "8px 7px",
               flexShrink: 0,
               border: "1px solid rgba(255,255,255,0.3)",
+              overflow: "hidden",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
             }}
           >
-            <p style={{ fontFamily: mincho, fontSize: 12, letterSpacing: "0.083em", color: "#fff", writingMode: "vertical-rl" as const }}>コース</p>
+            <p style={{ margin: 0, fontFamily: mincho, fontSize: 12, letterSpacing: "7px", lineHeight: "1", color: "#fff", writingMode: "vertical-rl" as const, whiteSpace: "nowrap", transform: "translateY(4px)" }}>コース</p>
           </div>
           <p style={{ fontFamily: display, fontSize: 80, letterSpacing: "-1px", color: "#ebe5db", lineHeight: "normal" }}>Course</p>
           <div style={{ flex: 1 }} />
-          <OutlineButton jp="コースメニュー" href="#" width={172} align="center" />
+          <OutlineButton jp="コースメニュー" href={SECTION_LINKS.course} width={172} align="center" />
         </div>
         {/* 説明文（paddingLeftでタイトル左端に揃える: 44+69=113） */}
         <p

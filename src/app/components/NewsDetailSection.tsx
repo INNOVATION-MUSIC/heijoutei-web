@@ -115,7 +115,7 @@ export default function NewsDetailSection({
             <span style={{ fontFamily: sans, fontSize: 14, fontWeight: 300, letterSpacing: "1.5px", color: "rgba(217,184,107,0.6)", whiteSpace: "nowrap" }}>
               {article.date}
             </span>
-            {article.tags.map((tag, i) => (
+            {article.tags.filter((t) => t.label !== "NEW").map((tag, i) => (
               <span
                 key={i}
                 style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 60, height: 20, backgroundColor: tag.color, borderRadius: 10, fontFamily: mincho, fontSize: 10, fontWeight: 500, color: "#fff", flexShrink: 0 }}

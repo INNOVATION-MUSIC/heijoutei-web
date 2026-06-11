@@ -73,5 +73,3 @@ CMS 管理画面・Supabase 連携・フロント動的化など **実装/検証
 | 'use server' ファイルの同期 export 不可 | admin-menu | 2026-06-11 |
 | .env の `$` 未エスケープで SMTP_PASS が欠落 | api-contact-takeout | 2026-06-08 |
 | DB 空時の静的フォールバック | front-dynamic | 2026-06-11 |
-</content>
-</invoke>

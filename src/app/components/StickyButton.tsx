@@ -5,12 +5,13 @@ import ReserveModal from "./ReserveModal";
 import { SECTION_LINKS } from "@/app/lib/navLinks";
 
 const mincho = "'Shippori Mincho', serif";
+const GOLD = "rgba(221,168,63,0.6)";
 
 const btnStyle: React.CSSProperties = {
   height: 30,
   paddingLeft: 16,
   paddingRight: 12,
-  background: "rgba(221,168,63,0.6)",
+  background: `linear-gradient(${GOLD}, ${GOLD}), #0a0a0a`,
   border: "none",
   borderRadius: 25,
   cursor: "pointer",

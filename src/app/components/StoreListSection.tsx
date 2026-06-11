@@ -189,11 +189,9 @@ export default function StoreListSection({ onOpenModal, height, stores }: Props)
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", paddingLeft: 57, paddingRight: 40, paddingTop: 144 }}>
         {/* 左: ラベル + StoreInfo */}
         <div style={{ display: "flex", gap: 49, alignItems: "flex-start", paddingTop: 48 }}>
-          {/* 縦書きラベル「店舗」（タイトルより 10px 低い位置） */}
-          <div style={{ paddingTop: 10, flexShrink: 0 }}>
-            <div style={{ width: 44, height: 85, border: "1px solid rgba(255,255,255,0.3)", display: "flex", justifyContent: "center", alignItems: "center" }}>
-              <span style={{ writingMode: "vertical-rl" as const, fontFamily: mincho, fontSize: 12, letterSpacing: "0.083em", color: "#fff", lineHeight: 1 }}>店舗</span>
-            </div>
+          {/* 縦書きラベル「店舗」 */}
+          <div style={{ boxSizing: "border-box", width: 44, height: 94, padding: "8px 7px", border: "1px solid rgba(255,255,255,0.3)", overflow: "hidden", flexShrink: 0, display: "flex", justifyContent: "center", alignItems: "center" }}>
+            <span style={{ margin: 0, writingMode: "vertical-rl" as const, fontFamily: mincho, fontSize: 12, letterSpacing: "7px", lineHeight: "1", color: "#fff", whiteSpace: "nowrap", transform: "translateY(4px)" }}>店舗</span>
           </div>
           <p style={{ fontFamily: display, fontSize: 80, letterSpacing: "-1px", color: "#ebe5db", lineHeight: "normal", margin: 0 }}>StoreInfo</p>
         </div>

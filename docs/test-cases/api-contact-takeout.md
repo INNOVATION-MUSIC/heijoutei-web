@@ -76,4 +76,3 @@ DB 保存:
 | API-REG-002 | .env の `$` エスケープで SMTP_PASS が正しく読まれる | SMTP_PASS に `$` を含む値 | `.env.local` で `$` を `\$` にエスケープし dev 起動 | パスワードが欠落せず正しい文字数で認証される（535 認証失敗にならない） | 中 | ミスリスト 2026-06-08。dotenv-expand が `$xxx` を変数展開し空になる問題 |
 | API-REG-003 | SMTP 接続方式（465=SSL/587=STARTTLS） | SMTP 設定済 | 465 と 587 でそれぞれ送信 | `secure = SMTP_SECURE==="true" || port===465` の判定で正しく接続される | 低 | ミスリスト 2026-06-08 |
 | API-REG-004 | お問い合わせ通知先フォールバック | `CONTACT_NOTIFY_TO` 未設定・`ORDER_NOTIFY_TO` 設定 | `/api/contact` に正常 POST | 通知先が `ORDER_NOTIFY_TO` にフォールバックされる | 低 | ミスリスト/ドキュメント 2026-06-08 |
-</content>

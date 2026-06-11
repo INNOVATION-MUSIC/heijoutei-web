@@ -82,8 +82,8 @@ export default function NewsSection({ items }: { items?: NewsItem[] }) {
       {/* ヘッダー行: ラベル + タイトル + ボタン */}
       <div className="absolute" style={{ top: 141, left: 140, right: 197, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 69 }}>
-          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", width: 44, height: 85, border: "1px solid rgba(255,255,255,0.3)", flexShrink: 0 }}>
-            <p style={{ fontFamily: mincho, fontSize: 12, letterSpacing: "0.083em", color: "#fff", writingMode: "vertical-rl" as const }}>お知らせ</p>
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", boxSizing: "border-box", width: 44, height: 94, padding: "8px 7px", border: "1px solid rgba(255,255,255,0.3)", flexShrink: 0, overflow: "hidden" }}>
+            <p style={{ margin: 0, fontFamily: mincho, fontSize: 12, letterSpacing: "7px", lineHeight: "1", color: "#fff", writingMode: "vertical-rl" as const, whiteSpace: "nowrap", transform: "translateY(4px)" }}>お知らせ</p>
           </div>
           <p style={{ fontFamily: display, fontSize: 80, letterSpacing: "-1px", color: "#ebe5db", lineHeight: "normal" }}>News</p>
         </div>
@@ -112,7 +112,7 @@ export default function NewsSection({ items }: { items?: NewsItem[] }) {
       <div className="absolute" style={{ top: 411, left: 70, width: 1370, overflow: "hidden" }}>
         <div ref={trackRef} style={{ display: "flex", gap: GAP, width: "max-content" }}>
           {[...NEWS, ...NEWS].map((item, index) => (
-            <a key={index} href="#" style={{ width: CARD_WIDTH, flexShrink: 0, display: "flex", flexDirection: "column", gap: 21, textDecoration: "none" }}>
+            <a key={index} href={item.id ? `/news/${item.id}` : SECTION_LINKS.news} style={{ width: CARD_WIDTH, flexShrink: 0, display: "flex", flexDirection: "column", gap: 21, textDecoration: "none" }}>
               <div style={{ position: "relative", width: CARD_WIDTH, height: 340, overflow: "hidden", background: "#4d2914" }}>
                 <Image src={item.img} alt={item.title} fill className="object-cover" sizes="340px" />
               </div>

@@ -42,7 +42,7 @@ function NewsCard({ item, delay }: { item: NewsListItem; delay: number }) {
       <div style={{ display: "flex", flexDirection: "column", gap: 11 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <span style={{ fontFamily: sans, fontSize: 12, fontWeight: 300, letterSpacing: "0.083em", color: "#948f85" }}>{item.date}</span>
-          {item.tags.map((tag, ti) => (
+          {item.tags.filter((t) => t.label !== "NEW").map((tag, ti) => (
             <span key={ti} style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 60, height: 20, backgroundColor: tag.color, borderRadius: 10, fontFamily: mincho, fontSize: 10, fontWeight: 500, color: "#fff" }}>
               {tag.label}
             </span>
@@ -85,8 +85,8 @@ export default function NewsListSection({ onOpenModal, height, visibleCount, has
         {/* 左: ラベル + News */}
         <div style={{ display: "flex", gap: 49, alignItems: "flex-start", paddingTop: 48 }}>
           {/* 縦書きラベル「お知らせ」 */}
-          <div style={{ width: 44, height: 85, border: "1px solid rgba(255,255,255,0.3)", display: "flex", justifyContent: "center", alignItems: "center", flexShrink: 0 }}>
-            <span style={{ writingMode: "vertical-rl" as const, fontFamily: mincho, fontSize: 12, letterSpacing: "0.083em", color: "#fff", lineHeight: 1 }}>
+          <div style={{ boxSizing: "border-box", width: 44, height: 94, padding: "8px 7px", border: "1px solid rgba(255,255,255,0.3)", overflow: "hidden", display: "flex", justifyContent: "center", alignItems: "center", flexShrink: 0 }}>
+            <span style={{ margin: 0, writingMode: "vertical-rl" as const, fontFamily: mincho, fontSize: 12, letterSpacing: "7px", lineHeight: "1", color: "#fff", whiteSpace: "nowrap", transform: "translateY(4px)" }}>
               お知らせ
             </span>
           </div>

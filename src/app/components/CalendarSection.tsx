@@ -109,12 +109,8 @@ export default function CalendarSection({ months }: { months?: BusinessMonth[] }
     <section className="relative overflow-hidden bg-[#0a0a0a]" style={{ width: 1440, height: 1000 }}>
 
       {/* ラベル 営業日 */}
-      <div className="absolute" style={{ left: 66, top: 51, width: 44, height: 85, border: "1px solid rgba(255,255,255,0.3)", display: "flex", justifyContent: "center", alignItems: "center" }}>
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 13 }}>
-          {["営", "業", "日"].map(char => (
-            <span key={char} style={{ fontFamily: mincho, fontSize: 12, color: "#fff", lineHeight: 1 }}>{char}</span>
-          ))}
-        </div>
+      <div className="absolute" style={{ left: 66, top: 51, boxSizing: "border-box", width: 44, height: 94, padding: "8px 7px", border: "1px solid rgba(255,255,255,0.3)", overflow: "hidden", display: "flex", justifyContent: "center", alignItems: "center" }}>
+        <p style={{ margin: 0, fontFamily: mincho, fontSize: 12, letterSpacing: "7px", lineHeight: "1", color: "#fff", writingMode: "vertical-rl" as const, whiteSpace: "nowrap", transform: "translateY(4px)" }}>営業日</p>
       </div>
 
       {/* Business days タイトル */}

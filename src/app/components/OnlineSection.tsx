@@ -1,6 +1,7 @@
 "use client";
 import Image from "next/image";
 import OutlineButton from "./OutlineButton";
+import { SECTION_LINKS } from "@/app/lib/navLinks";
 
 const mincho = "'Shippori Mincho', serif";
 const display = "'Cormorant Garamond', serif";
@@ -36,7 +37,7 @@ export default function OnlineSection() {
 
       {/* ボタン */}
       <div className="absolute" style={{ left: 179, top: 480 }}>
-        <OutlineButton jp="オンラインショップ" href="#" width={199} align="center" />
+        <OutlineButton jp="オンラインショップ" href={SECTION_LINKS.online} width={199} align="center" />
       </div>
 
     </section>

@@ -34,13 +34,15 @@ export default function StoreSectionSP() {
       <div style={{ display: "flex", alignItems: "flex-start", paddingLeft: 40, gap: 28, flexShrink: 0 }}>
         <div
           style={{
-            width: 44, height: 85,
+            boxSizing: "border-box",
+            width: 44, height: 94,
+            padding: "8px 7px",
             border: "1px solid rgba(255,255,255,0.3)",
             overflow: "hidden", flexShrink: 0,
             display: "flex", justifyContent: "center", alignItems: "center",
           }}
         >
-          <p style={{ fontFamily: mincho, fontSize: 12, letterSpacing: "5px", color: "#fff", writingMode: "vertical-rl" as const, margin: 0 }}>
+          <p style={{ margin: 0, fontFamily: mincho, fontSize: 12, letterSpacing: "7px", lineHeight: "1", color: "#fff", writingMode: "vertical-rl" as const, whiteSpace: "nowrap", transform: "translateY(4px)" }}>
             店舗
           </p>
         </div>

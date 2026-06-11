@@ -42,4 +42,53 @@
 | FRONT-REG-003 | 詳細フォールバック（未存在/例外） | DB 取得失敗 | `/news/<id>` を開く | 静的 `NEWS_LIST_DATA` から id 一致を返す（無ければ undefined） | 中 | ミスリスト 2026-06-11 |
 | FRONT-REG-004 | generateStaticParams のフォールバック | news が空 | ビルド時 | DB 空なら静的 id 一覧で SSG（`fetchNewsParams`） | 中 | ミスリスト 2026-06-11 |
 | FRONT-REG-005 | レイアウト無変更 | DB 連携後 | 各フロントページを表示 | 既存デザイン/レイアウトが変わっていない（データ取得のみ切替） | 高 | ミスリスト 2026-06-11 |
-</content>
+
+---
+
+## 追加連動（2026-06-11 後続セッション・据え置き分のうち SP 実装以外を消化）
+
+作成当初「据え置き（未解決）」だった以下のフロント連動を実装したため追記。いずれも「デザイン不変の任意 prop 注入＋DB 空フォールバック」パターン。
+
+関連コード:
+- 受付枠カレンダー: `takeoutOrderDb.fetchTakeoutSlots()` ＋ `takeoutData.buildCalendar(y,m,today,slots?)` ＋ `TakeoutClient`(`slotsByStore`)・`Step1DateTime`(`timeSlots`)
+- 営業カレンダー: `businessCalendarDb.fetchBusinessCalendar()` ＋ `CalendarSection`/`CalendarSectionSP`(`months`) ＋ `ResponsivePage`(`businessMonths`)
+- トップコース: `courseDb.fetchTopCourses()` ＋ `CourseSection`/`CourseSectionSP`(`courses`)
+- テイクアウト注文の店舗別メニュー: `takeoutOrderDb.fetchTakeoutMenuByStore()` ＋ `TakeoutClient`(`menuByStore`)
+
+### テイクアウト受付枠カレンダー連動（ハイブリッド）
+
+| ID | テスト項目 | 前提条件 | 操作手順 | 期待結果 | 優先度 |
+|----|-----------|----------|----------|----------|--------|
+| FRONT-018 | DB に枠がある日は DB 優先 | `takeout_slots`/`takeout_slot_times` に当該店・日付の枠（受付・時間枠）あり | `/takeout` Step1 で店舗選択しカレンダー確認 | DB 枠のある日は DB の受付可否で表示（例: 火曜でも開放設定なら予約可） | 高 |
+| FRONT-019 | 休止日（is_closed） | `is_closed=true` の日 | カレンダー確認 | 当該日は「定休/予約不可」で選択不可 | 高 |
+| FRONT-020 | 枠が無い日はアルゴリズム既定 | 当該日に DB 枠なし | カレンダー確認 | 従来 `buildCalendar` 既定（火曜定休・土日わずか等）で表示 | 高 |
+| FRONT-021 | DB 空でも注文不能化しない | `takeout_slots` 全空 | `/takeout` を開く | 全日アルゴリズム既定で予約可能日が残り、注文フローが成立（`fetchTakeoutSlots`→`{}`） | 高 |
+| FRONT-022 | 受付時間枠の連動 | 選択日に DB 時間枠あり（一部 `is_active=false`） | 受取日を選択し時間枠を確認 | `is_active=true` の時間枠のみ表示（DB 枠の無い日は既定の全枠） | 中 |
+| FRONT-023 | 予約可能期間ゲート維持 | DB 枠が 32 日以上先にある | カレンダー確認 | 本日〜31 日先の期間制限が優先され、期間外は予約不可 | 中 |
+| FRONT-024 | 店舗切替で受取日時リセット | 受取日時選択後に店舗変更 | Step1 で店舗を変更 | 受取日・時間がリセットされ、新店舗の枠で再選択になる | 中 |
+
+### 営業カレンダー（トップ Business days）連動
+
+| ID | テスト項目 | 前提条件 | 操作手順 | 期待結果 | 優先度 |
+|----|-----------|----------|----------|----------|--------|
+| FRONT-025 | 当月+翌月の DB 描画 | `business_calendars` に当月/翌月データ（代表店=kameoka） | トップ `/` の Business days を確認 | 当月+翌月が表示され、DB の status で日付スタイルが切替（PC/SP 両方） | 高 |
+| FRONT-026 | status 写像 | closed/special_closed/limited/open を設定 | カレンダー確認 | closed・special_closed=定休(赤)、limited=ランチのみ(金)、open=通常（無印） | 高 |
+| FRONT-027 | DB 空フォールバック | 当月/翌月に `business_calendars` データ無し | トップを開く | 従来の静的カレンダー（サンプル 5/6 月）にフォールバックし崩れない（`fetchBusinessCalendar`→`undefined`） | 高 |
+| FRONT-028 | PC/SP 高さ不変 | 6 行になる月を含む | PC/SP でカレンダー表示 | ScaledSection 固定高に収まりレイアウトが崩れない（PC 枠 480/SP 1090） | 中 |
+| FRONT-029 | 代表店 kameoka | 複数店に異なるカレンダー | トップを開く | トップの 1 カレンダーは kameoka 基準で表示（※全店共通/店舗別表示は運用未確定） | 低 |
+
+### トップ コース DB 連動
+
+| ID | テスト項目 | 前提条件 | 操作手順 | 期待結果 | 優先度 |
+|----|-----------|----------|----------|----------|--------|
+| FRONT-030 | テキスト DB 連動（画像据え置き） | `courses`(kameoka) に 3 件以上 | トップ `/` のコース節を確認 | 3 カードの名称/価格/サブ/説明が DB 値で描画。画像はローカル `course1/2/3.webp` のまま（PC/SP） | 高 |
+| FRONT-031 | コース フォールバック | `courses` が 3 件未満/空 | トップを開く | 静的コピーにフォールバックし、レイアウト不変で描画（`fetchTopCourses`→`undefined`） | 中 |
+
+### テイクアウト注文フローの店舗別メニュー
+
+| ID | テスト項目 | 前提条件 | 操作手順 | 期待結果 | 優先度 |
+|----|-----------|----------|----------|----------|--------|
+| FRONT-032 | Step1 店舗→Step2 にその店舗メニュー | `store_takeout_menus` に店舗別データ | Step1 で園部を選び日時選択→Step2 へ | Step2 に園部の品目（例「園部焼肉弁当」）が表示される | 高 |
+| FRONT-033 | 店舗変更でカート/カテゴリ/日時リセット | カート投入後に店舗変更 | Step1 で別店舗に変更 | カート・受取日時・選択カテゴリがリセットされる（店舗で品目 id が異なるため） | 高 |
+| FRONT-034 | カテゴリは全店共通・品目のみ店舗別 | 複数店舗 | 店舗を切替 | カテゴリ一覧は全店共通で、品目のみ店舗別に変わる | 中 |
+| FRONT-035 | 注文メニュー DB 空フォールバック | `store_takeout_menus` 空 or 品目 0 店 | `/takeout` を開く | 静的 `TAKEOUT_MENU` にフォールバックして注文可能 | 中 |

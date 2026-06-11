@@ -110,8 +110,10 @@ export default function NewsSectionSP({ items }: { items?: NewsItem[] }) {
       >
         <div
           style={{
+            boxSizing: "border-box",
             width: 44,
-            height: 85,
+            height: 94,
+            padding: "8px 7px",
             border: "1px solid rgba(255,255,255,0.3)",
             overflow: "hidden",
             flexShrink: 0,
@@ -122,12 +124,15 @@ export default function NewsSectionSP({ items }: { items?: NewsItem[] }) {
         >
           <p
             style={{
+              margin: 0,
               fontFamily: mincho,
               fontSize: 12,
-              letterSpacing: "5px",
+              letterSpacing: "7px",
+              lineHeight: "1",
               color: "#fff",
               writingMode: "vertical-rl" as const,
-              margin: 0,
+              whiteSpace: "nowrap",
+              transform: "translateY(4px)",
             }}
           >
             お知らせ
@@ -201,7 +206,7 @@ export default function NewsSectionSP({ items }: { items?: NewsItem[] }) {
           }}
         >
           {[...NEWS, ...NEWS].map((item, i) => (
-            <div key={i} style={{ flexShrink: 0, width: CARD_WIDTH }}>
+            <a key={i} href={item.id ? `/news/${item.id}` : SECTION_LINKS.news} style={{ flexShrink: 0, width: CARD_WIDTH, display: "block", textDecoration: "none" }}>
               <div
                 style={{
                   width: CARD_WIDTH,
@@ -260,7 +265,7 @@ export default function NewsSectionSP({ items }: { items?: NewsItem[] }) {
               >
                 {item.title}
               </p>
-            </div>
+            </a>
           ))}
         </div>
       </div>
