@@ -8,6 +8,9 @@ import LineModal from "./LineModal";
 // Desktop
 import HeroSection from "./HeroSection";
 import NewsSection from "./NewsSection";
+import { type NewsItem } from "@/app/lib/newsData";
+import { type BusinessMonth } from "@/app/lib/businessCalendarDb";
+import { type TopCourse } from "@/app/lib/courseDb";
 import KodawariSection from "./KodawariSection";
 import MenuSection from "./MenuSection";
 import LunchSection from "./LunchSection";
@@ -37,7 +40,7 @@ const DESIGN_PC = 1440;
 const DESIGN_SP = 390;
 const BREAKPOINT = 1024;
 
-export default function ResponsivePage() {
+export default function ResponsivePage({ topNews, businessMonths, topCourses }: { topNews?: NewsItem[]; businessMonths?: BusinessMonth[]; topCourses?: TopCourse[] }) {
   const [isMobile, setIsMobile] = useState<boolean | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [lineModalOpen, setLineModalOpen] = useState(false);
@@ -69,7 +72,7 @@ export default function ResponsivePage() {
           <HeroSectionSP onOpenModal={openModal} onOpenLineModal={openLineModal} />
         </ScaledSection>
         <ScaledSection designWidth={DESIGN_SP} height={801}>
-          <NewsSectionSP />
+          <NewsSectionSP items={topNews} />
         </ScaledSection>
         <ScaledSection designWidth={DESIGN_SP} height={1688}>
           <KodawariSectionSP />
@@ -81,13 +84,13 @@ export default function ResponsivePage() {
           <LunchSectionSP />
         </ScaledSection>
         <ScaledSection designWidth={DESIGN_SP} height={2411}>
-          <CourseSectionSP />
+          <CourseSectionSP courses={topCourses} />
         </ScaledSection>
         <ScaledSection designWidth={DESIGN_SP} height={1899}>
           <StoreSectionSP />
         </ScaledSection>
         <ScaledSection designWidth={DESIGN_SP} height={1090}>
-          <CalendarSectionSP />
+          <CalendarSectionSP months={businessMonths} />
         </ScaledSection>
         <ScaledSection designWidth={DESIGN_SP} height={671}>
           <CtaSectionSP />
@@ -116,7 +119,7 @@ export default function ResponsivePage() {
         <HeroSection onOpenModal={openModal} />
       </ScaledSection>
       <ScaledSection designWidth={DESIGN_PC} height={1000}>
-        <NewsSection />
+        <NewsSection items={topNews} />
       </ScaledSection>
       <ScaledSection designWidth={DESIGN_PC} height={1840}>
         <KodawariSection />
@@ -128,13 +131,13 @@ export default function ResponsivePage() {
         <LunchSection />
       </ScaledSection>
       <ScaledSection designWidth={DESIGN_PC} height={1020}>
-        <CourseSection />
+        <CourseSection courses={topCourses} />
       </ScaledSection>
       <ScaledSection designWidth={DESIGN_PC} height={1620}>
         <StoreSection />
       </ScaledSection>
       <ScaledSection designWidth={DESIGN_PC} height={1000}>
-        <CalendarSection />
+        <CalendarSection months={businessMonths} />
       </ScaledSection>
       <ScaledSection designWidth={DESIGN_PC} height={620}>
         <CtaSection />

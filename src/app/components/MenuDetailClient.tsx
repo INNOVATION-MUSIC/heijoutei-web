@@ -26,7 +26,7 @@ function detailHeight(itemCount: number) {
  * SP はデザイン未確定のため未実装（PC 設計 1440 を ScaledSection で縮小表示）。
  * カテゴリ・店舗の選択をここで一元管理し、どちらの切替でも品目（と高さ）を再計算する。
  */
-export default function MenuDetailClient({ category }: { category: MenuCategory }) {
+export default function MenuDetailClient({ category, allCategories }: { category: MenuCategory; allCategories?: MenuCategory[] }) {
   const [modalOpen, setModalOpen] = useState(false);
   const openModal = () => setModalOpen(true);
   const closeModal = () => setModalOpen(false);
@@ -42,7 +42,7 @@ export default function MenuDetailClient({ category }: { category: MenuCategory 
     if (p && MENU_STORES.some((s) => s.id === p)) setStoreId(p);
   }, []);
 
-  const cat = getMenuCategory(activeSlug) ?? category;
+  const cat = allCategories?.find((c) => c.slug === activeSlug) ?? getMenuCategory(activeSlug) ?? category;
   const items = getMenuItems(cat, storeId); // 店舗別メニュー（無ければ既定にフォールバック）
   const height = detailHeight(items.length);
 

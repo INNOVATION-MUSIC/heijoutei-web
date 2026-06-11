@@ -1,14 +1,17 @@
 import { notFound } from "next/navigation";
 import MenuDetailClient from "@/app/components/MenuDetailClient";
-import { MENU_CATEGORIES, getMenuCategory } from "@/app/lib/menuData";
+import { fetchMenuCategoriesFull, fetchMenuParams } from "@/app/lib/menuDb";
 
-export function generateStaticParams() {
-  return MENU_CATEGORIES.map((c) => ({ category: c.slug }));
+export const revalidate = 60;
+
+export async function generateStaticParams() {
+  return fetchMenuParams();
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ category: string }> }) {
   const { category } = await params;
-  const data = getMenuCategory(category);
+  const all = await fetchMenuCategoriesFull();
+  const data = all.find((c) => c.slug === category);
   if (!data) return {};
   return {
     title: `${data.title} | 焼肉平壌亭`,
@@ -18,7 +21,8 @@ export async function generateMetadata({ params }: { params: Promise<{ category:
 
 export default async function MenuDetailPage({ params }: { params: Promise<{ category: string }> }) {
   const { category } = await params;
-  const data = getMenuCategory(category);
+  const all = await fetchMenuCategoriesFull();
+  const data = all.find((c) => c.slug === category);
   if (!data) notFound();
-  return <MenuDetailClient category={data} />;
+  return <MenuDetailClient category={data} allCategories={all} />;
 }

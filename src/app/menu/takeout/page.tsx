@@ -1,10 +1,14 @@
 import MenuTakeoutClient from "@/app/components/MenuTakeoutClient";
+import { fetchTakeoutTabsByStore } from "@/app/lib/menuTakeoutDb";
+
+export const revalidate = 60;
 
 export const metadata = {
   title: "テイクアウトメニュー | 焼肉平壌亭",
   description: "焼肉平壌亭のテイクアウトメニュー。焼肉弁当・お惣菜・お家で焼肉セット・BBQセットなど、ご自宅で本格焼肉をお楽しみいただけます。",
 };
 
-export default function MenuTakeoutPage() {
-  return <MenuTakeoutClient />;
+export default async function MenuTakeoutPage() {
+  const tabsByStore = await fetchTakeoutTabsByStore();
+  return <MenuTakeoutClient tabsByStore={tabsByStore} />;
 }

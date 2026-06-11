@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useRef } from "react";
 import { SECTION_LINKS } from "@/app/lib/navLinks";
 import SpButton from "./SpButton";
-import { NEWS_DATA } from "@/app/lib/newsData";
+import { NEWS_DATA, type NewsItem } from "@/app/lib/newsData";
 
 const mincho = "'Shippori Mincho', serif";
 const display = "'Cormorant Garamond', serif";
@@ -13,12 +13,14 @@ const sans = "'Noto Sans JP', sans-serif";
 const CARD_WIDTH = 260;
 const GAP = 21;
 const CARD_STEP = CARD_WIDTH + GAP;
-const CARD_SET_WIDTH = CARD_STEP * NEWS_DATA.length;
 
 const easeInOut = (t: number) =>
   t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
 
-export default function NewsSectionSP() {
+export default function NewsSectionSP({ items }: { items?: NewsItem[] }) {
+  const NEWS = items && items.length > 0 ? items : NEWS_DATA;
+  // ループ幅は件数から算出（DB 連携で件数が変わっても崩れないように）
+  const CARD_SET_WIDTH = CARD_STEP * NEWS.length;
   const trackRef = useRef<HTMLDivElement>(null);
   const posRef = useRef(0);
   const animating = useRef(false);
@@ -198,7 +200,7 @@ export default function NewsSectionSP() {
             width: "max-content",
           }}
         >
-          {[...NEWS_DATA, ...NEWS_DATA].map((item, i) => (
+          {[...NEWS, ...NEWS].map((item, i) => (
             <div key={i} style={{ flexShrink: 0, width: CARD_WIDTH }}>
               <div
                 style={{

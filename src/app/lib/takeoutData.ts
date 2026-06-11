@@ -107,8 +107,22 @@ export type CalendarDay = {
 const WEEKDAY_LABELS = ["日", "月", "火", "水", "木", "金", "土"];
 export { WEEKDAY_LABELS };
 
-/** 指定年月（month は 0 始まり）の 6 週ぶんのカレンダーを生成する。 */
-export function buildCalendar(year: number, month: number, today: Date): CalendarDay[] {
+// ───────── DB 受付枠（フロント用の最小形・client-safe） ─────────
+// 管理画面「受付枠管理」(takeout_slots / takeout_slot_times) の1日ぶんを front 用に縮約したもの。
+export type DaySlotInfo = {
+  isClosed: boolean;       // その日を休止にしているか
+  timeLabels: string[];    // 受付可能な時間枠（is_active=true のラベル・"11 : 30" 形式）
+};
+// iso(YYYY-MM-DD) → DaySlotInfo
+export type DaySlotMap = Record<string, DaySlotInfo>;
+
+/**
+ * 指定年月（month は 0 始まり）の 6 週ぶんのカレンダーを生成する。
+ * `slots` を渡すと「DB に枠がある日は DB（休止/受付・時間枠の有無）を優先」し、
+ * 枠が無い日は従来アルゴリズム（火曜定休・土日わずか）にフォールバックする。
+ * 本日〜31日先の予約可能期間は DB 有無に関わらず外側のゲートとして維持する。
+ */
+export function buildCalendar(year: number, month: number, today: Date, slots?: DaySlotMap): CalendarDay[] {
   const first = new Date(year, month, 1);
   const startWeekday = first.getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -126,11 +140,20 @@ export function buildCalendar(year: number, month: number, today: Date): Calenda
     const date = new Date(year, month, d);
     const weekday = date.getDay();
     const iso = `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+    const slot = slots?.[iso];
     let status: DayStatus;
-    if (weekday === 2) status = "closed";          // 火曜定休
-    else if (date < t || date > max) status = "past"; // 期間外
-    else if (weekday === 0 || weekday === 6) status = "few"; // 土日は残りわずか
-    else status = "available";
+    if (date < t || date > max) {
+      status = "past"; // 期間外（DB枠があっても予約不可。31日先までの制限を優先）
+    } else if (slot) {
+      // DBに枠がある日はDBを優先（休止 or 受付時間が無ければ予約不可、あれば受付可能）
+      status = slot.isClosed || slot.timeLabels.length === 0 ? "closed" : "available";
+    } else if (weekday === 2) {
+      status = "closed";          // 火曜定休（既定）
+    } else if (weekday === 0 || weekday === 6) {
+      status = "few"; // 土日は残りわずか
+    } else {
+      status = "available";
+    }
     cells.push({ day: d, weekday, status, iso });
   }
   // 末尾の空セル（6週=42セルに揃える）

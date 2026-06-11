@@ -6,6 +6,7 @@ import ReserveModal from "./ReserveModal";
 import StickyButton from "./StickyButton";
 import Footer from "./Footer";
 import MenuCategorySection from "./MenuCategorySection";
+import { type MenuCategory } from "@/app/lib/menuData";
 
 const DESIGN_PC = 1440;
 
@@ -14,7 +15,7 @@ const DESIGN_PC = 1440;
  * SP はデザイン未確定のため未実装（PC 設計 1440 を ScaledSection で縮小表示）。
  * 予約モーダルは ScaledSection 外で一元管理。
  */
-export default function MenuCategoryClient() {
+export default function MenuCategoryClient({ categories }: { categories?: MenuCategory[] }) {
   const [modalOpen, setModalOpen] = useState(false);
   const openModal = () => setModalOpen(true);
   const closeModal = () => setModalOpen(false);
@@ -22,7 +23,7 @@ export default function MenuCategoryClient() {
   return (
     <>
       <ScaledSection designWidth={DESIGN_PC} height={3346}>
-        <MenuCategorySection onOpenModal={openModal} />
+        <MenuCategorySection onOpenModal={openModal} categories={categories} />
       </ScaledSection>
       <ScaledSection designWidth={DESIGN_PC} height={600}>
         <Footer onOpenModal={openModal} />

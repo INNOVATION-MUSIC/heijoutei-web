@@ -12,7 +12,8 @@ import Step3Form from "./Step3Form";
 import Step4Confirm from "./Step4Confirm";
 import Step5Complete from "./Step5Complete";
 
-import { TAKEOUT_CATEGORIES, TAKEOUT_MENU, TAKEOUT_STORES, buildCalendar, formatJpDate, type TakeoutCategory, type TakeoutStore } from "@/app/lib/takeoutData";
+import { TAKEOUT_CATEGORIES, TAKEOUT_MENU, TAKEOUT_STORES, TAKEOUT_TIME_SLOTS, buildCalendar, formatJpDate, type TakeoutStore, type TakeoutMenuItem, type DaySlotMap } from "@/app/lib/takeoutData";
+import type { TakeoutMenuData } from "@/app/lib/takeoutOrderDb";
 import type { OrderPayload } from "@/app/lib/takeoutMail";
 
 const DESIGN_PC = 1440;
@@ -36,7 +37,20 @@ const EMPTY_FORM: TakeoutForm = { name: "", kana: "", email: "", emailConfirm: "
  * SP はデザイン未確定のため未実装（PC 設計を ScaledSection で縮小表示）。
  * 予約モーダルは ScaledSection 外で一元管理。
  */
-export default function TakeoutClient() {
+export default function TakeoutClient({
+  stores,
+  menuByStore,
+  slotsByStore,
+}: {
+  stores?: TakeoutStore[];
+  menuByStore?: Record<string, TakeoutMenuData>;
+  slotsByStore?: Record<string, DaySlotMap>;
+} = {}) {
+  // DB 連携データ（無ければ静的フォールバック）
+  const STORES = stores && stores.length > 0 ? stores : TAKEOUT_STORES;
+  const MENU_BY_STORE = menuByStore ?? {};
+  const SLOTS = slotsByStore ?? {};
+
   const [modalOpen, setModalOpen] = useState(false);
   const openModal = () => setModalOpen(true);
   const closeModal = () => setModalOpen(false);
@@ -44,14 +58,19 @@ export default function TakeoutClient() {
   const [step, setStep] = useState(1);
 
   // 受取情報
-  const [store, setStore] = useState<TakeoutStore>(TAKEOUT_STORES[0]);
+  const [store, setStore] = useState<TakeoutStore>(STORES[0]);
+
+  // 選択中店舗のメニュー（DB 店舗別 → 無ければ静的フォールバック）
+  const storeMenu = MENU_BY_STORE[store.id];
+  const CATS = storeMenu && storeMenu.categories.length > 0 ? storeMenu.categories : [...TAKEOUT_CATEGORIES];
+  const ITEMS = storeMenu && storeMenu.items.length > 0 ? storeMenu.items : TAKEOUT_MENU;
   const today = useMemo(() => new Date(), []);
   const [view, setView] = useState({ year: today.getFullYear(), month: today.getMonth() });
   const [dateIso, setDateIso] = useState<string | null>(null);
   const [time, setTime] = useState<string | null>(null);
 
   // メニューカテゴリ
-  const [activeCategory, setActiveCategory] = useState<TakeoutCategory>(TAKEOUT_CATEGORIES[0]);
+  const [activeCategory, setActiveCategory] = useState<string>(CATS[0]);
 
   // カート（itemId → 数量）
   const [cart, setCart] = useState<Record<string, number>>({});
@@ -59,14 +78,22 @@ export default function TakeoutClient() {
   // 入力フォーム
   const [form, setForm] = useState<TakeoutForm>(EMPTY_FORM);
 
-  const calendar = useMemo(() => buildCalendar(view.year, view.month, today), [view, today]);
+  // 選択中店舗のDB受付枠（未投入なら undefined → buildCalendar はアルゴリズム既定）
+  const storeSlots = SLOTS[store.id];
+  const calendar = useMemo(() => buildCalendar(view.year, view.month, today, storeSlots), [view, today, storeSlots]);
   const weeks = calendar.length / 7;
+
+  // 選択中受取日の受付時間枠（DB枠がある日はその受付可能枠・無ければ既定の全枠）
+  const timeSlots = useMemo(() => {
+    const slot = dateIso ? storeSlots?.[dateIso] : undefined;
+    return slot ? slot.timeLabels : TAKEOUT_TIME_SLOTS;
+  }, [dateIso, storeSlots]);
 
   // カート計算
   const cartLines = useMemo(
     () =>
-      TAKEOUT_MENU.filter((m) => (cart[m.id] ?? 0) > 0).map((m) => ({ item: m, qty: cart[m.id] })),
-    [cart]
+      ITEMS.filter((m) => (cart[m.id] ?? 0) > 0).map((m) => ({ item: m, qty: cart[m.id] })),
+    [cart, ITEMS]
   );
   const subtotal = useMemo(() => cartLines.reduce((s, l) => s + l.item.price * l.qty, 0), [cartLines]);
   const cartCount = useMemo(() => cartLines.reduce((s, l) => s + l.qty, 0), [cartLines]);
@@ -101,6 +128,9 @@ export default function TakeoutClient() {
       items: cartLines.map((l) => ({ name: l.item.name, price: l.item.price, qty: l.qty })),
       total: subtotal,
       customer: { name: form.name, kana: form.kana, email: form.email, phone: form.phone, note: form.note },
+      storeSlug: store.id,
+      pickupDate: dateIso ?? undefined,
+      pickupTime: time ? time.replace(/ /g, "") : undefined,
     };
     try {
       const res = await fetch("/api/takeout", {
@@ -121,12 +151,12 @@ export default function TakeoutClient() {
   // step2 の高さは「メニュー列」「カート列」の高い方に合わせて可変
   const step2Height = useMemo(() => {
     const GRID_TOP = 1021;
-    const menuRows = Math.max(1, Math.ceil(TAKEOUT_MENU.filter((m) => m.category === activeCategory).length / 2));
+    const menuRows = Math.max(1, Math.ceil(ITEMS.filter((m) => m.category === activeCategory).length / 2));
     const menuBottom = GRID_TOP + menuRows * 240 - 40;
     const cartHeight = 296 + Math.max(20, cartLines.length * 32);
     const cartBottom = GRID_TOP + cartHeight + 162; // カート + 赤ボタン + 戻るボタン
     return Math.max(menuBottom, cartBottom) + 130;
-  }, [activeCategory, cartLines.length]);
+  }, [activeCategory, cartLines.length, ITEMS]);
 
   // ステップ別の高さ
   const heights = [
@@ -145,17 +175,31 @@ export default function TakeoutClient() {
           <Step1DateTime
             height={height}
             onOpenModal={openModal}
-            stores={TAKEOUT_STORES}
+            stores={STORES}
             store={store}
-            onSelectStore={setStore}
+            onSelectStore={(s) => {
+              setStore(s);
+              // 店舗で受付枠が異なるため受取日時をリセット
+              setDateIso(null);
+              setTime(null);
+              // 店舗で品目(itemId)が異なるためカートをリセットし、カテゴリも新店舗の先頭へ
+              setCart({});
+              const m = MENU_BY_STORE[s.id];
+              const newCats = m && m.categories.length > 0 ? m.categories : [...TAKEOUT_CATEGORIES];
+              setActiveCategory(newCats[0]);
+            }}
             calendar={calendar}
             view={view}
             onPrevMonth={goPrevMonth}
             onNextMonth={goNextMonth}
             dateIso={dateIso}
-            onSelectDate={setDateIso}
+            onSelectDate={(iso) => {
+              setDateIso(iso);
+              setTime(null); // 受取日を変えたら時間選択をリセット（DB枠で受付時間が異なるため）
+            }}
             time={time}
             onSelectTime={setTime}
+            timeSlots={timeSlots}
             onNext={() => goStep(2)}
           />
         )}
@@ -163,6 +207,8 @@ export default function TakeoutClient() {
           <Step2Menu
             height={height}
             onOpenModal={openModal}
+            menuItems={ITEMS}
+            categories={CATS}
             activeCategory={activeCategory}
             onSelectCategory={setActiveCategory}
             cart={cart}
@@ -213,4 +259,4 @@ export default function TakeoutClient() {
   );
 }
 
-export type CartLine = { item: (typeof TAKEOUT_MENU)[number]; qty: number };
+export type CartLine = { item: TakeoutMenuItem; qty: number };

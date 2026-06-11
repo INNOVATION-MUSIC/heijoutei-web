@@ -1,0 +1,90 @@
+'use server'
+
+import { adminSupabase } from '@/lib/supabase/admin'
+import { isAuthed } from '@/lib/auth-guard'
+import { revalidatePath } from 'next/cache'
+
+export type SlotTime = { time_label: string; capacity: number; is_active: boolean }
+export type DaySlot = {
+  date: string // YYYY-MM-DD
+  is_closed: boolean
+  default_capacity: number
+  times: SlotTime[]
+}
+
+// 指定月の受付枠を取得（date → DaySlot）
+export async function getMonthSlots(
+  storeId: string,
+  year: number,
+  month: number // 1-12
+): Promise<Record<string, DaySlot>> {
+  const start = `${year}-${String(month).padStart(2, '0')}-01`
+  const endDate = new Date(year, month, 0).getDate()
+  const end = `${year}-${String(month).padStart(2, '0')}-${String(endDate).padStart(2, '0')}`
+
+  const { data: slots } = await adminSupabase
+    .from('takeout_slots')
+    .select('id, available_date, default_capacity, is_closed')
+    .eq('store_id', storeId)
+    .gte('available_date', start)
+    .lte('available_date', end)
+
+  const slotIds = (slots ?? []).map((s) => s.id)
+  const timesBySlot = new Map<string, SlotTime[]>()
+  if (slotIds.length) {
+    const { data: times } = await adminSupabase
+      .from('takeout_slot_times')
+      .select('slot_id, time_label, capacity, is_active, sort_order')
+      .in('slot_id', slotIds)
+      .order('sort_order')
+    for (const t of times ?? []) {
+      const arr = timesBySlot.get(t.slot_id) ?? []
+      arr.push({ time_label: t.time_label, capacity: t.capacity, is_active: t.is_active ?? true })
+      timesBySlot.set(t.slot_id, arr)
+    }
+  }
+
+  const result: Record<string, DaySlot> = {}
+  for (const s of slots ?? []) {
+    result[s.available_date] = {
+      date: s.available_date,
+      is_closed: s.is_closed ?? false,
+      default_capacity: s.default_capacity,
+      times: timesBySlot.get(s.id) ?? [],
+    }
+  }
+  return result
+}
+
+// 1日分の受付枠を upsert（slot を upsert し、slot_times を総入れ替え）
+export async function saveDaySlot(storeId: string, day: DaySlot) {
+  if (!(await isAuthed())) return { error: '認証が必要です' }
+
+  const { data: slot, error } = await adminSupabase
+    .from('takeout_slots')
+    .upsert(
+      {
+        store_id: storeId,
+        available_date: day.date,
+        default_capacity: day.default_capacity,
+        is_closed: day.is_closed,
+      },
+      { onConflict: 'store_id,available_date' }
+    )
+    .select('id')
+    .single()
+  if (error || !slot) return { error: error?.message ?? '保存に失敗しました' }
+
+  await adminSupabase.from('takeout_slot_times').delete().eq('slot_id', slot.id)
+  const rows = day.times.map((t, idx) => ({
+    slot_id: slot.id,
+    time_label: t.time_label,
+    capacity: t.capacity,
+    is_active: t.is_active,
+    sort_order: idx,
+  }))
+  if (rows.length) await adminSupabase.from('takeout_slot_times').insert(rows)
+
+  revalidatePath('/takeout')
+  return { success: true }
+}

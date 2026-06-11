@@ -1,5 +1,8 @@
 "use client";
 
+import { Fragment } from "react";
+import type { BusinessMonth } from "@/app/lib/businessCalendarDb";
+
 const mincho = "'Shippori Mincho', serif";
 const display = "'Cormorant Garamond', serif";
 const sans = "'Noto Sans JP', sans-serif";
@@ -164,7 +167,9 @@ function CalendarGrid({
   );
 }
 
-export default function CalendarSectionSP() {
+export default function CalendarSectionSP({ months }: { months?: BusinessMonth[] } = {}) {
+  const useDb = !!months && months.length > 0;
+  const ALPHAS = [0.8, 0.4];
   return (
     <section
       style={{
@@ -266,32 +271,37 @@ export default function CalendarSectionSP() {
       {/* 凡例底〜カレンダー1上: 241 - 212 - 10 = 19px */}
       <div style={{ height: 19, flexShrink: 0 }} />
 
-      {/* 2026年5月 */}
-      <div style={{ paddingLeft: 16, paddingRight: 16, flexShrink: 0 }}>
-        <CalendarGrid
-          year={2026}
-          month={5}
-          startDay={5}
-          totalDays={31}
-          specials={MAY_SPECIALS}
-          topBorderAlpha={0.8}
-        />
-      </div>
-
-      {/* カレンダー1底〜カレンダー2上: 30px */}
-      <div style={{ height: 30, flexShrink: 0 }} />
-
-      {/* 2026年6月 */}
-      <div style={{ paddingLeft: 16, paddingRight: 16, flexShrink: 0 }}>
-        <CalendarGrid
-          year={2026}
-          month={6}
-          startDay={1}
-          totalDays={30}
-          specials={JUN_SPECIALS}
-          topBorderAlpha={0.4}
-        />
-      </div>
+      {/* カレンダー（DB連動: 当月＋翌月 / 未投入時は従来の静的サンプル） */}
+      {useDb ? (
+        months!.slice(0, 2).map((m, i) => (
+          <Fragment key={`${m.year}-${m.month}`}>
+            {i > 0 && <div style={{ height: 30, flexShrink: 0 }} />}
+            <div style={{ paddingLeft: 16, paddingRight: 16, flexShrink: 0 }}>
+              <CalendarGrid
+                year={m.year}
+                month={m.month}
+                startDay={m.startDay}
+                totalDays={m.totalDays}
+                specials={m.specials}
+                topBorderAlpha={ALPHAS[i]}
+              />
+            </div>
+          </Fragment>
+        ))
+      ) : (
+        <>
+          {/* 2026年5月 */}
+          <div style={{ paddingLeft: 16, paddingRight: 16, flexShrink: 0 }}>
+            <CalendarGrid year={2026} month={5} startDay={5} totalDays={31} specials={MAY_SPECIALS} topBorderAlpha={0.8} />
+          </div>
+          {/* カレンダー1底〜カレンダー2上: 30px */}
+          <div style={{ height: 30, flexShrink: 0 }} />
+          {/* 2026年6月 */}
+          <div style={{ paddingLeft: 16, paddingRight: 16, flexShrink: 0 }}>
+            <CalendarGrid year={2026} month={6} startDay={1} totalDays={30} specials={JUN_SPECIALS} topBorderAlpha={0.4} />
+          </div>
+        </>
+      )}
     </section>
   );
 }

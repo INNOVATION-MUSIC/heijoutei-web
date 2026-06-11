@@ -1,14 +1,16 @@
 import { notFound } from "next/navigation";
 import RecruitDetailClient from "@/app/components/RecruitDetailClient";
-import { RECRUIT_JOBS, getRecruitJob } from "@/app/lib/recruitData";
+import { fetchRecruitJob, fetchRecruitParams } from "@/app/lib/recruitDb";
 
-export function generateStaticParams() {
-  return RECRUIT_JOBS.map((j) => ({ id: j.id }));
+export const revalidate = 60;
+
+export async function generateStaticParams() {
+  return fetchRecruitParams();
 }
 
 export default async function RecruitDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const job = getRecruitJob(id);
+  const job = await fetchRecruitJob(id);
   if (!job) notFound();
   return <RecruitDetailClient job={job} />;
 }

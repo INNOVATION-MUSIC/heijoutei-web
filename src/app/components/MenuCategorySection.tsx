@@ -104,7 +104,8 @@ function PromoBanner({ promo }: { promo: MenuPromo }) {
  * /menu カテゴリページのメインコンテンツ（PC のみ・全高 3346px・フッターは別 ScaledSection）。
  * 共有コンポーネント（PageHeader/Footer/OutlineButton）は変更せず再利用。
  */
-export default function MenuCategorySection({ onOpenModal }: { onOpenModal: () => void }) {
+export default function MenuCategorySection({ onOpenModal, categories }: { onOpenModal: () => void; categories?: MenuCategory[] }) {
+  const cats = categories ?? MENU_CATEGORIES;
   const [storeId, setStore] = useStoreParam();
   return (
     <section style={{ display: "flex", flexDirection: "column", width: 1440, height: 3346, background: "#0a0a0a" }}>
@@ -113,7 +114,7 @@ export default function MenuCategorySection({ onOpenModal }: { onOpenModal: () =
 
       {/* カテゴリカードグリッド（3列×4行・gap40） */}
       <div style={{ display: "flex", flexWrap: "wrap", columnGap: 40, rowGap: 40, paddingLeft: 50, paddingRight: 50, paddingTop: 62 }}>
-        {MENU_CATEGORIES.map((c) => (
+        {cats.map((c) => (
           <CategoryCard key={c.slug} category={c} storeId={storeId} />
         ))}
       </div>

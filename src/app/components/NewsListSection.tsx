@@ -62,6 +62,8 @@ type Props = {
   onShowMore: () => void;
   /** この index 以降のカードを出現アニメーション対象にする（既出カードは再生しない） */
   animateFrom: number;
+  /** 表示するお知らせ一覧（未指定時は静的データ）。DB 連携時にサーバーから供給する。 */
+  items?: NewsListItem[];
 };
 
 /**
@@ -70,7 +72,8 @@ type Props = {
  * デフォルト 6 件表示し「もっと見る」で 6 件ずつ追加表示する。表示件数に応じて高さ（height）を可変にする。
  * タグ色・デザインは PC トップ NewsSection と統一。NEW タグは一覧では表示しない。
  */
-export default function NewsListSection({ onOpenModal, height, visibleCount, hasMore, onShowMore, animateFrom }: Props) {
+export default function NewsListSection({ onOpenModal, height, visibleCount, hasMore, onShowMore, animateFrom, items }: Props) {
+  const list = items ?? LIST;
   return (
     <div style={{ display: "flex", flexDirection: "column", width: 1440, height, background: "#0a0a0a", overflow: "hidden" }}>
 
@@ -99,7 +102,7 @@ export default function NewsListSection({ onOpenModal, height, visibleCount, has
 
       {/* 3列グリッド */}
       <div style={{ display: "flex", flexWrap: "wrap", rowGap: 66, columnGap: 60, paddingLeft: 150, paddingRight: 150, paddingTop: 211 }}>
-        {LIST.slice(0, visibleCount).map((item, index) => (
+        {list.slice(0, visibleCount).map((item, index) => (
           // key に index を使うことで、追加表示分だけが新規マウントされ、その時だけアニメーションする。
           // delay はそのバッチ内での出現順（index - animateFrom）に応じて 1 枚ずつずらす。
           <NewsCard key={index} item={item} delay={Math.max(0, index - animateFrom) * 110} />

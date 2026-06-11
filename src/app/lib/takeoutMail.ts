@@ -15,6 +15,10 @@ export type OrderPayload = {
     phone: string;
     note: string;
   };
+  // DB 保存用（メール本文には未使用・任意）。フロントから店舗 slug・受取日(ISO)・時刻を渡す。
+  storeSlug?: string;
+  pickupDate?: string;  // "YYYY-MM-DD"
+  pickupTime?: string;  // "13:00"
 };
 
 const yen = (n: number) => `${n.toLocaleString("ja-JP")}円`;

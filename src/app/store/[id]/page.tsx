@@ -1,14 +1,16 @@
 import { notFound } from "next/navigation";
 import StoreDetailClient from "@/app/components/StoreDetailClient";
-import { STORE_DETAILS, getStoreDetail } from "@/app/lib/storeDetailData";
+import { fetchStoreDetail, fetchStoreParams } from "@/app/lib/storeDb";
 
-export function generateStaticParams() {
-  return STORE_DETAILS.map((s) => ({ id: s.slug }));
+export const revalidate = 60;
+
+export async function generateStaticParams() {
+  return fetchStoreParams();
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const store = getStoreDetail(id);
+  const store = await fetchStoreDetail(id);
   if (!store) return {};
   return {
     title: `${store.name} | 焼肉平壌亭`,
@@ -18,7 +20,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
 export default async function StoreDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const store = getStoreDetail(id);
+  const store = await fetchStoreDetail(id);
   if (!store) notFound();
   return <StoreDetailClient store={store} />;
 }

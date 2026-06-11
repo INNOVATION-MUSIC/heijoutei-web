@@ -38,6 +38,7 @@ type Props = {
   onSelectDate: (iso: string) => void;
   time: string | null;
   onSelectTime: (t: string) => void;
+  timeSlots?: string[]; // 選択中受取日の受付時間枠（省略時は既定の全枠）
   onNext: () => void;
 };
 
@@ -87,7 +88,7 @@ export default function Step1DateTime(p: Props) {
         {/* 3. 受取時間 */}
         <div style={{ width: 580, display: "flex", flexDirection: "column", gap: 24 }}>
           <p style={{ margin: 0, fontFamily: mincho, fontSize: 18, letterSpacing: "0.06em", color: "#ebe5db" }}>3. 受取時間を選択</p>
-          <TimeGrid dateIso={p.dateIso} time={p.time} onSelectTime={p.onSelectTime} />
+          <TimeGrid dateIso={p.dateIso} time={p.time} onSelectTime={p.onSelectTime} timeSlots={p.timeSlots} />
         </div>
       </div>
 
@@ -229,7 +230,8 @@ function CalendarCell({ cell, selected, onSelect }: { cell: CalendarDay; selecte
 }
 
 /* ─────────── 時間枠 ─────────── */
-function TimeGrid({ dateIso, time, onSelectTime }: { dateIso: string | null; time: string | null; onSelectTime: (t: string) => void }) {
+function TimeGrid({ dateIso, time, onSelectTime, timeSlots }: { dateIso: string | null; time: string | null; onSelectTime: (t: string) => void; timeSlots?: string[] }) {
+  const slots = timeSlots && timeSlots.length > 0 ? timeSlots : TAKEOUT_TIME_SLOTS;
   return (
     <div style={{ width: 580, background: PANEL, overflow: "hidden" }}>
       <div style={{ height: 2, background: GOLD_BAR }} />
@@ -244,7 +246,7 @@ function TimeGrid({ dateIso, time, onSelectTime }: { dateIso: string | null; tim
 
         {/* スロット */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(5,1fr)", gap: 9 }}>
-          {TAKEOUT_TIME_SLOTS.map((t) => {
+          {slots.map((t) => {
             const sel = t === time;
             const enabled = !!dateIso;
             return (

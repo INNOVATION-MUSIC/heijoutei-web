@@ -7,7 +7,7 @@ import StickyButton from "./StickyButton";
 import Footer from "./Footer";
 import MenuLunchSection from "./MenuLunchSection";
 import { useStoreParam } from "./MenuShared";
-import { getLunchItems } from "@/app/lib/menuData";
+import { getLunchItems, type MenuItem } from "@/app/lib/menuData";
 
 const DESIGN_PC = 1440;
 const GRID_TOP = 1047; // 見出し+店舗タブ〜項目グリッド上端
@@ -22,13 +22,13 @@ function lunchHeight(itemCount: number) {
  * /menu/lunch ランチメニューのクライアントラッパー（PC のみ）。
  * 店舗（?store=）に応じてメニュー内容を切り替える。SP はデザイン未確定のため未実装。
  */
-export default function MenuLunchClient() {
+export default function MenuLunchClient({ lunchByStore }: { lunchByStore?: Record<string, MenuItem[]> }) {
   const [modalOpen, setModalOpen] = useState(false);
   const openModal = () => setModalOpen(true);
   const closeModal = () => setModalOpen(false);
 
   const [storeId, setStore] = useStoreParam();
-  const items = getLunchItems(storeId);
+  const items = lunchByStore?.[storeId] ?? getLunchItems(storeId);
   const height = lunchHeight(items.length);
 
   return (

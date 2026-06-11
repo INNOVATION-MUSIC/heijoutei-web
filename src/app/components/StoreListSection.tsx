@@ -1,28 +1,15 @@
 "use client";
 
-import { type ReactNode } from "react";
 import Image from "next/image";
 import PageHeader from "./PageHeader";
 import OutlineButton from "./OutlineButton";
+import type { StoreCardData as Store } from "@/app/lib/storeListDb";
 
 const mincho = "'Shippori Mincho', serif";
 const display = "'Cormorant Garamond', serif";
 const sans = "'Noto Sans JP', sans-serif";
 
-/* ━━━ 店舗データ ━━━ */
-type Store = {
-  slug: string; // 詳細ページ /store/[slug] と対応
-  enLabel: string;
-  name: string;
-  address: string;
-  phone: string;
-  access: string;
-  hours: ReactNode;
-  closed: string;
-  img?: string; // 未指定は Coming Soon
-  logo?: string; // 白背景にロゴを contain 表示（KOPU29 など写真がない店舗）
-};
-
+/* ━━━ 店舗データ（DB 未連携時のフォールバック。hours は文字列配列） ━━━ */
 const STORES: Store[] = [
   {
     slug: "kameoka",
@@ -31,12 +18,10 @@ const STORES: Store[] = [
     address: "京都府亀岡市篠町浄法寺中村３５-５",
     phone: "0771-23-8410",
     access: "30台駐車場完備/8名様よりマイクロバス送迎あり",
-    hours: (
-      <>
-        <p style={{ lineHeight: "22px" }}>月、水〜日、祝日、祝前日: 11:30〜14:30（料理L.O. 14:00 ドリンクL.O. 14:00）</p>
-        <p style={{ lineHeight: "22px" }}>16:00〜22:30（料理L.O. 22:00 ドリンクL.O. 22:00）</p>
-      </>
-    ),
+    hours: [
+      "月、水〜日、祝日、祝前日: 11:30〜14:30（料理L.O. 14:00 ドリンクL.O. 14:00）",
+      "16:00〜22:30（料理L.O. 22:00 ドリンクL.O. 22:00）",
+    ],
     closed: "定休日 火曜",
     img: "/images/storelist_kameoka.webp",
   },
@@ -47,7 +32,7 @@ const STORES: Store[] = [
     address: "京都府南丹市園部町上木崎町坪ノ内26-5",
     phone: "0771-68-1760",
     access: "20台駐車場完備/8名様よりマイクロバス送迎あり",
-    hours: <p style={{ lineHeight: "22px" }}>月、水〜日、祝日、祝前日: 16:00〜22:30</p>,
+    hours: ["月、水〜日、祝日、祝前日: 16:00〜22:30"],
     closed: "定休日 火曜",
     img: "/images/storelist_sonobe.webp",
   },
@@ -58,7 +43,7 @@ const STORES: Store[] = [
     address: "京都府福知山市字堀2303の２",
     phone: "0773-24-2322",
     access: "15台駐車場完備/8名様よりマイクロバス送迎あり",
-    hours: <p style={{ lineHeight: "22px" }}>月、水〜日、祝日、祝前日: 16:00〜22:30</p>,
+    hours: ["月、水〜日、祝日、祝前日: 16:00〜22:30"],
     closed: "定休日 火曜",
     img: "/images/storelist_fukuchiyama.webp",
   },
@@ -69,7 +54,7 @@ const STORES: Store[] = [
     address: "京都府福知山堀今岡６番地ゆらのガーデン内",
     phone: "0773-45-8429",
     access: "JR福知山駅より徒歩10分/駐車場有",
-    hours: <p style={{ lineHeight: "22px" }}>11:30〜14:30(LO14:00) / 17:00〜22:00(LO21:30)</p>,
+    hours: ["11:30〜14:30(LO14:00) / 17:00〜22:00(LO21:30)"],
     closed: "定休日 火曜",
     img: "/images/storelist_yurano.webp",
   },
@@ -80,7 +65,7 @@ const STORES: Store[] = [
     address: "京都府亀岡市篠町浄法寺中村34-6",
     phone: "0771-20-1960",
     access: "JR嵯峨野線「亀岡」駅から徒歩15分",
-    hours: <p style={{ lineHeight: "22px" }}>月、水〜日、祝日、祝前日: 16:00〜22:30</p>,
+    hours: ["月、水〜日、祝日、祝前日: 16:00〜22:30"],
     closed: "定休日 火曜",
     logo: "/images/store_kopu29.webp", // 写真未提供のため白背景にロゴ表示（トップ StoreInfo と統一）
   },
@@ -165,7 +150,11 @@ function StoreCard({ store }: { store: Store }) {
           </div>
           <p style={detailText}>{store.phone}</p>
           <p style={detailText}>{store.access}</p>
-          <div style={{ ...detailText }}>{store.hours}</div>
+          <div style={{ ...detailText }}>
+            {store.hours.map((line, i) => (
+              <p key={i} style={{ lineHeight: "22px" }}>{line}</p>
+            ))}
+          </div>
           <p style={detailText}>{store.closed}</p>
         </div>
         {/* 店舗詳細ボタン（右下） */}
@@ -180,6 +169,8 @@ function StoreCard({ store }: { store: Store }) {
 type Props = {
   onOpenModal: () => void;
   height: number;
+  /** DB 由来の店舗一覧（未指定時は静的フォールバック）。 */
+  stores?: Store[];
 };
 
 /**
@@ -187,7 +178,8 @@ type Props = {
  * Figma 設計幅 1440・「店舗一覧」161:504 準拠。
  * 見出しは /news・/about と同構成。本体は全幅カード（1340×350）を 5 件縦に並べる。
  */
-export default function StoreListSection({ onOpenModal, height }: Props) {
+export default function StoreListSection({ onOpenModal, height, stores }: Props) {
+  const list = stores && stores.length > 0 ? stores : STORES;
   return (
     <div style={{ display: "flex", flexDirection: "column", width: 1440, height, background: "#0a0a0a", overflow: "hidden" }}>
       {/* 共通ヘッダー */}
@@ -213,8 +205,8 @@ export default function StoreListSection({ onOpenModal, height }: Props) {
 
       {/* 店舗カード群（先頭カード上端 y=803） */}
       <div style={{ paddingTop: 186, paddingLeft: 50, paddingRight: 50, paddingBottom: 257, display: "flex", flexDirection: "column", gap: 60 }}>
-        {STORES.map((store) => (
-          <StoreCard key={store.name} store={store} />
+        {list.map((store) => (
+          <StoreCard key={store.slug} store={store} />
         ))}
       </div>
     </div>

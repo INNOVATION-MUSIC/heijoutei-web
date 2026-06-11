@@ -7,7 +7,7 @@ import StickyButton from "./StickyButton";
 import Footer from "./Footer";
 import MenuTakeoutSection from "./MenuTakeoutSection";
 import { useStoreParam } from "./MenuShared";
-import { getTakeoutTabs, TAKEOUT_MENU_TABS } from "@/app/lib/menuData";
+import { getTakeoutTabs, TAKEOUT_MENU_TABS, type TakeoutMenuTab } from "@/app/lib/menuData";
 
 const DESIGN_PC = 1440;
 
@@ -26,7 +26,7 @@ function takeoutHeight(itemCount: number) {
  * 店舗（?store=）に応じてメニュー内容を切り替え、カテゴリタブの切替はリロードせず state で行う。
  * SP はデザイン未確定のため未実装。予約モーダルは ScaledSection 外で一元管理。
  */
-export default function MenuTakeoutClient() {
+export default function MenuTakeoutClient({ tabsByStore }: { tabsByStore?: Record<string, TakeoutMenuTab[]> }) {
   const [modalOpen, setModalOpen] = useState(false);
   const openModal = () => setModalOpen(true);
   const closeModal = () => setModalOpen(false);
@@ -34,7 +34,7 @@ export default function MenuTakeoutClient() {
   const [storeId, setStore] = useStoreParam();
   const [activeSlug, setActiveSlug] = useState(TAKEOUT_MENU_TABS[0].slug);
 
-  const tabs = getTakeoutTabs(storeId); // 店舗別メニュー（無ければ既定にフォールバック）
+  const tabs = tabsByStore?.[storeId] ?? getTakeoutTabs(storeId); // 店舗別メニュー（無ければ既定にフォールバック）
   const tab = tabs.find((t) => t.slug === activeSlug) ?? tabs[0];
   const height = takeoutHeight(tab.items.length);
 

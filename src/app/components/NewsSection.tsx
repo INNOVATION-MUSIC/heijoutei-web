@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useRef } from "react";
-import { NEWS_DATA as NEWS } from "@/app/lib/newsData";
+import { NEWS_DATA, type NewsItem } from "@/app/lib/newsData";
 import { SECTION_LINKS } from "@/app/lib/navLinks";
 import OutlineButton from "./OutlineButton";
 
@@ -13,11 +13,13 @@ const display = "'Cormorant Garamond', serif";
 const CARD_WIDTH = 340;
 const GAP = 55;
 const CARD_STEP = CARD_WIDTH + GAP;
-const CARD_SET_WIDTH = CARD_STEP * NEWS.length;
 
 const easeInOut = (t: number) => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
 
-export default function NewsSection() {
+export default function NewsSection({ items }: { items?: NewsItem[] }) {
+  const NEWS = items && items.length > 0 ? items : NEWS_DATA;
+  // ループ幅は件数から算出（DB 連携で件数が変わっても崩れないように）
+  const CARD_SET_WIDTH = CARD_STEP * NEWS.length;
   const trackRef = useRef<HTMLDivElement>(null);
   const posRef = useRef(0);
   const animating = useRef(false);

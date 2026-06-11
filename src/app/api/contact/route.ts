@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 import { buildContactCustomerMail, buildContactStoreMail, type ContactPayload } from "@/app/lib/contactMail";
+import { adminSupabase } from "@/lib/supabase/admin";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -44,30 +45,36 @@ export async function POST(request: Request) {
   if (!result.ok) return NextResponse.json({ error: result.error }, { status: 400 });
   const contact = result.value;
 
+  // DB へ保存（管理画面「お問い合わせ管理」に届く）。メール未設定でも受付は成立させる。
+  const { error: dbError } = await adminSupabase.from("contact_messages").insert({
+    name: contact.name,
+    kana: contact.kana,
+    email: contact.email,
+    phone: contact.phone || null,
+    subject: contact.store ? `${contact.inquiryType}（${contact.store}）` : contact.inquiryType,
+    message: contact.message || "",
+  });
+  if (dbError) {
+    console.error("[contact] db insert failed:", dbError);
+    return NextResponse.json({ error: "送信に失敗しました。時間をおいて再度お試しください。" }, { status: 500 });
+  }
+
+  // メール送信（既存処理を維持・SMTP 未設定や失敗時も受付は保存済みなので ok を返す）
   const transporter = createTransport();
-  if (!transporter) {
-    return NextResponse.json(
-      { error: "メール送信の設定が未完了です。サーバーの環境変数（SMTP_*）を設定してください。" },
-      { status: 500 }
-    );
-  }
-
-  const from = process.env.MAIL_FROM || process.env.SMTP_USER!;
-  const notifyTo = process.env.CONTACT_NOTIFY_TO || process.env.ORDER_NOTIFY_TO;
-
-  try {
-    // 店舗・管理者通知（宛先未設定ならスキップ）
-    if (notifyTo) {
-      const store = buildContactStoreMail(contact);
-      await transporter.sendMail({ from, to: notifyTo, replyTo: contact.email, subject: store.subject, text: store.text, html: store.html });
+  if (transporter) {
+    const from = process.env.MAIL_FROM || process.env.SMTP_USER!;
+    const notifyTo = process.env.CONTACT_NOTIFY_TO || process.env.ORDER_NOTIFY_TO;
+    try {
+      if (notifyTo) {
+        const store = buildContactStoreMail(contact);
+        await transporter.sendMail({ from, to: notifyTo, replyTo: contact.email, subject: store.subject, text: store.text, html: store.html });
+      }
+      const cust = buildContactCustomerMail(contact);
+      await transporter.sendMail({ from, to: contact.email, subject: cust.subject, text: cust.text, html: cust.html });
+    } catch (e) {
+      console.error("[contact] mail send failed (受付は保存済み):", e);
     }
-    // お客様控え（自動返信）
-    const cust = buildContactCustomerMail(contact);
-    await transporter.sendMail({ from, to: contact.email, subject: cust.subject, text: cust.text, html: cust.html });
-
-    return NextResponse.json({ ok: true });
-  } catch (e) {
-    console.error("[contact] mail send failed:", e);
-    return NextResponse.json({ error: "メールの送信に失敗しました。時間をおいて再度お試しください。" }, { status: 502 });
   }
+
+  return NextResponse.json({ ok: true });
 }

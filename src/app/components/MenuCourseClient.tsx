@@ -7,7 +7,7 @@ import StickyButton from "./StickyButton";
 import Footer from "./Footer";
 import MenuCourseSection from "./MenuCourseSection";
 import { useStoreParam } from "./MenuShared";
-import { getCourses } from "@/app/lib/menuData";
+import { getCourses, type CourseItem } from "@/app/lib/menuData";
 
 const DESIGN_PC = 1440;
 const HEIGHT = 2060; // 見出し+店舗タブ+コースカード3枚+注記+一覧へ戻るボタン（余白を詰めた）
@@ -15,14 +15,15 @@ const HEIGHT = 2060; // 見出し+店舗タブ+コースカード3枚+注記+一
 /**
  * /menu/course コースメニューのクライアントラッパー（PC のみ）。
  * 店舗（?store=）に応じてコース内容を切り替える。SP はデザイン未確定のため未実装。
+ * coursesByStore（DB 由来）が渡された場合はそれを優先し、無ければ静的データにフォールバック。
  */
-export default function MenuCourseClient() {
+export default function MenuCourseClient({ coursesByStore }: { coursesByStore?: Record<string, CourseItem[]> }) {
   const [modalOpen, setModalOpen] = useState(false);
   const openModal = () => setModalOpen(true);
   const closeModal = () => setModalOpen(false);
 
   const [storeId, setStore] = useStoreParam();
-  const courses = getCourses(storeId);
+  const courses = coursesByStore?.[storeId] ?? getCourses(storeId);
 
   return (
     <>

@@ -6,7 +6,7 @@ import ReserveModal from "./ReserveModal";
 import StickyButton from "./StickyButton";
 import Footer from "./Footer";
 import RecruitListSection from "./RecruitListSection";
-import { RECRUIT_JOBS, RECRUIT_STORE_TABS } from "@/app/lib/recruitData";
+import { RECRUIT_JOBS, RECRUIT_STORE_TABS, type RecruitJob } from "@/app/lib/recruitData";
 
 const DESIGN_PC = 1440;
 
@@ -28,14 +28,15 @@ function sectionHeight(n: number) {
  * 店舗タブで求人を絞り込み、件数に応じてセクション高さを可変にする。
  * SP はデザイン未確定のため未実装。予約モーダルは ScaledSection 外で一元管理。
  */
-export default function RecruitListClient() {
+export default function RecruitListClient({ allJobs }: { allJobs?: RecruitJob[] }) {
+  const source = allJobs ?? RECRUIT_JOBS;
   const [modalOpen, setModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<string>(RECRUIT_STORE_TABS[0]);
 
   const openModal = () => setModalOpen(true);
   const closeModal = () => setModalOpen(false);
 
-  const jobs = RECRUIT_JOBS.filter((j) => j.store === activeTab);
+  const jobs = source.filter((j) => j.store === activeTab);
   const height = sectionHeight(jobs.length);
 
   return (

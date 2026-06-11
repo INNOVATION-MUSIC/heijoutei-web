@@ -7,7 +7,7 @@ import StickyButton from "./StickyButton";
 
 import NewsListSection from "./NewsListSection";
 import Footer from "./Footer";
-import { NEWS_LIST_DATA } from "@/app/lib/newsData";
+import { NEWS_LIST_DATA, type NewsListItem } from "@/app/lib/newsData";
 
 const DESIGN_PC = 1440;
 
@@ -32,7 +32,8 @@ function sectionHeight(visible: number, hasMore: boolean) {
  * SP デザイン確定後に AboutClient と同様の PC/SP 分岐を追加する想定。
  * 予約モーダルは ScaledSection 外で一元管理。
  */
-export default function NewsListClient() {
+export default function NewsListClient({ items }: { items?: NewsListItem[] }) {
+  const list = items ?? NEWS_LIST_DATA;
   const [modalOpen, setModalOpen] = useState(false);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   // この index 以降のカードを出現アニメーション対象にする（初期表示分も再生）
@@ -41,7 +42,7 @@ export default function NewsListClient() {
   const openModal = () => setModalOpen(true);
   const closeModal = () => setModalOpen(false);
 
-  const total = NEWS_LIST_DATA.length;
+  const total = list.length;
   const hasMore = visibleCount < total;
   const showMore = () =>
     setVisibleCount((v) => {
@@ -60,6 +61,7 @@ export default function NewsListClient() {
           hasMore={hasMore}
           onShowMore={showMore}
           animateFrom={animateFrom}
+          items={list}
         />
       </ScaledSection>
       <ScaledSection designWidth={DESIGN_PC} height={600}>

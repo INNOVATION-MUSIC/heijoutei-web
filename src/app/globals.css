@@ -2,10 +2,15 @@
 
 @import "tailwindcss";
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+/* 全要素リセットは @layer base に入れる。
+   レイヤー外に置くと Tailwind のユーティリティ（padding/margin/space 等）より優先され、
+   管理画面(/admin)の余白が全て潰れてしまうため。フロントはインライン style 主体で影響なし。 */
+@layer base {
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
 }
 
 html {

@@ -1,10 +1,12 @@
 import Image from "next/image";
 import { SECTION_LINKS } from "@/app/lib/navLinks";
 import SpButton from "./SpButton";
+import type { TopCourse } from "@/app/lib/courseDb";
 
 const mincho = "'Shippori Mincho', serif";
 const display = "'Cormorant Garamond', serif";
 
+// 画像はトップ専用ローカル据え置き。テキストは DB(courses) があれば上書き、無ければこの静的コピー。
 const COURSES = [
   {
     img: "/images/course1.webp",
@@ -29,7 +31,8 @@ const COURSES = [
   },
 ];
 
-export default function CourseSectionSP() {
+export default function CourseSectionSP({ courses }: { courses?: TopCourse[] } = {}) {
+  const cards = COURSES.map((c, i) => ({ ...c, ...(courses?.[i] ?? {}) }));
   return (
     <section
       style={{
@@ -83,7 +86,7 @@ export default function CourseSectionSP() {
 
       {/* コースカード */}
       <div style={{ display: "flex", flexDirection: "column", gap: 30, paddingLeft: 20, paddingRight: 20, flexShrink: 0 }}>
-        {COURSES.map((c) => (
+        {cards.map((c) => (
           <div key={c.name} style={{ background: "#171717", overflow: "hidden" }}>
             {/* 写真: h=320 */}
             <div style={{ width: 350, height: 320, overflow: "hidden", background: "#22140c", position: "relative" }}>

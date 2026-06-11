@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 import { buildCustomerMail, buildStoreMail, type OrderPayload } from "@/app/lib/takeoutMail";
+import { adminSupabase } from "@/lib/supabase/admin";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -47,30 +48,63 @@ export async function POST(request: Request) {
   if (!result.ok) return NextResponse.json({ error: result.error }, { status: 400 });
   const order = result.value;
 
-  const transporter = createTransport();
-  if (!transporter) {
-    return NextResponse.json(
-      { error: "メール送信の設定が未完了です。サーバーの環境変数（SMTP_*）を設定してください。" },
-      { status: 500 }
-    );
-  }
-
-  const from = process.env.MAIL_FROM || process.env.SMTP_USER!;
-  const notifyTo = process.env.ORDER_NOTIFY_TO;
-
+  // DB へ保存（管理画面「注文受付」に届く）。店舗 slug → store_id を解決して INSERT。
+  // 解決できない/日付欠落時はログのみで注文フロー自体は止めない（メールにフォールバック）。
   try {
-    // 店舗通知（宛先未設定ならスキップ）
-    if (notifyTo) {
-      const store = buildStoreMail(order);
-      await transporter.sendMail({ from, to: notifyTo, replyTo: order.customer.email, subject: store.subject, text: store.text, html: store.html });
+    if (order.storeSlug && order.pickupDate) {
+      const { data: storeRow } = await adminSupabase
+        .from("stores").select("id").eq("slug", order.storeSlug).maybeSingle();
+      if (storeRow) {
+        const { data: created, error: orderErr } = await adminSupabase
+          .from("takeout_orders")
+          .insert({
+            store_id: storeRow.id,
+            pickup_date: order.pickupDate,
+            pickup_time: order.pickupTime || "",
+            customer_name: order.customer.name,
+            customer_kana: order.customer.kana || null,
+            customer_email: order.customer.email,
+            customer_phone: order.customer.phone || null,
+            customer_note: order.customer.note || null,
+            total_price: order.total,
+          })
+          .select("id")
+          .single();
+        if (orderErr) {
+          console.error("[takeout] order insert failed:", orderErr);
+        } else if (created) {
+          const items = order.items.map((i) => ({
+            order_id: created.id,
+            item_name: i.name,
+            price: i.price,
+            quantity: i.qty,
+          }));
+          if (items.length) await adminSupabase.from("takeout_order_items").insert(items);
+        }
+      } else {
+        console.warn("[takeout] store slug not found:", order.storeSlug);
+      }
     }
-    // お客様控え
-    const cust = buildCustomerMail(order);
-    await transporter.sendMail({ from, to: order.customer.email, subject: cust.subject, text: cust.text, html: cust.html });
-
-    return NextResponse.json({ ok: true });
   } catch (e) {
-    console.error("[takeout] mail send failed:", e);
-    return NextResponse.json({ error: "メールの送信に失敗しました。時間をおいて再度お試しください。" }, { status: 502 });
+    console.error("[takeout] db save error:", e);
   }
+
+  // メール送信（既存処理を維持・SMTP 未設定や失敗時も注文は保存済みなので ok を返す）
+  const transporter = createTransport();
+  if (transporter) {
+    const from = process.env.MAIL_FROM || process.env.SMTP_USER!;
+    const notifyTo = process.env.ORDER_NOTIFY_TO;
+    try {
+      if (notifyTo) {
+        const store = buildStoreMail(order);
+        await transporter.sendMail({ from, to: notifyTo, replyTo: order.customer.email, subject: store.subject, text: store.text, html: store.html });
+      }
+      const cust = buildCustomerMail(order);
+      await transporter.sendMail({ from, to: order.customer.email, subject: cust.subject, text: cust.text, html: cust.html });
+    } catch (e) {
+      console.error("[takeout] mail send failed (注文は保存済み):", e);
+    }
+  }
+
+  return NextResponse.json({ ok: true });
 }

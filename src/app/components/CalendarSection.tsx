@@ -1,4 +1,6 @@
 "use client";
+import type { BusinessMonth } from "@/app/lib/businessCalendarDb";
+
 const mincho = "'Shippori Mincho', serif";
 const display = "'Cormorant Garamond', serif";
 const sans = "'Noto Sans JP', sans-serif";
@@ -100,7 +102,9 @@ function CalendarGrid({ year, month, startDay, totalDays, specials, left }: {
   );
 }
 
-export default function CalendarSection() {
+export default function CalendarSection({ months }: { months?: BusinessMonth[] } = {}) {
+  const useDb = !!months && months.length > 0;
+  const LEFTS = [66, 755];
   return (
     <section className="relative overflow-hidden bg-[#0a0a0a]" style={{ width: 1440, height: 1000 }}>
 
@@ -130,11 +134,17 @@ export default function CalendarSection() {
         ))}
       </div>
 
-      {/* 2026年5月 */}
-      <CalendarGrid year={2026} month={5} startDay={4} totalDays={31} specials={MAY_SPECIALS} left={66} />
-
-      {/* 2026年6月 */}
-      <CalendarGrid year={2026} month={6} startDay={1} totalDays={30} specials={JUN_SPECIALS} left={755} />
+      {/* カレンダー（DB連動: 当月＋翌月 / 未投入時は従来の静的サンプル） */}
+      {useDb ? (
+        months!.slice(0, 2).map((m, i) => (
+          <CalendarGrid key={`${m.year}-${m.month}`} year={m.year} month={m.month} startDay={m.startDay} totalDays={m.totalDays} specials={m.specials} left={LEFTS[i]} />
+        ))
+      ) : (
+        <>
+          <CalendarGrid year={2026} month={5} startDay={4} totalDays={31} specials={MAY_SPECIALS} left={66} />
+          <CalendarGrid year={2026} month={6} startDay={1} totalDays={30} specials={JUN_SPECIALS} left={755} />
+        </>
+      )}
 
     </section>
   );

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { TakeoutHeader, TakeoutStepper, RedButton, OutlineButton, mincho, sans } from "./TakeoutShared";
-import { TAKEOUT_CATEGORIES, TAKEOUT_MENU, type TakeoutCategory, type TakeoutMenuItem } from "@/app/lib/takeoutData";
+import { type TakeoutMenuItem } from "@/app/lib/takeoutData";
 import type { CartLine } from "./TakeoutClient";
 
 const PANEL = "#171717";
@@ -13,8 +13,10 @@ const GOLD_BORDER = "rgba(221,168,63,0.6)";
 type Props = {
   height: number;
   onOpenModal: () => void;
-  activeCategory: TakeoutCategory;
-  onSelectCategory: (c: TakeoutCategory) => void;
+  menuItems: TakeoutMenuItem[];
+  categories: string[];
+  activeCategory: string;
+  onSelectCategory: (c: string) => void;
   cart: Record<string, number>;
   onSetQty: (id: string, qty: number) => void;
   cartLines: CartLine[];
@@ -25,7 +27,7 @@ type Props = {
 };
 
 export default function Step2Menu(p: Props) {
-  const items = TAKEOUT_MENU.filter((m) => m.category === p.activeCategory);
+  const items = p.menuItems.filter((m) => m.category === p.activeCategory);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", width: 1440, height: p.height, background: "#0a0a0a", overflow: "hidden" }}>
@@ -40,7 +42,7 @@ export default function Step2Menu(p: Props) {
       <div style={{ paddingLeft: 50, paddingRight: 50, paddingTop: 64 }}>
         <div style={{ width: 1340 }}>
           <div style={{ display: "flex" }}>
-            {TAKEOUT_CATEGORIES.map((c) => {
+            {p.categories.map((c) => {
               const active = c === p.activeCategory;
               return (
                 <button
@@ -54,7 +56,7 @@ export default function Step2Menu(p: Props) {
             })}
           </div>
           <div style={{ position: "relative", width: 1340, height: 2, background: "rgba(235,229,219,0.15)" }}>
-            <div style={{ position: "absolute", top: 0, left: `${(TAKEOUT_CATEGORIES.indexOf(p.activeCategory) * 100) / TAKEOUT_CATEGORIES.length}%`, width: `${100 / TAKEOUT_CATEGORIES.length}%`, height: 2, background: GOLD_BAR, transition: "left 0.25s ease" }} />
+            <div style={{ position: "absolute", top: 0, left: `${(p.categories.indexOf(p.activeCategory) * 100) / p.categories.length}%`, width: `${100 / p.categories.length}%`, height: 2, background: GOLD_BAR, transition: "left 0.25s ease" }} />
           </div>
         </div>
       </div>
