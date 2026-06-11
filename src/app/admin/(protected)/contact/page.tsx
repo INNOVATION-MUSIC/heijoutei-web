@@ -1,32 +1,61 @@
+import Link from 'next/link'
 import { adminSupabase } from '@/lib/supabase/admin'
 import MarkReadButton from '@/components/admin/MarkReadButton'
 
 export const dynamic = 'force-dynamic'
 
-export default async function AdminContactPage() {
+export default async function AdminContactPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ read?: string }>
+}) {
+  const { read } = await searchParams
+
   const { data: messages } = await adminSupabase
     .from('contact_messages')
     .select('*')
     .order('created_at', { ascending: false })
 
-  const unread = (messages ?? []).filter((m) => !m.is_read).length
+  const all = messages ?? []
+  const unread = all.filter((m) => !m.is_read).length
+  const filtered =
+    read === 'unread' ? all.filter((m) => !m.is_read)
+    : read === 'read' ? all.filter((m) => m.is_read)
+    : all
+
+  const filters = [
+    { key: '', label: `すべて (${all.length})` },
+    { key: 'unread', label: `未読 (${unread})` },
+    { key: 'read', label: `既読 (${all.length - unread})` },
+  ]
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-[#ebe5db]">お問い合わせ管理</h1>
-        <p className="text-sm text-[#6f6f80]">全 {messages?.length ?? 0} 件 / 未読 {unread} 件</p>
+        <p className="text-sm text-[#6f6f80]">全 {all.length} 件 / 未読 {unread} 件</p>
+      </div>
+
+      {/* 未読/既読フィルター */}
+      <div className="flex flex-wrap gap-2">
+        {filters.map((f) => {
+          const active = (read ?? '') === f.key
+          const href = f.key ? `/admin/contact?read=${f.key}` : '/admin/contact'
+          return (
+            <Link key={f.key} href={href} className={`rounded-full border px-3 py-1.5 text-xs ${active ? 'border-[#d9b86b] bg-[#d9b86b]/15 text-[#ebe5db]' : 'border-[#2f2f3c] text-[#9a9aa8] hover:text-[#ebe5db]'}`}>{f.label}</Link>
+          )
+        })}
       </div>
 
       <div className="space-y-3">
-        {(messages ?? []).map((m) => (
-          <details key={m.id} className={`group rounded-xl border bg-[#14141a] ${m.is_read ? 'border-[#23232e]' : 'border-l-2 border-l-blue-500 border-[#23232e]'}`}>
+        {filtered.map((m) => (
+          <details key={m.id} className={`group rounded-xl border ${m.is_read ? 'border-[#23232e] bg-[#14141a]' : 'border-l-2 border-l-blue-500 border-[#23232e] bg-blue-500/[0.06]'}`}>
             <summary className="flex cursor-pointer items-center gap-3 px-5 py-4">
-              {!m.is_read && <span className="h-2 w-2 flex-shrink-0 rounded-full bg-blue-500" />}
+              {!m.is_read && <span className="flex-shrink-0 rounded bg-blue-500/20 px-1.5 py-0.5 text-[10px] font-bold tracking-wide text-blue-400">未読</span>}
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-medium text-[#ebe5db]">
+                <p className={`truncate text-sm text-[#ebe5db] ${m.is_read ? 'font-medium' : 'font-bold'}`}>
                   {m.name}
-                  {m.subject ? <span className="ml-2 text-[#9a9aa8]">{m.subject}</span> : null}
+                  {m.subject ? <span className="ml-2 font-normal text-[#9a9aa8]">{m.subject}</span> : null}
                 </p>
                 <p className="truncate text-xs text-[#6f6f80]">{m.email} ・ {m.created_at ? new Date(m.created_at).toLocaleString('ja-JP') : ''}</p>
               </div>
@@ -49,8 +78,10 @@ export default async function AdminContactPage() {
             </div>
           </details>
         ))}
-        {(!messages || messages.length === 0) && (
-          <p className="rounded-xl border border-[#23232e] bg-[#14141a] px-5 py-10 text-center text-sm text-[#6f6f80]">お問い合わせはありません。</p>
+        {filtered.length === 0 && (
+          <p className="rounded-xl border border-[#23232e] bg-[#14141a] px-5 py-10 text-center text-sm text-[#6f6f80]">
+            {all.length === 0 ? 'お問い合わせはありません。' : '該当するお問い合わせはありません。'}
+          </p>
         )}
       </div>
     </div>

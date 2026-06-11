@@ -15,10 +15,21 @@ const STATUS_BADGE: Record<string, { label: string; cls: string }> = {
 export default async function AdminTakeoutOrdersPage({
   searchParams,
 }: {
-  searchParams: Promise<{ store?: string }>
+  searchParams: Promise<{ store?: string; read?: string }>
 }) {
-  const { store } = await searchParams
+  const { store, read } = await searchParams
   const today = new Date().toISOString().slice(0, 10)
+
+  // store / read を保ちつつ片方だけ差し替えたURLを作る
+  const buildHref = (next: { store?: string; read?: string }) => {
+    const sp = new URLSearchParams()
+    const s = 'store' in next ? next.store : store
+    const r = 'read' in next ? next.read : read
+    if (s) sp.set('store', s)
+    if (r) sp.set('read', r)
+    const qs = sp.toString()
+    return qs ? `/admin/takeout-orders?${qs}` : '/admin/takeout-orders'
+  }
 
   const { data: stores } = await adminSupabase.from('stores').select('id, name').order('sort_order')
 
@@ -44,9 +55,21 @@ export default async function AdminTakeoutOrdersPage({
   }
 
   const storeName = new Map((stores ?? []).map((s) => [s.id, s.name]))
-  const unread = (orders ?? []).filter((o) => !o.is_read).length
-  const todays = (orders ?? []).filter((o) => o.pickup_date === today)
+  const allOrders = orders ?? []
+  const unread = allOrders.filter((o) => !o.is_read).length
+  const todays = allOrders.filter((o) => o.pickup_date === today)
   const todayTotal = todays.reduce((sum, o) => sum + o.total_price, 0)
+
+  const filteredOrders =
+    read === 'unread' ? allOrders.filter((o) => !o.is_read)
+    : read === 'read' ? allOrders.filter((o) => o.is_read)
+    : allOrders
+
+  const readFilters = [
+    { key: '', label: `すべて (${allOrders.length})` },
+    { key: 'unread', label: `未読 (${unread})` },
+    { key: 'read', label: `既読 (${allOrders.length - unread})` },
+  ]
 
   return (
     <div className="space-y-6">
@@ -57,21 +80,31 @@ export default async function AdminTakeoutOrdersPage({
         </p>
       </div>
 
+      {/* 未読/既読フィルター */}
+      <div className="flex flex-wrap gap-2">
+        {readFilters.map((f) => {
+          const active = (read ?? '') === f.key
+          return (
+            <Link key={f.key} href={buildHref({ read: f.key || undefined })} className={`rounded-full border px-3 py-1.5 text-xs ${active ? 'border-[#d9b86b] bg-[#d9b86b]/15 text-[#ebe5db]' : 'border-[#2f2f3c] text-[#9a9aa8] hover:text-[#ebe5db]'}`}>{f.label}</Link>
+          )
+        })}
+      </div>
+
       {/* 店舗フィルター */}
       <div className="flex flex-wrap gap-2">
-        <Link href="/admin/takeout-orders" className={`rounded-full border px-3 py-1.5 text-xs ${!store ? 'border-[#d9b86b] bg-[#d9b86b]/15 text-[#ebe5db]' : 'border-[#2f2f3c] text-[#9a9aa8] hover:text-[#ebe5db]'}`}>すべて</Link>
+        <Link href={buildHref({ store: undefined })} className={`rounded-full border px-3 py-1.5 text-xs ${!store ? 'border-[#d9b86b] bg-[#d9b86b]/15 text-[#ebe5db]' : 'border-[#2f2f3c] text-[#9a9aa8] hover:text-[#ebe5db]'}`}>すべて</Link>
         {(stores ?? []).map((s) => (
-          <Link key={s.id} href={`/admin/takeout-orders?store=${s.id}`} className={`rounded-full border px-3 py-1.5 text-xs ${store === s.id ? 'border-[#d9b86b] bg-[#d9b86b]/15 text-[#ebe5db]' : 'border-[#2f2f3c] text-[#9a9aa8] hover:text-[#ebe5db]'}`}>{s.name}</Link>
+          <Link key={s.id} href={buildHref({ store: s.id })} className={`rounded-full border px-3 py-1.5 text-xs ${store === s.id ? 'border-[#d9b86b] bg-[#d9b86b]/15 text-[#ebe5db]' : 'border-[#2f2f3c] text-[#9a9aa8] hover:text-[#ebe5db]'}`}>{s.name}</Link>
         ))}
       </div>
 
       <div className="space-y-3">
-        {(orders ?? []).map((o) => (
-          <details key={o.id} className={`rounded-xl border bg-[#14141a] ${o.is_read ? 'border-[#23232e]' : 'border-l-2 border-l-blue-500 border-[#23232e]'}`}>
+        {filteredOrders.map((o) => (
+          <details key={o.id} className={`rounded-xl border ${o.is_read ? 'border-[#23232e] bg-[#14141a]' : 'border-l-2 border-l-blue-500 border-[#23232e] bg-blue-500/[0.06]'}`}>
             <summary className="flex cursor-pointer items-center gap-3 px-5 py-4">
-              {!o.is_read && <span className="h-2 w-2 flex-shrink-0 rounded-full bg-blue-500" />}
+              {!o.is_read && <span className="flex-shrink-0 rounded bg-blue-500/20 px-1.5 py-0.5 text-[10px] font-bold tracking-wide text-blue-400">未読</span>}
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-medium text-[#ebe5db]">
+                <p className={`truncate text-sm text-[#ebe5db] ${o.is_read ? 'font-medium' : 'font-bold'}`}>
                   {o.customer_name} 様 ・ {storeName.get(o.store_id) ?? ''}
                 </p>
                 <p className="truncate text-xs text-[#6f6f80]">受取 {o.pickup_date} {o.pickup_time} ・ {o.total_price.toLocaleString('ja-JP')}円</p>
@@ -103,8 +136,10 @@ export default async function AdminTakeoutOrdersPage({
             </div>
           </details>
         ))}
-        {(!orders || orders.length === 0) && (
-          <p className="rounded-xl border border-[#23232e] bg-[#14141a] px-5 py-10 text-center text-sm text-[#6f6f80]">注文はありません。</p>
+        {filteredOrders.length === 0 && (
+          <p className="rounded-xl border border-[#23232e] bg-[#14141a] px-5 py-10 text-center text-sm text-[#6f6f80]">
+            {allOrders.length === 0 ? '注文はありません。' : '該当する注文はありません。'}
+          </p>
         )}
       </div>
     </div>
