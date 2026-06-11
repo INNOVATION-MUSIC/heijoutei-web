@@ -1,14 +1,21 @@
 'use client'
 
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
+import PasswordInput from '@/components/admin/PasswordInput'
 
-export default function AdminLoginPage() {
+function AdminLoginForm() {
+  const searchParams = useSearchParams()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [error, setError] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(
+    searchParams.get('error') === 'auth'
+      ? 'リンクが無効か、有効期限が切れています。再度お試しください。'
+      : null
+  )
   const [loading, setLoading] = useState(false)
   const router = useRouter()
   const supabase = createClient()
@@ -52,12 +59,11 @@ export default function AdminLoginPage() {
           </div>
           <div>
             <label className="mb-1 block text-xs font-medium text-[#9a9aa8]">パスワード</label>
-            <input
-              type="password"
+            <PasswordInput
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full rounded-lg border border-[#2f2f3c] bg-[#0a0a0f] px-4 py-2.5 text-[#ebe5db] focus:border-[#d9b86b] focus:outline-none focus:ring-1 focus:ring-[#d9b86b]/40"
+              autoComplete="current-password"
             />
           </div>
           <button
@@ -68,7 +74,22 @@ export default function AdminLoginPage() {
             {loading ? 'ログイン中...' : 'ログイン'}
           </button>
         </form>
+
+        <Link
+          href="/admin/forgot-password"
+          className="mt-6 block text-center text-xs text-[#9a9aa8] transition-colors hover:text-[#d9b86b]"
+        >
+          パスワードをお忘れの方
+        </Link>
       </div>
     </div>
+  )
+}
+
+export default function AdminLoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <AdminLoginForm />
+    </Suspense>
   )
 }
