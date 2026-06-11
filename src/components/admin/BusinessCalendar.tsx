@@ -19,6 +19,10 @@ const STATUS_META: Record<CalStatus, { label: string; dot: string; mark: string 
   limited: { label: '時短・特別営業', dot: 'bg-[#d9b86b]', mark: '○' },
 }
 
+// 管理画面で選択可能なステータス（トップ Business days は定休日のみ表示するため、
+// 通常営業 open / 時短・特別営業 limited は選択肢から除外）。
+const SELECTABLE_STATUSES: CalStatus[] = ['closed', 'special_closed']
+
 function iso(y: number, m: number, d: number) {
   return `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`
 }
@@ -121,7 +125,7 @@ export default function BusinessCalendar({ storeId, storeName }: { storeId: stri
             })}
           </div>
           <div className="mt-4 flex flex-wrap gap-3 text-xs text-[#6f6f80]">
-            {(Object.keys(STATUS_META) as CalStatus[]).map((s) => (
+            {SELECTABLE_STATUSES.map((s) => (
               <span key={s} className="flex items-center gap-1"><span className={`h-2 w-2 rounded-full ${STATUS_META[s].dot}`} />{STATUS_META[s].label}</span>
             ))}
           </div>
@@ -139,13 +143,13 @@ export default function BusinessCalendar({ storeId, storeName }: { storeId: stri
               <div>
                 <label className="mb-1.5 block text-xs text-[#9a9aa8]">ステータス</label>
                 <select value={status} onChange={(e) => setStatus(e.target.value as CalStatus)} className="w-full rounded-lg border border-[#2f2f3c] bg-[#0a0a0f] px-3 py-2 text-sm text-[#ebe5db]">
-                  {(Object.keys(STATUS_META) as CalStatus[]).map((s) => (
+                  {SELECTABLE_STATUSES.map((s) => (
                     <option key={s} value={s}>{STATUS_META[s].label}（{STATUS_META[s].mark}）</option>
                   ))}
                 </select>
               </div>
               <div>
-                <label className="mb-1.5 block text-xs text-[#9a9aa8]">備考（「ランチのみ」「貸切」等）</label>
+                <label className="mb-1.5 block text-xs text-[#9a9aa8]">備考（「貸切」等）</label>
                 <input value={note} onChange={(e) => setNote(e.target.value)} className="w-full rounded-lg border border-[#2f2f3c] bg-[#0a0a0f] px-3 py-2 text-sm text-[#ebe5db]" />
               </div>
               <div className="flex gap-2">

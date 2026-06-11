@@ -1,7 +1,7 @@
 import { createStaticClient } from "@/lib/supabase/static";
 
 // フロント営業カレンダーの日種別（既存 CalendarSection の DayType と同一ユニオン）。
-export type BizDayType = "normal" | "teikyu" | "lunch";
+export type BizDayType = "normal" | "teikyu" | "rinji";
 
 export type BusinessMonth = {
   year: number;                          // 西暦（例: 2026）
@@ -12,14 +12,13 @@ export type BusinessMonth = {
 };
 
 // 管理画面 business_calendars.status → フロント表示種別。
-// open=通常 / closed=定休 / special_closed=臨時休業（赤＝定休扱い） / limited=時短・特別営業（ランチのみ扱い）。
+// closed=定休日 / special_closed=臨時休業。それ以外（open 等）は通常営業＝省略。
 function mapStatus(status: string): BizDayType {
   switch (status) {
     case "closed":
-    case "special_closed":
       return "teikyu";
-    case "limited":
-      return "lunch";
+    case "special_closed":
+      return "rinji";
     default:
       return "normal";
   }

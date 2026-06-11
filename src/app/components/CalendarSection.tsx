@@ -5,16 +5,16 @@ const mincho = "'Shippori Mincho', serif";
 const display = "'Cormorant Garamond', serif";
 const sans = "'Noto Sans JP', sans-serif";
 
-type DayType = "normal" | "teikyu" | "lunch";
+type DayType = "normal" | "teikyu" | "rinji";
 
 const MAY_SPECIALS: Record<number, DayType> = {
   6: "teikyu",
   12: "teikyu", 13: "teikyu", 14: "teikyu",
   20: "teikyu",
-  26: "lunch", 27: "teikyu",
+  27: "teikyu",
 };
 const JUN_SPECIALS: Record<number, DayType> = {
-  2: "teikyu", 9: "teikyu", 16: "teikyu", 23: "teikyu", 29: "lunch", 30: "teikyu",
+  2: "teikyu", 9: "teikyu", 16: "teikyu", 23: "teikyu", 30: "teikyu",
 };
 
 const DAYS = ["日", "月", "火", "水", "木", "金", "土"];
@@ -67,11 +67,11 @@ function CalendarGrid({ year, month, startDay, totalDays, specials, left }: {
             const status = day ? (specials[day] ?? "normal") : "normal";
             const isSun = di === 0;
             const isSat = di === 6;
-            const sub = status === "teikyu" ? "定休" : status === "lunch" ? "ランチのみ" : "";
+            const sub = status === "teikyu" ? "定休日" : status === "rinji" ? "臨時休業" : "";
             const highlightBg = status === "teikyu"
               ? "rgba(166,49,49,0.35)"
-              : status === "lunch"
-              ? "rgba(237,212,153,0.35)"
+              : status === "rinji"
+              ? "rgba(214,138,49,0.35)"
               : undefined;
 
             return (
@@ -88,7 +88,7 @@ function CalendarGrid({ year, month, startDay, totalDays, specials, left }: {
                     {sub && (
                       <p style={{
                         fontFamily: sans, fontWeight: 300, fontSize: 9,
-                        color: status === "lunch" ? "rgba(255,255,255,0.7)" : "rgba(184,178,173,0.7)",
+                        color: "rgba(184,178,173,0.7)",
                       }}>{sub}</p>
                     )}
                   </div>
@@ -119,9 +119,8 @@ export default function CalendarSection({ months }: { months?: BusinessMonth[] }
       {/* 凡例 */}
       <div className="absolute" style={{ left: 67, top: 241, display: "flex", alignItems: "center", gap: 30 }}>
         {[
-          { dot: "rgba(255,255,255,0.85)", label: "通常営業" },
-          { dot: "rgba(237,212,153,0.7)",  label: "ランチのみ" },
           { dot: "rgba(166,49,49,0.85)",   label: "定休日" },
+          { dot: "rgba(214,138,49,0.85)",  label: "臨時休業" },
         ].map(({ dot, label }) => (
           <div key={label} style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <span style={{ display: "inline-block", width: 10, height: 10, borderRadius: "50%", background: dot, flexShrink: 0 }} />

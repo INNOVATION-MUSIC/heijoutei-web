@@ -7,7 +7,7 @@ const mincho = "'Shippori Mincho', serif";
 const display = "'Cormorant Garamond', serif";
 const sans = "'Noto Sans JP', sans-serif";
 
-type DayType = "normal" | "teikyu" | "lunch";
+type DayType = "normal" | "teikyu" | "rinji";
 
 const MAY_SPECIALS: Record<number, DayType> = {
   5: "teikyu", 12: "teikyu", 19: "teikyu", 26: "teikyu",
@@ -103,15 +103,16 @@ function CalendarGrid({
           {week.map((day, di) => {
             const status = day ? (specials[day] ?? "normal") : "normal";
             const isTeikyu = status === "teikyu";
-            const isLunch = status === "lunch";
+            const isRinji = status === "rinji";
+            const isClosed = isTeikyu || isRinji;
             const isSun = di === 0;
             const isSat = di === 6;
             const bg = isTeikyu
               ? "rgba(166,49,49,0.35)"
-              : isLunch
-              ? "rgba(74,62,32,0.5)"
+              : isRinji
+              ? "rgba(214,138,49,0.35)"
               : "transparent";
-            const sub = isTeikyu ? "定休" : isLunch ? "ランチ" : "";
+            const sub = isTeikyu ? "定休日" : isRinji ? "臨時休業" : "";
 
             return (
               <div
@@ -120,7 +121,7 @@ function CalendarGrid({
                   textAlign: "center",
                   padding: "9px 0 7px",
                   backgroundColor: day ? bg : "transparent",
-                  borderRadius: day && (isTeikyu || isLunch) ? 2 : 0,
+                  borderRadius: day && isClosed ? 2 : 0,
                   minHeight: 38,
                 }}
               >
@@ -130,7 +131,7 @@ function CalendarGrid({
                       style={{
                         fontFamily: mincho,
                         fontSize: 13,
-                        color: isTeikyu
+                        color: isClosed
                           ? "#a6a199"
                           : isSun
                           ? "#cc6659"
@@ -249,9 +250,8 @@ export default function CalendarSectionSP({ months }: { months?: BusinessMonth[]
         }}
       >
         {[
-          { color: "#ffffff", label: "通常営業" },
-          { color: "#8a7a5a", label: "ランチのみ" },
           { color: "#cc6659", label: "定休日" },
+          { color: "#d68a31", label: "臨時休業" },
         ].map(({ color, label }) => (
           <div key={label} style={{ display: "flex", alignItems: "center", gap: 6 }}>
             <span
