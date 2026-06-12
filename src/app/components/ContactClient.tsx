@@ -62,6 +62,7 @@ export default function ContactClient() {
   // 送信
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [turnstileToken, setTurnstileToken] = useState("");
 
   const selectedStore = CONTACT_STORES.find((s) => s.name === form.store) ?? CONTACT_STORES[0];
 
@@ -82,7 +83,7 @@ export default function ContactClient() {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({ ...payload, turnstileToken }),
       });
       const json = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(json.error || "送信に失敗しました。");
@@ -115,6 +116,8 @@ export default function ContactClient() {
             onConfirm={handleConfirm}
             submitting={submitting}
             submitError={submitError}
+            onVerify={setTurnstileToken}
+            turnstileReady={!!turnstileToken}
           />
         )}
         {step === 3 && <ContactComplete height={CONTACT_HEIGHT} onOpenModal={openModal} tel={selectedStore.tel} />}

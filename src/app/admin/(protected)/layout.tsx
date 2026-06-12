@@ -1,4 +1,3 @@
-import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { adminSupabase } from '@/lib/supabase/admin'
@@ -12,25 +11,19 @@ export default async function AdminProtectedLayout({
 }: {
   children: React.ReactNode
 }) {
-  // クッキーベースの認証チェック（getUser() は環境によってネットワーク呼び出しで失敗しうるため使わない）
-  const cookieStore = await cookies()
-  const isLoggedIn = cookieStore
-    .getAll()
-    .some((c) => c.name.startsWith('sb-') && c.name.endsWith('-auth-token'))
+  // getUser() で Auth サーバにトークンを検証（署名・期限・失効）。
+  // 期限切れトークンは middleware（updateSession）で更新されるため getUser は安定動作する。
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
 
-  if (!isLoggedIn) {
+  if (!user) {
     redirect('/admin/login') // /admin/login は (protected) 外なので無限ループにならない
   }
 
-  // プロフィール取得
-  const supabase = await createClient()
-  const {
-    data: { session },
-  } = await supabase.auth.getSession()
-  const user = session?.user
-
   let profile: { full_name: string | null; role: string; avatar_url: string | null } | null = null
-  if (user) {
+  {
     const { data } = await adminSupabase
       .from('profiles')
       .select('full_name, role, avatar_url')

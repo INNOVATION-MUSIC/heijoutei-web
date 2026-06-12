@@ -2,6 +2,7 @@
 
 import { ContactHeader, OutlineButton, mincho, sans } from "./ContactShared";
 import type { ContactForm as ContactFormData } from "../ContactClient";
+import Turnstile, { turnstileEnabled } from "../Turnstile";
 
 const PANEL = "#171717";
 const HR = "rgba(235,229,219,0.12)";
@@ -14,6 +15,8 @@ type Props = {
   onConfirm: () => void;
   submitting: boolean;
   submitError: string | null;
+  onVerify: (token: string) => void;
+  turnstileReady: boolean;
 };
 
 export default function ContactConfirm(p: Props) {
@@ -53,7 +56,8 @@ export default function ContactConfirm(p: Props) {
         {p.submitError && (
           <p style={{ margin: 0, fontFamily: sans, fontSize: 13, color: "#e0726a", textAlign: "center" }}>{p.submitError}</p>
         )}
-        <OutlineButton label={p.submitting ? "送信中..." : "送信する"} onClick={p.onConfirm} disabled={p.submitting} width={200} />
+        {turnstileEnabled && <Turnstile onVerify={p.onVerify} />}
+        <OutlineButton label={p.submitting ? "送信中..." : "送信する"} onClick={p.onConfirm} disabled={p.submitting || (turnstileEnabled && !p.turnstileReady)} width={200} />
         <OutlineButton label="入力画面へ戻る" onClick={p.onBack} width={200} />
       </div>
 

@@ -1,8 +1,7 @@
 'use server'
 
 import { adminSupabase } from '@/lib/supabase/admin'
-import { createClient } from '@/lib/supabase/server'
-import { isAuthed } from '@/lib/auth-guard'
+import { requireAdmin } from '@/lib/auth-guard'
 import { revalidatePath } from 'next/cache'
 
 export type AdminUserRow = {
@@ -13,18 +12,10 @@ export type AdminUserRow = {
   created_at: string | null
 }
 
-// 呼び出し元が admin ロールであることを確認
-async function requireAdmin(): Promise<{ ok: true } | { ok: false; error: string }> {
-  if (!(await isAuthed())) return { ok: false, error: '認証が必要です' }
-  const supabase = await createClient()
-  const { data: { session } } = await supabase.auth.getSession()
-  if (!session?.user) return { ok: false, error: '認証が必要です' }
-  const { data: profile } = await adminSupabase.from('profiles').select('role').eq('id', session.user.id).single()
-  if (profile?.role !== 'admin') return { ok: false, error: '権限がありません（管理者のみ）' }
-  return { ok: true }
-}
-
 export async function getUsers(): Promise<AdminUserRow[]> {
+  // 直接 Server Action として呼ばれた場合に備えガード（メール一覧の漏洩防止）
+  const guard = await requireAdmin()
+  if (!guard.ok) return []
   const { data: profiles } = await adminSupabase
     .from('profiles')
     .select('id, full_name, role, created_at')

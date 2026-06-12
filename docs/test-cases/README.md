@@ -3,7 +3,7 @@
 CMS 管理画面・Supabase 連携・フロント動的化など **実装/検証が完了済みの機能** を対象としたテストケース仕様書です。
 未実装・据え置き・SP 未対応の機能（ミスリストの「未解決」項目）は対象外です。
 
-最終更新: 2026-06-11
+最終更新: 2026-06-12
 
 ---
 
@@ -50,8 +50,8 @@ CMS 管理画面・Supabase 連携・フロント動的化など **実装/検証
 
 | ファイル | 機能領域 | 主なプレフィックス |
 |----------|----------|--------------------|
-| [admin-auth.md](./admin-auth.md) | 管理画面の認証・ルートガード | AUTH |
-| [admin-news.md](./admin-news.md) | お知らせ CRUD（TipTap・タグ・公開状態） | NEWS |
+| [admin-auth.md](./admin-auth.md) | 認証・ルートガード・パスワード再設定・表示トグル・ブランド UI | AUTH / PWRESET / PWUI / BRAND |
+| [admin-news.md](./admin-news.md) | お知らせ CRUD（TipTap・タグ・公開状態）・ダッシュボード | NEWS / DASH |
 | [admin-stores.md](./admin-stores.md) | 店舗 CRUD（画像・並び順・マスタ連動） | STORE |
 | [admin-menu.md](./admin-menu.md) | メニュー / コース / テイクアウトメニュー / カテゴリ | MENU / COURSE / TKMENU / CAT |
 | [admin-recruit.md](./admin-recruit.md) | 採用情報 CRUD | RCRT |
@@ -59,6 +59,7 @@ CMS 管理画面・Supabase 連携・フロント動的化など **実装/検証
 | [admin-media-users.md](./admin-media-users.md) | メディア(Storage)・ユーザー管理(admin限定) | MEDIA / USER |
 | [front-dynamic.md](./front-dynamic.md) | フロント動的化（DB描画・店舗別切替・フォールバック・ISR） | FRONT |
 | [api-contact-takeout.md](./api-contact-takeout.md) | /api/contact・/api/takeout（INSERT・メール・検証） | API |
+| [security.md](./security.md) | 認証ハードニング・RLS/anon権限・Turnstile・Brevo・Cloudflare強化 | SEC |
 
 ---
 
@@ -73,3 +74,7 @@ CMS 管理画面・Supabase 連携・フロント動的化など **実装/検証
 | 'use server' ファイルの同期 export 不可 | admin-menu | 2026-06-11 |
 | .env の `$` 未エスケープで SMTP_PASS が欠落 | api-contact-takeout | 2026-06-08 |
 | DB 空時の静的フォールバック | front-dynamic | 2026-06-11 |
+| パスワード再設定失敗を一律「リンク失効」に丸めていた（真因は同一PW） | admin-auth | 2026-06-12 |
+| 未登録メールでも成功扱い → 送信前にサーバー側で存在照合 | admin-auth | 2026-06-12 |
+| `useSearchParams` を `Suspense` でラップせずビルドエラー | admin-auth | 2026-06-11 |
+| Brevo SMTP リレー移行で実メールが受信トレイに届く（隔離解消） | api-contact-takeout | 2026-06-12 |

@@ -117,6 +117,7 @@ export default function TakeoutClient({
   // 注文確定（メール送信）
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [turnstileToken, setTurnstileToken] = useState("");
 
   const handleConfirm = async () => {
     setSubmitting(true);
@@ -136,7 +137,7 @@ export default function TakeoutClient({
       const res = await fetch("/api/takeout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({ ...payload, turnstileToken }),
       });
       const json = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(json.error || "送信に失敗しました。");
@@ -244,6 +245,8 @@ export default function TakeoutClient({
             onConfirm={handleConfirm}
             submitting={submitting}
             submitError={submitError}
+            onVerify={setTurnstileToken}
+            turnstileReady={!!turnstileToken}
           />
         )}
         {step === 5 && <Step5Complete height={height} onOpenModal={openModal} store={store} />}

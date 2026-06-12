@@ -3,6 +3,7 @@
 import { TakeoutHeader, TakeoutStepper, RedButton, OutlineButton, mincho, sans } from "./TakeoutShared";
 import { formatJpDate, type TakeoutStore } from "@/app/lib/takeoutData";
 import type { CartLine, TakeoutForm } from "./TakeoutClient";
+import Turnstile, { turnstileEnabled } from "../Turnstile";
 
 const PANEL = "#171717";
 const GOLD_BAR = "rgba(217,184,107,0.8)";
@@ -21,6 +22,8 @@ type Props = {
   onConfirm: () => void;
   submitting: boolean;
   submitError: string | null;
+  onVerify: (token: string) => void;
+  turnstileReady: boolean;
 };
 
 export default function Step4Confirm(p: Props) {
@@ -91,7 +94,8 @@ export default function Step4Confirm(p: Props) {
         {p.submitError && (
           <p style={{ margin: 0, fontFamily: sans, fontSize: 13, color: "#e0726a", textAlign: "center" }}>{p.submitError}</p>
         )}
-        <RedButton label={p.submitting ? "送信中..." : "予約を確定する"} onClick={p.onConfirm} disabled={p.submitting} width={210} />
+        {turnstileEnabled && <Turnstile onVerify={p.onVerify} />}
+        <RedButton label={p.submitting ? "送信中..." : "予約を確定する"} onClick={p.onConfirm} disabled={p.submitting || (turnstileEnabled && !p.turnstileReady)} width={210} />
         <OutlineButton label="情報入力へ戻る" onClick={p.onBack} width={172} />
       </div>
 
