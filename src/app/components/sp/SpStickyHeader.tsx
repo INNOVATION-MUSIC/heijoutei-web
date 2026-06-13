@@ -19,6 +19,8 @@ const LOGO_H_SMALL = 44;
 const PADDING_TOP_SMALL = 6;
 
 const EASING = "0.35s ease";
+const MENU_BTN_W = 28;
+const MENU_LINE_W = 20;
 
 interface Props {
   onOpenMenu: () => void;
@@ -109,22 +111,28 @@ export default function SpStickyHeader({ onOpenMenu }: Props) {
             border: "none",
             cursor: "pointer",
             padding: 0,
+            width: MENU_BTN_W,
             display: "flex",
             flexDirection: "column",
-            alignItems: "flex-end",
+            alignItems: "center",
             gap: 5,
             pointerEvents: "auto",
           }}
         >
-          <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
-            <div style={{ width: 20, height: 1, backgroundColor: "#fff" }} />
-            <div style={{ width: 20, height: 1, backgroundColor: "#fff" }} />
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 9, width: "100%" }}>
+            <div style={{ width: MENU_LINE_W, height: 1, backgroundColor: "#fff" }} />
+            <div style={{ width: MENU_LINE_W, height: 1, backgroundColor: "#fff" }} />
           </div>
           <span
             style={{
+              display: "block",
+              width: "100%",
+              boxSizing: "border-box",
+              textAlign: "center",
               fontFamily: sans,
               fontSize: 7,
               letterSpacing: "0.2em",
+              paddingRight: "0.2em",
               color: "rgba(255,255,255,0.5)",
               lineHeight: 1,
             }}
