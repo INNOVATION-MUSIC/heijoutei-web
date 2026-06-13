@@ -44,10 +44,14 @@ function autoSlug(name: string): string {
 }
 
 export async function getCategories(kind: CategoryKind): Promise<Category[]> {
-  const { data } = await adminSupabase
+  let query = adminSupabase
     .from(tableFor(kind))
     .select('id, name, slug, is_active, sort_order')
     .order('sort_order', { ascending: true })
+  // ランチは /admin/lunch 専用画面で管理し、フロントが slug='lunch' 固定で依存するため
+  // カテゴリ管理（リネーム/削除/並べ替え）の対象から除外して事故を防ぐ
+  if (kind === 'menu') query = query.neq('slug', 'lunch')
+  const { data } = await query
   return data ?? []
 }
 

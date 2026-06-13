@@ -15,11 +15,6 @@ export type MenuItemInput = {
 export type StoreMenuPayload = {
   store_id: string
   category_id: string | null
-  section_title?: string | null
-  has_detail_page?: boolean
-  detail_slug?: string | null
-  detail_image_url?: string | null
-  detail_description?: string | null
   is_active?: boolean
   sort_order?: number
 }
@@ -36,11 +31,6 @@ function normalize(p: StoreMenuPayload) {
   return {
     store_id: p.store_id,
     category_id: p.category_id || null,
-    section_title: p.section_title?.trim() || null,
-    has_detail_page: p.has_detail_page ?? false,
-    detail_slug: p.detail_slug?.trim() || null,
-    detail_image_url: p.detail_image_url?.trim() || null,
-    detail_description: p.detail_description?.trim() || null,
     is_active: p.is_active ?? true,
     sort_order: p.sort_order ?? 0,
   }

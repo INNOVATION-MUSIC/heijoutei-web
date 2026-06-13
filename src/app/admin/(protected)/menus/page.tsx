@@ -11,19 +11,23 @@ export default async function AdminMenusPage({
 }) {
   const { store, category } = await searchParams
 
-  const [{ data: stores }, { data: cats }] = await Promise.all([
+  // ランチは専用画面（/admin/lunch）で管理するため、この一覧・絞り込みからは除外する
+  const [{ data: stores }, { data: cats }, { data: lunchCat }] = await Promise.all([
     adminSupabase.from('stores').select('id, name').order('sort_order'),
-    adminSupabase.from('menu_categories').select('id, name').order('sort_order'),
+    adminSupabase.from('menu_categories').select('id, name').neq('slug', 'lunch').order('sort_order'),
+    adminSupabase.from('menu_categories').select('id').eq('slug', 'lunch').maybeSingle(),
   ])
+  const lunchId = lunchCat?.id ?? null
 
   let query = adminSupabase
     .from('store_menus')
-    .select('id, store_id, category_id, section_title, has_detail_page, detail_slug, is_active, sort_order')
+    .select('id, store_id, category_id, is_active, sort_order')
     .order('store_id')
     .order('sort_order')
   if (store) query = query.eq('store_id', store)
   if (category) query = query.eq('category_id', category)
-  const { data: menus } = await query
+  const { data: rawMenus } = await query
+  const menus = (rawMenus ?? []).filter((m) => m.category_id !== lunchId)
 
   // 品目数
   const ids = (menus ?? []).map((m) => m.id)
@@ -41,7 +45,7 @@ export default async function AdminMenusPage({
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-[#ebe5db]">メニュー管理</h1>
-          <p className="text-sm text-[#6f6f80]">店舗×カテゴリのメニューセクション（誘導バナー含む）</p>
+          <p className="text-sm text-[#6f6f80]">店舗×カテゴリのメニューセクション</p>
         </div>
         <Link href="/admin/menus/new" className="inline-flex items-center gap-2 rounded-lg bg-[#d9b86b] px-4 py-2 text-sm font-medium text-[#1a1410] hover:opacity-90">
           ＋ 新規メニュー
@@ -73,7 +77,6 @@ export default async function AdminMenusPage({
             <tr className="border-b border-[#23232e] bg-[#1a1a22] text-left text-xs text-[#6f6f80]">
               <th className="px-4 py-3 font-medium">店舗</th>
               <th className="px-4 py-3 font-medium">カテゴリ</th>
-              <th className="px-4 py-3 font-medium">種別</th>
               <th className="px-4 py-3 font-medium">品目数</th>
               <th className="px-4 py-3 font-medium">状態</th>
               <th className="px-4 py-3 text-right font-medium">操作</th>
@@ -83,15 +86,8 @@ export default async function AdminMenusPage({
             {(menus ?? []).map((m) => (
               <tr key={m.id} className="border-b border-[#1d1d26] last:border-0 hover:bg-white/[0.02]">
                 <td className="px-4 py-3 text-[#9a9aa8]">{storeName.get(m.store_id) ?? '—'}</td>
-                <td className="px-4 py-3 text-[#ebe5db]">{m.category_id ? catName.get(m.category_id) : (m.section_title || '—')}</td>
-                <td className="px-4 py-3">
-                  {m.has_detail_page ? (
-                    <span className="rounded-full bg-blue-900/30 px-2 py-0.5 text-xs text-blue-300">誘導バナー（{m.detail_slug ?? '-'}）</span>
-                  ) : (
-                    <span className="text-xs text-[#6f6f80]">メニュー</span>
-                  )}
-                </td>
-                <td className="px-4 py-3 text-[#9a9aa8]">{m.has_detail_page ? '—' : (countByMenu.get(m.id) ?? 0)}</td>
+                <td className="px-4 py-3 text-[#ebe5db]">{m.category_id ? catName.get(m.category_id) : '—'}</td>
+                <td className="px-4 py-3 text-[#9a9aa8]">{countByMenu.get(m.id) ?? 0}</td>
                 <td className="px-4 py-3">
                   {m.is_active ? (
                     <span className="rounded-full bg-green-900/30 px-2 py-0.5 text-xs text-green-400">公開中</span>
@@ -102,13 +98,13 @@ export default async function AdminMenusPage({
                 <td className="px-4 py-3 text-right">
                   <div className="flex items-center justify-end gap-3">
                     <Link href={`/admin/menus/${m.id}/edit`} className="text-xs text-[#d9b86b] hover:underline">編集</Link>
-                    <MenuDeleteButton id={m.id} label={(storeName.get(m.store_id) ?? '') + ' / ' + (m.category_id ? catName.get(m.category_id) ?? '' : m.section_title ?? '')} />
+                    <MenuDeleteButton id={m.id} label={(storeName.get(m.store_id) ?? '') + ' / ' + (m.category_id ? catName.get(m.category_id) ?? '' : '')} />
                   </div>
                 </td>
               </tr>
             ))}
             {(!menus || menus.length === 0) && (
-              <tr><td colSpan={6} className="px-4 py-10 text-center text-sm text-[#6f6f80]">メニューがありません。</td></tr>
+              <tr><td colSpan={5} className="px-4 py-10 text-center text-sm text-[#6f6f80]">メニューがありません。</td></tr>
             )}
           </tbody>
         </table>
