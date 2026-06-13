@@ -50,9 +50,8 @@ export default function AdminForgotPasswordPage() {
 
         {sent ? (
           <div className="space-y-4">
-            <p className="rounded-lg bg-emerald-900/30 px-4 py-3 text-sm leading-relaxed text-emerald-300">
-              パスワード再設定用のメールを送信しました。
-              <br />
+            <p className="rounded-lg bg-emerald-900/30 px-4 py-3 text-[13px] leading-relaxed text-emerald-300">
+              <span className="block whitespace-nowrap">パスワード再設定用のメールを送信しました。</span>
               メール内のリンクから再設定を行ってください。
             </p>
             <p className="text-xs leading-relaxed text-[#9a9aa8]">
