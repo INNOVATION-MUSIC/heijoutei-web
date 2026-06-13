@@ -1,5 +1,6 @@
 import MenuCourseClient from "@/app/components/MenuCourseClient";
 import { fetchCoursesByStore } from "@/app/lib/courseDb";
+import { fetchPublicStores } from "@/app/lib/storesDb";
 
 export const revalidate = 60;
 
@@ -9,6 +10,6 @@ export const metadata = {
 };
 
 export default async function MenuCoursePage() {
-  const coursesByStore = await fetchCoursesByStore();
-  return <MenuCourseClient coursesByStore={coursesByStore} />;
+  const [coursesByStore, stores] = await Promise.all([fetchCoursesByStore(), fetchPublicStores()]);
+  return <MenuCourseClient coursesByStore={coursesByStore} stores={stores} />;
 }

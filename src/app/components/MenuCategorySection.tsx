@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { MENU_CATEGORIES, type MenuCategory, type MenuPromo } from "@/app/lib/menuData";
+import { MENU_CATEGORIES, MENU_STORES, type MenuCategory, type MenuPromo } from "@/app/lib/menuData";
 import { SECTION_LINKS } from "@/app/lib/navLinks";
-import { MenuHeading, StoreTabs, useStoreParam, withStore, mincho, sans, display, PANEL, GOLD } from "./MenuShared";
+import { MenuHeading, StoreTabs, useStoreParam, withStore, mincho, sans, display, PANEL, GOLD, type StoreTab } from "./MenuShared";
 
 // カテゴリページ下部の3バナー（ランチ/テイクアウト/コース）。写真は既存アセットを流用。
 const PROMOS: MenuPromo[] = [
@@ -32,11 +32,11 @@ const PROMOS: MenuPromo[] = [
 ];
 
 /* ─────────── カテゴリカード（420×200・クリックで /menu/[slug]） ─────────── */
-function CategoryCard({ category, storeId }: { category: MenuCategory; storeId: string }) {
+function CategoryCard({ category, storeId, defaultStore }: { category: MenuCategory; storeId: string; defaultStore: string }) {
   const [hover, setHover] = useState(false);
   return (
     <a
-      href={withStore(`/menu/${category.slug}`, storeId)}
+      href={withStore(`/menu/${category.slug}`, storeId, defaultStore)}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       style={{
@@ -104,18 +104,19 @@ function PromoBanner({ promo }: { promo: MenuPromo }) {
  * /menu カテゴリページのメインコンテンツ（PC のみ・全高 3346px・フッターは別 ScaledSection）。
  * 共有コンポーネント（PageHeader/Footer/OutlineButton）は変更せず再利用。
  */
-export default function MenuCategorySection({ onOpenModal, categories }: { onOpenModal: () => void; categories?: MenuCategory[] }) {
+export default function MenuCategorySection({ onOpenModal, categories, stores }: { onOpenModal: () => void; categories?: MenuCategory[]; stores?: StoreTab[] }) {
   const cats = categories ?? MENU_CATEGORIES;
-  const [storeId, setStore] = useStoreParam();
+  const [storeId, setStore] = useStoreParam(stores);
+  const defaultStore = (stores && stores.length > 0 ? stores[0].id : MENU_STORES[0].id);
   return (
     <section style={{ display: "flex", flexDirection: "column", width: 1440, height: 3346, background: "#0a0a0a" }}>
       <MenuHeading onOpenModal={onOpenModal} />
-      <StoreTabs activeId={storeId} onSelect={setStore} />
+      <StoreTabs stores={stores} activeId={storeId} onSelect={setStore} />
 
       {/* カテゴリカードグリッド（3列×4行・gap40） */}
       <div style={{ display: "flex", flexWrap: "wrap", columnGap: 40, rowGap: 40, paddingLeft: 50, paddingRight: 50, paddingTop: 62 }}>
         {cats.map((c) => (
-          <CategoryCard key={c.slug} category={c} storeId={storeId} />
+          <CategoryCard key={c.slug} category={c} storeId={storeId} defaultStore={defaultStore} />
         ))}
       </div>
 

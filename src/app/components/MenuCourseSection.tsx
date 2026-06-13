@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { MenuHeading, StoreTabs, BackToMenuButton, mincho, sans, PANEL, GOLD } from "./MenuShared";
+import { MenuHeading, StoreTabs, BackToMenuButton, mincho, sans, PANEL, GOLD, type StoreTab } from "./MenuShared";
 import { COURSE_NOTES, type CourseItem } from "@/app/lib/menuData";
 
 /* ─────────── コースカード（420×576・写真上 + 見出し/価格/説明） ─────────── */
@@ -29,12 +29,14 @@ function CourseCard({ course }: { course: CourseItem }) {
 export default function MenuCourseSection({
   courses,
   storeId,
+  stores,
   onSelectStore,
   onOpenModal,
   height,
 }: {
   courses: CourseItem[];
   storeId: string;
+  stores?: StoreTab[];
   onSelectStore: (id: string) => void;
   onOpenModal: () => void;
   height: number;
@@ -42,7 +44,7 @@ export default function MenuCourseSection({
   return (
     <section style={{ display: "flex", flexDirection: "column", width: 1440, height, background: "#0a0a0a" }}>
       <MenuHeading onOpenModal={onOpenModal} />
-      <StoreTabs activeId={storeId} onSelect={onSelectStore} />
+      <StoreTabs stores={stores} activeId={storeId} onSelect={onSelectStore} />
 
       {/* 見出し（中央） */}
       <div style={{ display: "flex", justifyContent: "center", paddingTop: 64 }}>

@@ -1,5 +1,6 @@
 import MenuTakeoutClient from "@/app/components/MenuTakeoutClient";
 import { fetchTakeoutTabsByStore } from "@/app/lib/menuTakeoutDb";
+import { fetchPublicStores } from "@/app/lib/storesDb";
 
 export const revalidate = 60;
 
@@ -9,6 +10,6 @@ export const metadata = {
 };
 
 export default async function MenuTakeoutPage() {
-  const tabsByStore = await fetchTakeoutTabsByStore();
-  return <MenuTakeoutClient tabsByStore={tabsByStore} />;
+  const [tabsByStore, stores] = await Promise.all([fetchTakeoutTabsByStore(), fetchPublicStores()]);
+  return <MenuTakeoutClient tabsByStore={tabsByStore} stores={stores} />;
 }

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import OutlineButton from "./OutlineButton";
-import { MenuHeading, StoreTabs, ItemCard, BackToMenuButton, mincho, sans, display, PANEL, GOLD } from "./MenuShared";
+import { MenuHeading, StoreTabs, ItemCard, BackToMenuButton, mincho, sans, display, PANEL, GOLD, type StoreTab } from "./MenuShared";
 import { TAKEOUT_MENU_NOTE, TAKEOUT_MENU_CONTACT, type MenuItem, type TakeoutMenuTab } from "@/app/lib/menuData";
 import { SECTION_LINKS } from "@/app/lib/navLinks";
 
@@ -102,6 +102,7 @@ export default function MenuTakeoutSection({
   activeSlug,
   items,
   storeId,
+  stores,
   onSelectTab,
   onSelectStore,
   onOpenModal,
@@ -111,6 +112,7 @@ export default function MenuTakeoutSection({
   activeSlug: string;
   items: MenuItem[];
   storeId: string;
+  stores?: StoreTab[];
   onSelectTab: (slug: string) => void;
   onSelectStore: (id: string) => void;
   onOpenModal: () => void;
@@ -119,7 +121,7 @@ export default function MenuTakeoutSection({
   return (
     <section style={{ display: "flex", flexDirection: "column", width: 1440, height, background: "#0a0a0a" }}>
       <MenuHeading onOpenModal={onOpenModal} />
-      <StoreTabs activeId={storeId} onSelect={onSelectStore} />
+      <StoreTabs stores={stores} activeId={storeId} onSelect={onSelectStore} />
 
       {/* 見出し（中央） */}
       <div style={{ display: "flex", justifyContent: "center", paddingTop: 64 }}>

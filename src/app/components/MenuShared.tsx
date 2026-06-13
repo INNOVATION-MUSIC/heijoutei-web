@@ -6,25 +6,32 @@ import PageHeader from "./PageHeader";
 import OutlineButton from "./OutlineButton";
 import { MENU_STORES, type MenuItem } from "@/app/lib/menuData";
 
-const DEFAULT_STORE = MENU_STORES[0].id;
+// 受取店舗タブ1件分（id=slug）。DB 連動時は stores テーブル由来、未指定時は静的 MENU_STORES。
+export type StoreTab = { id: string; name: string };
+
+function tabsOf(stores?: readonly StoreTab[]): readonly StoreTab[] {
+  return stores && stores.length > 0 ? stores : MENU_STORES;
+}
 
 /**
  * 選択中の受取店舗を URL クエリ（?store=）で保持するフック。
  * メニューは店舗ごとに変わる想定のため、ページ遷移しても選択を維持できるよう URL を真実の値とする。
- * 既定店舗（亀岡）のときはクエリを付けない。
+ * 既定店舗（先頭店舗）のときはクエリを付けない。stores は DB 連動の店舗一覧（省略時は静的）。
  */
-export function useStoreParam(): [string, (id: string) => void] {
-  const [storeId, setStoreId] = useState<string>(DEFAULT_STORE);
+export function useStoreParam(stores?: readonly StoreTab[]): [string, (id: string) => void] {
+  const list = tabsOf(stores);
+  const defaultStore = list[0]?.id ?? "";
+  const [storeId, setStoreId] = useState<string>(defaultStore);
 
   useEffect(() => {
     const p = new URLSearchParams(window.location.search).get("store");
-    if (p && MENU_STORES.some((s) => s.id === p)) setStoreId(p);
-  }, []);
+    if (p && list.some((s) => s.id === p)) setStoreId(p);
+  }, [list]);
 
   const update = (id: string) => {
     setStoreId(id);
     const url = new URL(window.location.href);
-    if (id === DEFAULT_STORE) url.searchParams.delete("store");
+    if (id === defaultStore) url.searchParams.delete("store");
     else url.searchParams.set("store", id);
     window.history.replaceState({}, "", url);
   };
@@ -33,8 +40,8 @@ export function useStoreParam(): [string, (id: string) => void] {
 }
 
 /** リンク先に現在の店舗クエリを引き継ぐ（既定店舗のときは付けない）。 */
-export function withStore(href: string, storeId: string): string {
-  return storeId === DEFAULT_STORE ? href : `${href}?store=${storeId}`;
+export function withStore(href: string, storeId: string, defaultStore: string = MENU_STORES[0].id): string {
+  return storeId === defaultStore ? href : `${href}?store=${storeId}`;
 }
 
 export const mincho = "'Shippori Mincho', serif";
@@ -99,21 +106,23 @@ export function ItemCard({ item, priceAlign = "right" }: { item: MenuItem; price
   );
 }
 
-/* ─────────── 受取店舗タブ（5店舗・幅268×80・下線1340 / 金ハイライト268） ─────────── */
-export function StoreTabs({ activeId, onSelect }: { activeId: string; onSelect: (id: string) => void }) {
+/* ─────────── 受取店舗タブ（下線1340を店舗数で等分 / 金ハイライト） ─────────── */
+export function StoreTabs({ stores, activeId, onSelect }: { stores?: readonly StoreTab[]; activeId: string; onSelect: (id: string) => void }) {
   // 選択中の店舗（URL クエリ由来）。メニューは店舗ごとに変わる想定。
-  const active = Math.max(0, MENU_STORES.findIndex((s) => s.id === activeId));
+  const list = tabsOf(stores);
+  const active = Math.max(0, list.findIndex((s) => s.id === activeId));
+  const tabW = 1340 / list.length; // 店舗数で等分（5店舗なら従来どおり268）
   return (
     <div style={{ paddingLeft: 50, paddingRight: 50, paddingTop: 178 }}>
       <div style={{ position: "relative", width: 1340 }}>
         <div style={{ display: "flex" }}>
-          {MENU_STORES.map((s, i) => (
+          {list.map((s, i) => (
             <button
               key={s.id}
               type="button"
               onClick={() => onSelect(s.id)}
               style={{
-                width: 268,
+                width: tabW,
                 height: 80,
                 background: "transparent",
                 border: "none",
@@ -123,6 +132,7 @@ export function StoreTabs({ activeId, onSelect }: { activeId: string; onSelect: 
                 letterSpacing: "0.08em",
                 color: i === active ? "#ebe5db" : "#99948c",
                 transition: "color 0.3s ease",
+                whiteSpace: "nowrap",
               }}
             >
               {s.name}
@@ -131,7 +141,7 @@ export function StoreTabs({ activeId, onSelect }: { activeId: string; onSelect: 
         </div>
         {/* 下線（全幅）+ 金ハイライト（アクティブタブ下） */}
         <div style={{ position: "relative", width: 1340, height: 2, background: "rgba(234,229,219,0.15)" }}>
-          <div style={{ position: "absolute", top: 0, left: active * 268, width: 268, height: 2, background: GOLD, transition: "left 0.3s ease" }} />
+          <div style={{ position: "absolute", top: 0, left: active * tabW, width: tabW, height: 2, background: GOLD, transition: "left 0.3s ease" }} />
         </div>
       </div>
     </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { MenuHeading, StoreTabs, ItemCard, BackToMenuButton, mincho, sans } from "./MenuShared";
+import { MenuHeading, StoreTabs, ItemCard, BackToMenuButton, mincho, sans, type StoreTab } from "./MenuShared";
 import { type MenuItem } from "@/app/lib/menuData";
 
 /**
@@ -11,12 +11,14 @@ import { type MenuItem } from "@/app/lib/menuData";
 export default function MenuLunchSection({
   items,
   storeId,
+  stores,
   onSelectStore,
   onOpenModal,
   height,
 }: {
   items: MenuItem[];
   storeId: string;
+  stores?: StoreTab[];
   onSelectStore: (id: string) => void;
   onOpenModal: () => void;
   height: number;
@@ -24,7 +26,7 @@ export default function MenuLunchSection({
   return (
     <section style={{ display: "flex", flexDirection: "column", width: 1440, height, background: "#0a0a0a" }}>
       <MenuHeading onOpenModal={onOpenModal} />
-      <StoreTabs activeId={storeId} onSelect={onSelectStore} />
+      <StoreTabs stores={stores} activeId={storeId} onSelect={onSelectStore} />
 
       {/* 見出し（中央） */}
       <div style={{ display: "flex", justifyContent: "center", paddingTop: 64 }}>

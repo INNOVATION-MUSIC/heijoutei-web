@@ -1,5 +1,6 @@
 import MenuCategoryClient from "@/app/components/MenuCategoryClient";
 import { fetchMenuCategoriesFull } from "@/app/lib/menuDb";
+import { fetchPublicStores } from "@/app/lib/storesDb";
 
 export const revalidate = 60;
 
@@ -9,6 +10,6 @@ export const metadata = {
 };
 
 export default async function MenuPage() {
-  const categories = await fetchMenuCategoriesFull();
-  return <MenuCategoryClient categories={categories} />;
+  const [categories, stores] = await Promise.all([fetchMenuCategoriesFull(), fetchPublicStores()]);
+  return <MenuCategoryClient categories={categories} stores={stores} />;
 }

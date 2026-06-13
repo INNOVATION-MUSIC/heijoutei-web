@@ -1,5 +1,6 @@
 import MenuLunchClient from "@/app/components/MenuLunchClient";
 import { fetchLunchByStore } from "@/app/lib/menuDb";
+import { fetchPublicStores } from "@/app/lib/storesDb";
 
 export const revalidate = 60;
 
@@ -9,6 +10,6 @@ export const metadata = {
 };
 
 export default async function MenuLunchPage() {
-  const lunchByStore = await fetchLunchByStore();
-  return <MenuLunchClient lunchByStore={lunchByStore} />;
+  const [lunchByStore, stores] = await Promise.all([fetchLunchByStore(), fetchPublicStores()]);
+  return <MenuLunchClient lunchByStore={lunchByStore} stores={stores} />;
 }

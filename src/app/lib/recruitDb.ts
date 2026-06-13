@@ -1,14 +1,6 @@
 import { createStaticClient } from "@/lib/supabase/static";
-import { RECRUIT_JOBS, getRecruitJob, type RecruitJob, type RecruitTag, type RecruitRow } from "./recruitData";
-
-// 店舗 slug → 採用タブ名（RECRUIT_STORE_TABS の値と一致させる）
-const SLUG_TO_TAB: Record<string, string> = {
-  kameoka: "亀岡店",
-  sonobe: "園部店",
-  fukuchiyama: "福知山店",
-  yurano: "焼肉 ゆらの",
-  heijohtei: "ヘイジョウテイ",
-};
+import { fetchPublicStores } from "./storesDb";
+import { RECRUIT_JOBS, RECRUIT_STORE_TABS, getRecruitJob, type RecruitJob, type RecruitTag, type RecruitRow } from "./recruitData";
 
 function formatDate(iso: string | null): string {
   if (!iso) return "";
@@ -28,13 +20,13 @@ type RecruitRowDb = {
   summary: string | null;
   body: string | null;
   published_at: string | null;
-  stores: { slug: string; phone: string | null } | null;
+  stores: { slug: string; name: string; phone: string | null; is_active: boolean | null } | null;
   recruitment_tags: { label: string; color: string; sort_order: number | null }[];
   recruitment_details: { label: string; value: string; sort_order: number | null }[];
 };
 
 const SELECT =
-  "sort_order, title, image_url, hero_image_url, summary, body, published_at, stores(slug, phone), recruitment_tags(label, color, sort_order), recruitment_details(label, value, sort_order)";
+  "sort_order, title, image_url, hero_image_url, summary, body, published_at, stores!inner(slug, name, phone, is_active), recruitment_tags(label, color, sort_order), recruitment_details(label, value, sort_order)";
 
 function toJob(r: RecruitRowDb): RecruitJob {
   const tags: RecruitTag[] = (r.recruitment_tags ?? [])
@@ -45,7 +37,7 @@ function toJob(r: RecruitRowDb): RecruitJob {
     .map((d) => ({ label: d.label, value: d.value }));
   return {
     id: String(r.sort_order ?? ""),
-    store: r.stores ? (SLUG_TO_TAB[r.stores.slug] ?? r.stores.slug) : "",
+    store: r.stores?.name ?? "",
     img: r.image_url ?? "",
     heroImg: r.hero_image_url ?? undefined,
     date: formatDate(r.published_at),
@@ -65,6 +57,7 @@ export async function fetchRecruitList(): Promise<RecruitJob[]> {
       .from("recruitments")
       .select(SELECT)
       .eq("is_published", true)
+      .eq("stores.is_active", true)
       .order("sort_order", { ascending: true });
     if (error || !data || data.length === 0) return RECRUIT_JOBS;
     return (data as unknown as RecruitRowDb[]).map(toJob);
@@ -80,6 +73,7 @@ export async function fetchRecruitJob(id: string): Promise<RecruitJob | undefine
       .from("recruitments")
       .select(SELECT)
       .eq("is_published", true)
+      .eq("stores.is_active", true)
       .eq("sort_order", Number(id))
       .limit(1)
       .maybeSingle();
@@ -90,10 +84,22 @@ export async function fetchRecruitJob(id: string): Promise<RecruitJob | undefine
   }
 }
 
+// 採用ページの店舗タブを DB の店舗一覧（is_active・sort_order 順）から取得。
+// 求人の store（= stores.name）と一致させるため同じ name を返す。DB 空時は静的タブ。
+export async function fetchRecruitStoreTabs(): Promise<string[]> {
+  const stores = await fetchPublicStores();
+  if (stores.length === 0) return [...RECRUIT_STORE_TABS];
+  return stores.map((s) => s.name).filter(Boolean);
+}
+
 export async function fetchRecruitParams(): Promise<{ id: string }[]> {
   try {
     const supabase = createStaticClient();
-    const { data } = await supabase.from("recruitments").select("sort_order").eq("is_published", true);
+    const { data } = await supabase
+      .from("recruitments")
+      .select("sort_order, stores!inner(is_active)")
+      .eq("is_published", true)
+      .eq("stores.is_active", true);
     if (!data || data.length === 0) return RECRUIT_JOBS.map((j) => ({ id: j.id }));
     return data.map((r) => ({ id: String(r.sort_order ?? "") }));
   } catch {

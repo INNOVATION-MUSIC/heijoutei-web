@@ -28,10 +28,11 @@ function sectionHeight(n: number) {
  * 店舗タブで求人を絞り込み、件数に応じてセクション高さを可変にする。
  * SP はデザイン未確定のため未実装。予約モーダルは ScaledSection 外で一元管理。
  */
-export default function RecruitListClient({ allJobs }: { allJobs?: RecruitJob[] }) {
+export default function RecruitListClient({ allJobs, storeTabs }: { allJobs?: RecruitJob[]; storeTabs?: string[] }) {
   const source = allJobs ?? RECRUIT_JOBS;
+  const tabs = storeTabs && storeTabs.length > 0 ? storeTabs : [...RECRUIT_STORE_TABS];
   const [modalOpen, setModalOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<string>(RECRUIT_STORE_TABS[0]);
+  const [activeTab, setActiveTab] = useState<string>(tabs[0]);
 
   const openModal = () => setModalOpen(true);
   const closeModal = () => setModalOpen(false);
@@ -46,6 +47,7 @@ export default function RecruitListClient({ allJobs }: { allJobs?: RecruitJob[] 
           onOpenModal={openModal}
           height={height}
           jobs={jobs}
+          storeTabs={tabs}
           activeTab={activeTab}
           onSelectTab={setActiveTab}
           emptyHeight={EMPTY_H}

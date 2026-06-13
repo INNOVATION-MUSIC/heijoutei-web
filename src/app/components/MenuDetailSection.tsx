@@ -1,7 +1,7 @@
 "use client";
 
 import { MENU_CATEGORIES, type MenuCategory, type MenuItem } from "@/app/lib/menuData";
-import { MenuHeading, StoreTabs, ItemCard, BackToMenuButton, mincho, sans, GOLD } from "./MenuShared";
+import { MenuHeading, StoreTabs, ItemCard, BackToMenuButton, mincho, sans, GOLD, type StoreTab } from "./MenuShared";
 
 /* ─────────── カテゴリ切替タブ（2行・現在カテゴリは金で点灯・リロードせず切替） ─────────── */
 function CategoryNav({ current, onSelect }: { current: string; onSelect: (slug: string) => void }) {
@@ -50,6 +50,7 @@ export default function MenuDetailSection({
   category,
   items,
   storeId,
+  stores,
   onOpenModal,
   height,
   onSelectCategory,
@@ -58,6 +59,7 @@ export default function MenuDetailSection({
   category: MenuCategory;
   items: MenuItem[];
   storeId: string;
+  stores?: StoreTab[];
   onOpenModal: () => void;
   height: number;
   onSelectCategory: (slug: string) => void;
@@ -66,7 +68,7 @@ export default function MenuDetailSection({
   return (
     <section style={{ display: "flex", flexDirection: "column", width: 1440, height, background: "#0a0a0a" }}>
       <MenuHeading onOpenModal={onOpenModal} />
-      <StoreTabs activeId={storeId} onSelect={onSelectStore} />
+      <StoreTabs stores={stores} activeId={storeId} onSelect={onSelectStore} />
 
       {/* カテゴリ見出し（中央） */}
       <div style={{ display: "flex", justifyContent: "center", paddingTop: 64 }}>

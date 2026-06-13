@@ -1,9 +1,9 @@
 import RecruitListClient from "@/app/components/RecruitListClient";
-import { fetchRecruitList } from "@/app/lib/recruitDb";
+import { fetchRecruitList, fetchRecruitStoreTabs } from "@/app/lib/recruitDb";
 
 export const revalidate = 60;
 
 export default async function RecruitPage() {
-  const allJobs = await fetchRecruitList();
-  return <RecruitListClient allJobs={allJobs} />;
+  const [allJobs, storeTabs] = await Promise.all([fetchRecruitList(), fetchRecruitStoreTabs()]);
+  return <RecruitListClient allJobs={allJobs} storeTabs={storeTabs} />;
 }

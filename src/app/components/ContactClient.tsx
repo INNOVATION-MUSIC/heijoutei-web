@@ -11,6 +11,7 @@ import ContactConfirm from "./contact/ContactConfirm";
 import ContactComplete from "./contact/ContactComplete";
 
 import { CONTACT_STORES, INQUIRY_TYPES } from "@/app/lib/contactData";
+import type { PublicStore } from "@/app/lib/storesDb";
 import type { ContactPayload } from "@/app/lib/contactMail";
 
 const DESIGN_PC = 1440;
@@ -28,17 +29,19 @@ export type ContactForm = {
   agreed: boolean;
 };
 
-const EMPTY_FORM: ContactForm = {
-  name: "",
-  kana: "",
-  email: "",
-  emailConfirm: "",
-  phone: "",
-  inquiryType: INQUIRY_TYPES[0],
-  store: CONTACT_STORES[0].name,
-  message: "",
-  agreed: false,
-};
+function emptyForm(defaultStore: string): ContactForm {
+  return {
+    name: "",
+    kana: "",
+    email: "",
+    emailConfirm: "",
+    phone: "",
+    inquiryType: INQUIRY_TYPES[0],
+    store: defaultStore,
+    message: "",
+    agreed: false,
+  };
+}
 
 /**
  * /contact お問い合わせフロー（PC専用）。
@@ -46,13 +49,15 @@ const EMPTY_FORM: ContactForm = {
  * SP はデザイン未確定のため未実装（PC 設計を ScaledSection で縮小表示）。
  * 予約モーダルは ScaledSection 外で一元管理。
  */
-export default function ContactClient() {
+export default function ContactClient({ stores }: { stores?: PublicStore[] }) {
+  const storeList = stores && stores.length > 0 ? stores : CONTACT_STORES;
+
   const [modalOpen, setModalOpen] = useState(false);
   const openModal = () => setModalOpen(true);
   const closeModal = () => setModalOpen(false);
 
   const [step, setStep] = useState(1);
-  const [form, setForm] = useState<ContactForm>(EMPTY_FORM);
+  const [form, setForm] = useState<ContactForm>(() => emptyForm(storeList[0].name));
 
   const goStep = (n: number) => {
     setStep(n);
@@ -64,7 +69,7 @@ export default function ContactClient() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [turnstileToken, setTurnstileToken] = useState("");
 
-  const selectedStore = CONTACT_STORES.find((s) => s.name === form.store) ?? CONTACT_STORES[0];
+  const selectedStore = storeList.find((s) => s.name === form.store) ?? storeList[0];
 
   const handleConfirm = async () => {
     setSubmitting(true);
@@ -105,6 +110,7 @@ export default function ContactClient() {
             form={form}
             onChange={setForm}
             onNext={() => goStep(2)}
+            storeNames={storeList.map((s) => s.name)}
           />
         )}
         {step === 2 && (

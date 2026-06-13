@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import PageHeader from "./PageHeader";
-import { RECRUIT_STORE_TABS, type RecruitJob } from "@/app/lib/recruitData";
+import { type RecruitJob } from "@/app/lib/recruitData";
 
 const mincho = "'Shippori Mincho', serif";
 const sans = "'Noto Sans JP', sans-serif";
@@ -83,6 +83,7 @@ export default function RecruitListSection({
   onOpenModal,
   height,
   jobs,
+  storeTabs,
   activeTab,
   onSelectTab,
   emptyHeight,
@@ -90,6 +91,7 @@ export default function RecruitListSection({
   onOpenModal: () => void;
   height: number;
   jobs: RecruitJob[];
+  storeTabs: string[];
   activeTab: string;
   onSelectTab: (tab: string) => void;
   emptyHeight: number;
@@ -121,13 +123,13 @@ export default function RecruitListSection({
       {/* 店舗タブ（クリックで絞り込み・y=795） */}
       <div style={{ paddingLeft: 50, paddingRight: 50, paddingTop: 178 }}>
         <div style={{ display: "flex" }}>
-          {RECRUIT_STORE_TABS.map((tab) => {
+          {storeTabs.map((tab) => {
             const active = tab === activeTab;
             return (
               <button
                 key={tab}
                 onClick={() => onSelectTab(tab)}
-                style={{ width: 268, height: 80, display: "flex", alignItems: "center", justifyContent: "center", background: "transparent", cursor: "pointer", padding: 0, borderLeft: "none", borderRight: "none", borderTop: "none", borderBottom: active ? "2px solid rgba(217,184,107,0.8)" : "2px solid rgba(234,229,219,0.15)", transition: "border-color 0.25s ease, color 0.25s ease" }}
+                style={{ flex: 1, minWidth: 0, height: 80, display: "flex", alignItems: "center", justifyContent: "center", background: "transparent", cursor: "pointer", padding: 0, borderLeft: "none", borderRight: "none", borderTop: "none", borderBottom: active ? "2px solid rgba(217,184,107,0.8)" : "2px solid rgba(234,229,219,0.15)", transition: "border-color 0.25s ease, color 0.25s ease" }}
               >
                 <span style={{ fontFamily: mincho, fontSize: 20, fontWeight: active ? 600 : 400, letterSpacing: "2px", color: active ? "#ebe5db" : "rgba(235,229,219,0.45)", whiteSpace: "nowrap" }}>{tab}</span>
               </button>

@@ -1,7 +1,7 @@
 "use client";
 
 import { ContactHeader, OutlineButton, mincho, sans } from "./ContactShared";
-import { CONTACT_STORES, INQUIRY_TYPES } from "@/app/lib/contactData";
+import { INQUIRY_TYPES } from "@/app/lib/contactData";
 import type { ContactForm as ContactFormData } from "../ContactClient";
 
 const FIELD_BG = "#171717";
@@ -15,6 +15,7 @@ type Props = {
   form: ContactFormData;
   onChange: (f: ContactFormData) => void;
   onNext: () => void;
+  storeNames: string[];
 };
 
 export default function ContactForm(p: Props) {
@@ -52,7 +53,7 @@ export default function ContactForm(p: Props) {
           <Select value={f.inquiryType} onChange={(v) => set("inquiryType", v)} options={[...INQUIRY_TYPES]} />
         </Field>
         <Field label="ご利用予定店舗">
-          <Select value={f.store} onChange={(v) => set("store", v)} options={CONTACT_STORES.map((s) => s.name)} />
+          <Select value={f.store} onChange={(v) => set("store", v)} options={p.storeNames} />
         </Field>
         <Field label="お問合せ内容">
           <textarea

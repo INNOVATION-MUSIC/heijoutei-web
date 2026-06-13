@@ -6,7 +6,7 @@ import ReserveModal from "./ReserveModal";
 import StickyButton from "./StickyButton";
 import Footer from "./Footer";
 import MenuLunchSection from "./MenuLunchSection";
-import { useStoreParam } from "./MenuShared";
+import { useStoreParam, type StoreTab } from "./MenuShared";
 import { getLunchItems, type MenuItem } from "@/app/lib/menuData";
 
 const DESIGN_PC = 1440;
@@ -22,19 +22,19 @@ function lunchHeight(itemCount: number) {
  * /menu/lunch ランチメニューのクライアントラッパー（PC のみ）。
  * 店舗（?store=）に応じてメニュー内容を切り替える。SP はデザイン未確定のため未実装。
  */
-export default function MenuLunchClient({ lunchByStore }: { lunchByStore?: Record<string, MenuItem[]> }) {
+export default function MenuLunchClient({ lunchByStore, stores }: { lunchByStore?: Record<string, MenuItem[]>; stores?: StoreTab[] }) {
   const [modalOpen, setModalOpen] = useState(false);
   const openModal = () => setModalOpen(true);
   const closeModal = () => setModalOpen(false);
 
-  const [storeId, setStore] = useStoreParam();
+  const [storeId, setStore] = useStoreParam(stores);
   const items = lunchByStore?.[storeId] ?? getLunchItems(storeId);
   const height = lunchHeight(items.length);
 
   return (
     <>
       <ScaledSection designWidth={DESIGN_PC} height={height}>
-        <MenuLunchSection items={items} storeId={storeId} onSelectStore={setStore} onOpenModal={openModal} height={height} />
+        <MenuLunchSection items={items} storeId={storeId} stores={stores} onSelectStore={setStore} onOpenModal={openModal} height={height} />
       </ScaledSection>
       <ScaledSection designWidth={DESIGN_PC} height={600}>
         <Footer onOpenModal={openModal} />
