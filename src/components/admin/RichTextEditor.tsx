@@ -77,7 +77,7 @@ export default function RichTextEditor({ value, onChange }: { value: string; onC
     onUpdate: ({ editor }) => onChange(editor.getHTML()),
     editorProps: {
       attributes: {
-        class: 'prose prose-invert max-w-none min-h-60 px-4 py-3 focus:outline-none text-[#ebe5db]',
+        class: 'rte-content max-w-none min-h-60 px-4 py-3 focus:outline-none text-[#ebe5db]',
       },
     },
   })

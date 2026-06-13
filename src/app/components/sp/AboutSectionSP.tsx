@@ -38,8 +38,8 @@ export default function AboutSectionSP() {
       {/* About 見出し（縦書きラベル + About） */}
       <div style={{ display: "flex", alignItems: "flex-start", paddingLeft: 19, paddingTop: 73, gap: 33 }}>
         {/* 縦書きラベル「平壌亭について」 */}
-        <div style={{ width: 44, height: 144, border: "1px solid rgba(255,255,255,0.3)", display: "flex", justifyContent: "center", alignItems: "center", flexShrink: 0 }}>
-          <span style={{ writingMode: "vertical-rl" as const, whiteSpace: "nowrap", fontFamily: mincho, fontSize: 12, letterSpacing: "5px", color: "#fff", lineHeight: 1 }}>
+        <div style={{ boxSizing: "border-box", width: 44, height: 158, padding: "8px 7px", border: "1px solid rgba(255,255,255,0.3)", overflow: "hidden", flexShrink: 0, display: "flex", justifyContent: "center", alignItems: "center" }}>
+          <span style={{ margin: 0, writingMode: "vertical-rl" as const, whiteSpace: "nowrap", fontFamily: mincho, fontSize: 12, letterSpacing: "7px", lineHeight: "1", color: "#fff", transform: "translateY(4px)" }}>
             平壌亭について
           </span>
         </div>

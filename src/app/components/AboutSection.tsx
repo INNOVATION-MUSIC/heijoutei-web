@@ -24,8 +24,8 @@ export default function AboutSection({ onOpenModal }: { onOpenModal: () => void 
         {/* 左: ラベル + About */}
         <div style={{ display: "flex", gap: 49, alignItems: "flex-start", paddingTop: 17 }}>
           {/* 縦書きラベル「平壌亭について」 */}
-          <div style={{ width: 44, height: 144, border: "1px solid rgba(255,255,255,0.3)", display: "flex", justifyContent: "center", alignItems: "center" }}>
-            <span style={{ writingMode: "vertical-rl" as const, whiteSpace: "nowrap", fontFamily: mincho, fontSize: 12, letterSpacing: "8px", color: "#fff", lineHeight: 1 }}>
+          <div style={{ boxSizing: "border-box", width: 44, height: 158, padding: "8px 7px", border: "1px solid rgba(255,255,255,0.3)", overflow: "hidden", flexShrink: 0, display: "flex", justifyContent: "center", alignItems: "center" }}>
+            <span style={{ margin: 0, writingMode: "vertical-rl" as const, whiteSpace: "nowrap", fontFamily: mincho, fontSize: 12, letterSpacing: "7px", lineHeight: "1", color: "#fff", transform: "translateY(4px)" }}>
               平壌亭について
             </span>
           </div>

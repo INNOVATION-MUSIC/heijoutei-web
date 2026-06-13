@@ -1,18 +1,25 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import PageHeader from "./PageHeader";
-import { NEWS_LIST_DATA, newsBody, newsHero, type NewsListItem } from "@/app/lib/newsData";
+import { newsBody, newsHero, type NewsListItem } from "@/app/lib/newsData";
+
+type NavItem = { id: string; title: string };
 
 const mincho = "'Shippori Mincho', serif";
 const sans = "'Noto Sans JP', sans-serif";
+
+/** 本文が（TipTap 由来の）HTML か、静的フォールバックのプレーンテキストかを判定 */
+function isHtmlBody(body: string): boolean {
+  return /<\/?[a-z][\s\S]*>/i.test(body);
+}
 
 /**
  * 記事末尾の「前 / 次のお知らせ」リンク（Figma 外・サイトのデザインテイストで生成）。
  * 細身の矢印 SVG（news_arrow）＋ ゴールドのラベル＋明朝タイトル。ホバーで矢印がスライドしタイトルが発色。
  */
-function NavLink({ dir, item }: { dir: "prev" | "next"; item: NewsListItem }) {
+function NavLink({ dir, item }: { dir: "prev" | "next"; item: NavItem }) {
   const [hover, setHover] = useState(false);
   const isPrev = dir === "prev";
 
@@ -88,15 +95,34 @@ export default function NewsDetailSection({
   article,
   onOpenModal,
   height,
+  prev = null,
+  next = null,
+  onBodyMeasured,
 }: {
   article: NewsListItem;
   onOpenModal: () => void;
   height: number;
+  /** 前後のお知らせ（一覧の並び順から親が算出して渡す。DB 記事も静的記事も対応） */
+  prev?: NavItem | null;
+  next?: NavItem | null;
+  /** 本文の実測高さ（design 1440 幅でのpx）を親に通知し、全高算出に使わせる */
+  onBodyMeasured?: (h: number) => void;
 }) {
-  // 一覧順での前後（先頭は前なし・末尾は次なし）
-  const idx = NEWS_LIST_DATA.findIndex((n) => n.id === article.id);
-  const prev = idx > 0 ? NEWS_LIST_DATA[idx - 1] : null;
-  const next = idx >= 0 && idx < NEWS_LIST_DATA.length - 1 ? NEWS_LIST_DATA[idx + 1] : null;
+  const body = newsBody(article);
+  const bodyIsHtml = isHtmlBody(body);
+
+  // 本文 HTML は高さが可変（見出し・リスト・画像読み込み・Web フォント反映で変わる）。
+  // transform: scale() は offsetHeight に影響しないため、design 幅での実測値をそのまま親へ返す。
+  const bodyRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = bodyRef.current;
+    if (!el || !onBodyMeasured) return;
+    const report = () => onBodyMeasured(el.offsetHeight);
+    report();
+    const ro = new ResizeObserver(report);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [body, onBodyMeasured]);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", width: 1440, height, background: "#0a0a0a", overflow: "hidden" }}>
@@ -132,10 +158,26 @@ export default function NewsDetailSection({
         </div>
       </div>
 
-      {/* 本文 */}
-      <p style={{ paddingLeft: 259, paddingTop: 83, width: 1101, fontFamily: mincho, fontSize: 16, fontWeight: 400, letterSpacing: "1.5px", lineHeight: "34px", color: "#ebe5db", whiteSpace: "pre-wrap", margin: 0 }}>
-        {newsBody(article)}
-      </p>
+      {/* 本文（DB由来は TipTap の HTML を .rte-content で装飾描画／静的フォールバックはプレーンテキスト） */}
+      <div style={{ paddingLeft: 259, paddingTop: 83 }}>
+        <div
+          ref={bodyRef}
+          className={bodyIsHtml ? "rte-content" : undefined}
+          style={{
+            width: 1101,
+            fontFamily: mincho,
+            fontSize: 16,
+            fontWeight: 400,
+            letterSpacing: "1.5px",
+            lineHeight: "34px",
+            color: "#ebe5db",
+            ...(bodyIsHtml ? {} : { whiteSpace: "pre-wrap" }),
+          }}
+          {...(bodyIsHtml
+            ? { dangerouslySetInnerHTML: { __html: body } }
+            : { children: body })}
+        />
+      </div>
 
       {/* 本文中画像（980×640・任意） */}
       {article.bodyImg && (

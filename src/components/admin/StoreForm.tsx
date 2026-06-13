@@ -35,13 +35,11 @@ export default function StoreForm({ initial }: { initial?: Tables<'stores'> }) {
     closed_days: initial?.closed_days ?? '',
     access: initial?.access ?? '',
     description: initial?.description ?? '',
-    seat_count: initial?.seat_count ?? '',
     seat_description: initial?.seat_description ?? '',
     hero_image_url: initial?.hero_image_url ?? '',
     logo_image_url: initial?.logo_image_url ?? '',
     gallery_image_urls: initial?.gallery_image_urls ?? [],
     line_id: initial?.line_id ?? '',
-    google_map_url: initial?.google_map_url ?? '',
     is_active: initial?.is_active ?? true,
     is_coming_soon: initial?.is_coming_soon ?? false,
     sort_order: initial?.sort_order ?? 0,
@@ -49,8 +47,38 @@ export default function StoreForm({ initial }: { initial?: Tables<'stores'> }) {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  // 郵便番号は住所自動入力の補助のみ（DB 保存・フロント表示はしない）
+  const [postal, setPostal] = useState('')
+  const [zipLoading, setZipLoading] = useState(false)
+  const [zipError, setZipError] = useState<string | null>(null)
+
   function set<K extends keyof StorePayload>(key: K, val: StorePayload[K]) {
     setForm((f) => ({ ...f, [key]: val }))
+  }
+
+  // 郵便番号(7桁)から zipcloud で都道府県〜町域を取得し、住所欄に自動入力する
+  async function lookupAddress(raw: string) {
+    const zip = raw.replace(/[^0-9]/g, '')
+    if (zip.length !== 7) {
+      setZipError('郵便番号は7桁で入力してください')
+      return
+    }
+    setZipLoading(true)
+    setZipError(null)
+    try {
+      const res = await fetch(`https://zipcloud.ibsnet.co.jp/api/search?zipcode=${zip}`)
+      const json = await res.json()
+      const r = json?.results?.[0]
+      if (!r) {
+        setZipError('住所が見つかりませんでした')
+        return
+      }
+      set('address', `${r.address1}${r.address2}${r.address3}`)
+    } catch {
+      setZipError('住所の取得に失敗しました')
+    } finally {
+      setZipLoading(false)
+    }
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -103,6 +131,32 @@ export default function StoreForm({ initial }: { initial?: Tables<'stores'> }) {
           <div className="rounded-xl border border-[#23232e] bg-[#14141a] p-5">
             <h2 className="mb-4 text-sm font-semibold text-[#ebe5db]">店舗情報</h2>
             <div className="space-y-4">
+              <Field label="郵便番号（住所自動入力用・フロント非表示）" hint="7桁を入力すると住所欄に都道府県〜町域を自動入力。番地・建物名は続けて入力してください">
+                <>
+                  <div className="flex gap-2">
+                    <input
+                      className={inputClass}
+                      value={postal}
+                      inputMode="numeric"
+                      placeholder="例: 6210825（ハイフン不要）"
+                      onChange={(e) => {
+                        const v = e.target.value
+                        setPostal(v)
+                        if (v.replace(/[^0-9]/g, '').length === 7) lookupAddress(v)
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => lookupAddress(postal)}
+                      disabled={zipLoading}
+                      className="shrink-0 rounded-lg border border-[#2f2f3c] px-4 text-sm text-[#9a9aa8] transition-colors hover:text-[#ebe5db] disabled:opacity-50"
+                    >
+                      {zipLoading ? '検索中...' : '住所検索'}
+                    </button>
+                  </div>
+                  {zipError && <p className="mt-1 text-xs text-red-400">{zipError}</p>}
+                </>
+              </Field>
               <Field label="住所">
                 <input className={inputClass} value={form.address ?? ''} onChange={(e) => set('address', e.target.value)} />
               </Field>
@@ -120,22 +174,12 @@ export default function StoreForm({ initial }: { initial?: Tables<'stores'> }) {
               <Field label="アクセス">
                 <textarea className={`${inputClass} min-h-16`} value={form.access ?? ''} onChange={(e) => set('access', e.target.value)} />
               </Field>
-              <div className="grid grid-cols-2 gap-4">
-                <Field label="座席数" hint="例: 126席">
-                  <input className={inputClass} value={form.seat_count ?? ''} onChange={(e) => set('seat_count', e.target.value)} />
-                </Field>
-                <Field label="座席の説明">
-                  <input className={inputClass} value={form.seat_description ?? ''} onChange={(e) => set('seat_description', e.target.value)} />
-                </Field>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <Field label="LINE ID / URL">
-                  <input className={inputClass} value={form.line_id ?? ''} onChange={(e) => set('line_id', e.target.value)} />
-                </Field>
-                <Field label="Google マップ URL">
-                  <input className={inputClass} value={form.google_map_url ?? ''} onChange={(e) => set('google_map_url', e.target.value)} />
-                </Field>
-              </div>
+              <Field label="座席の説明" hint="店舗詳細ページの「お席」欄に表示">
+                <input className={inputClass} value={form.seat_description ?? ''} onChange={(e) => set('seat_description', e.target.value)} />
+              </Field>
+              <Field label="LINE ID / URL">
+                <input className={inputClass} value={form.line_id ?? ''} onChange={(e) => set('line_id', e.target.value)} />
+              </Field>
             </div>
           </div>
 
