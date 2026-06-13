@@ -11,6 +11,8 @@ export type Category = {
   slug: string
   is_active: boolean | null
   sort_order: number | null
+  // メニューカテゴリのみ。フロント /menu のカテゴリカード画像。takeout_categories には列なし。
+  card_image_url?: string | null
 }
 
 function tableFor(kind: CategoryKind) {
@@ -44,15 +46,17 @@ function autoSlug(name: string): string {
 }
 
 export async function getCategories(kind: CategoryKind): Promise<Category[]> {
+  // card_image_url はメニューカテゴリのみ存在する列
+  const cols = kind === 'menu' ? 'id, name, slug, is_active, sort_order, card_image_url' : 'id, name, slug, is_active, sort_order'
   let query = adminSupabase
     .from(tableFor(kind))
-    .select('id, name, slug, is_active, sort_order')
+    .select(cols)
     .order('sort_order', { ascending: true })
   // ランチは /admin/lunch 専用画面で管理し、フロントが slug='lunch' 固定で依存するため
   // カテゴリ管理（リネーム/削除/並べ替え）の対象から除外して事故を防ぐ
   if (kind === 'menu') query = query.neq('slug', 'lunch')
   const { data } = await query
-  return data ?? []
+  return (data ?? []) as unknown as Category[]
 }
 
 export async function createCategory(kind: CategoryKind, name: string, slug?: string) {
@@ -79,14 +83,18 @@ export async function createCategory(kind: CategoryKind, name: string, slug?: st
 export async function updateCategory(
   kind: CategoryKind,
   id: string,
-  patch: { name?: string; slug?: string; is_active?: boolean }
+  patch: { name?: string; slug?: string; is_active?: boolean; card_image_url?: string | null }
 ) {
   if (!(await isAuthed())) return { error: '認証が必要です' }
-  const update: { name?: string; slug?: string; is_active?: boolean } = {}
+  const update: { name?: string; slug?: string; is_active?: boolean; card_image_url?: string | null } = {}
   if (patch.name !== undefined) update.name = patch.name.trim()
   if (patch.slug !== undefined) update.slug = patch.slug.trim()
   if (patch.is_active !== undefined) update.is_active = patch.is_active
-  const { error } = await adminSupabase.from(tableFor(kind)).update(update).eq('id', id)
+  // card_image_url はメニューカテゴリのみ（takeout_categories には列が無いため除外）
+  if (patch.card_image_url !== undefined && kind === 'menu') update.card_image_url = patch.card_image_url || null
+  // tableFor が union 型のため、共通列だけの型にキャストして update（card_image_url は menu のみ実行時に含まれる）
+  const baseUpdate = update as { name?: string; slug?: string; is_active?: boolean }
+  const { error } = await adminSupabase.from(tableFor(kind)).update(baseUpdate).eq('id', id)
   if (error) return { error: error.message }
   revalidateFor(kind)
   return { success: true }

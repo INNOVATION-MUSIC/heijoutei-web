@@ -16,6 +16,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
+import CategoryImageCell from '@/components/admin/CategoryImageCell'
 import {
   createCategory,
   updateCategory,
@@ -59,6 +60,17 @@ function Row({
           ⠿
         </button>
       </td>
+      {kind === 'menu' && (
+        <td className="px-2 py-2">
+          <CategoryImageCell
+            value={cat.card_image_url}
+            onChange={(url) => {
+              onChange({ card_image_url: url })
+              updateCategory(kind, cat.id, { card_image_url: url })
+            }}
+          />
+        </td>
+      )}
       <td className="px-2 py-2">
         <input
           className={`${inputClass} w-full`}
@@ -169,6 +181,7 @@ export default function DraggableCategoryTable({
           <thead>
             <tr className="border-b border-[#23232e] bg-[#1a1a22] text-left text-xs text-[#6f6f80]">
               <th className="w-10 px-2 py-3"></th>
+              {kind === 'menu' && <th className="w-24 px-2 py-3 font-medium">カード画像</th>}
               <th className="px-2 py-3 font-medium">カテゴリ名</th>
               <th className="px-2 py-3 font-medium">スラッグ</th>
               <th className="w-16 px-2 py-3 text-center font-medium">表示</th>
