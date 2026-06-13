@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { getMonthSlots, saveDaySlot, type DaySlot, type SlotTime } from '@/lib/actions/takeout-slots'
+import { getMonthSlots, saveDaySlot, saveMonthSlots, type DaySlot, type SlotTime } from '@/lib/actions/takeout-slots'
 import { defaultTimeLabels } from '@/lib/takeout-times'
 import type { StoreRef } from '@/lib/actions/refs'
 
@@ -42,6 +42,8 @@ export default function TakeoutCalendar({ stores }: { stores: StoreRef[] }) {
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
   const [bulkCap, setBulkCap] = useState(DEFAULT_CAPACITY)
+  const [monthCap, setMonthCap] = useState(DEFAULT_CAPACITY)
+  const [monthSaving, setMonthSaving] = useState(false)
 
   const load = useCallback(async () => {
     if (!storeId) return
@@ -89,6 +91,20 @@ export default function TakeoutCalendar({ stores }: { stores: StoreRef[] }) {
     const result = await saveDaySlot(storeId, editing)
     setSaving(false)
     if (result?.error) { alert(result.error); return }
+    await load()
+  }
+
+  // 月単位の一括設定：基本は「全日を受付」にし、停止したい日だけ後からクリックで止める運用
+  async function handleMonthBulk(mode: 'open' | 'closed') {
+    if (!storeId || monthSaving) return
+    const verb = mode === 'open' ? '受付' : '受付停止'
+    if (!confirm(`${year}年${month}月のすべての日を「${verb}」に設定します。\n個別に設定済みの日も上書きされます。よろしいですか？`)) return
+    setMonthSaving(true)
+    const result = await saveMonthSlots(storeId, year, month, mode, monthCap)
+    setMonthSaving(false)
+    if (result?.error) { alert(result.error); return }
+    setSelected(null)
+    setEditing(null)
     await load()
   }
 
@@ -159,6 +175,38 @@ export default function TakeoutCalendar({ stores }: { stores: StoreRef[] }) {
             <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-green-500" />受付あり</span>
             <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-red-500" />停止</span>
             <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-[#5a5a6a]" />全枠OFF</span>
+          </div>
+
+          {/* この月を一括設定（全日選択）。基本は全日受付にして、停止日だけ後でクリック */}
+          <div className="mt-4 border-t border-[#23232e] pt-4">
+            <p className="mb-2 text-xs text-[#6f6f80]">この月（{month}月）を一括設定</p>
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                onClick={() => handleMonthBulk('open')}
+                disabled={monthSaving || loading}
+                className="rounded-md border border-green-700/50 bg-green-900/20 px-3 py-1.5 text-xs text-green-300 hover:bg-green-900/40 disabled:opacity-50"
+              >
+                全日を受付
+              </button>
+              <button
+                onClick={() => handleMonthBulk('closed')}
+                disabled={monthSaving || loading}
+                className="rounded-md border border-red-800/50 bg-red-900/20 px-3 py-1.5 text-xs text-red-300 hover:bg-red-900/40 disabled:opacity-50"
+              >
+                全日を停止
+              </button>
+              <div className="flex items-center gap-1 text-xs text-[#6f6f80]">
+                <span>定員</span>
+                <input
+                  type="number"
+                  value={monthCap}
+                  onChange={(e) => setMonthCap(Number(e.target.value))}
+                  min={0}
+                  className="w-16 rounded-md border border-[#2f2f3c] bg-[#0a0a0f] px-2 py-1 text-xs text-[#ebe5db]"
+                />
+              </div>
+              {monthSaving && <span className="text-xs text-[#6f6f80]">設定中…</span>}
+            </div>
           </div>
         </div>
 

@@ -22,15 +22,17 @@ export default function SimpleTagsEditor({ tags, onChange }: { tags: TagInput[];
   return (
     <div className="space-y-3">
       {tags.map((t, idx) => (
-        <div key={idx} className="flex items-center gap-2">
-          <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium text-white" style={{ backgroundColor: t.color }}>{t.label || 'タグ'}</span>
-          <input className={`${inputClass} flex-1`} value={t.label} onChange={(e) => update(idx, { label: e.target.value })} placeholder="ラベル" />
-          <div className="flex items-center gap-1">
+        <div key={idx} className="space-y-2 rounded-lg border border-[#23232e] bg-[#0f0f15] p-2.5">
+          <div className="flex items-center gap-2">
+            <span className="inline-flex flex-shrink-0 items-center rounded-full px-2.5 py-0.5 text-xs font-medium text-white" style={{ backgroundColor: t.color }}>{t.label || 'タグ'}</span>
+            <input className={`${inputClass} min-w-0 flex-1`} value={t.label} onChange={(e) => update(idx, { label: e.target.value })} placeholder="ラベル" />
+            <button type="button" onClick={() => remove(idx)} className="flex-shrink-0 text-xs text-red-400/80 hover:text-red-400">削除</button>
+          </div>
+          <div className="flex flex-wrap items-center gap-1.5">
             {PALETTE.map((c) => (
               <button key={c} type="button" onClick={() => update(idx, { color: c })} className={`h-5 w-5 rounded-full border ${t.color === c ? 'border-white' : 'border-transparent'}`} style={{ backgroundColor: c }} aria-label={c} />
             ))}
           </div>
-          <button type="button" onClick={() => remove(idx)} className="text-xs text-red-400/80 hover:text-red-400">削除</button>
         </div>
       ))}
       <div className="flex flex-wrap gap-2">
