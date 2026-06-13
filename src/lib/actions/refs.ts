@@ -7,9 +7,11 @@ export type CategoryRef = { id: string; name: string; slug: string }
 
 // 各管理フォームのプルダウン用。店舗マスタが単一マスタなので各所で再利用する。
 export async function getStoreRefs(): Promise<StoreRef[]> {
+  // 非公開（is_active=false）の店舗は各フォームの選択肢に出さない。
   const { data } = await adminSupabase
     .from('stores')
     .select('id, name, slug')
+    .eq('is_active', true)
     .order('sort_order', { ascending: true })
   return data ?? []
 }

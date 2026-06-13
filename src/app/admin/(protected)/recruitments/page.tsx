@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic'
 export default async function AdminRecruitmentsPage() {
   const [{ data: recruits }, { data: stores }] = await Promise.all([
     adminSupabase.from('recruitments').select('id, store_id, title, is_published, sort_order').order('store_id').order('sort_order'),
-    adminSupabase.from('stores').select('id, name'),
+    adminSupabase.from('stores').select('id, name').eq('is_active', true),
   ])
   const storeName = new Map((stores ?? []).map((s) => [s.id, s.name]))
 

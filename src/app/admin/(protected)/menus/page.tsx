@@ -13,7 +13,7 @@ export default async function AdminMenusPage({
 
   // ランチは専用画面（/admin/lunch）で管理するため、この一覧・絞り込みからは除外する
   const [{ data: stores }, { data: cats }, { data: lunchCat }] = await Promise.all([
-    adminSupabase.from('stores').select('id, name').order('sort_order'),
+    adminSupabase.from('stores').select('id, name').eq('is_active', true).order('sort_order'),
     adminSupabase.from('menu_categories').select('id, name').neq('slug', 'lunch').order('sort_order'),
     adminSupabase.from('menu_categories').select('id').eq('slug', 'lunch').maybeSingle(),
   ])

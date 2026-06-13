@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic'
 // 店舗ごとのランチを一覧・編集する専用ビューとして見せる（データ構造は通常メニューと共通）。
 export default async function AdminLunchPage() {
   const [{ data: stores }, { data: lunchCat }] = await Promise.all([
-    adminSupabase.from('stores').select('id, name').order('sort_order'),
+    adminSupabase.from('stores').select('id, name').eq('is_active', true).order('sort_order'),
     adminSupabase.from('menu_categories').select('id').eq('slug', 'lunch').maybeSingle(),
   ])
   const lunchId = lunchCat?.id ?? null

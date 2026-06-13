@@ -31,7 +31,7 @@ export default async function AdminTakeoutOrdersPage({
     return qs ? `/admin/takeout-orders?${qs}` : '/admin/takeout-orders'
   }
 
-  const { data: stores } = await adminSupabase.from('stores').select('id, name').order('sort_order')
+  const { data: stores } = await adminSupabase.from('stores').select('id, name').eq('is_active', true).order('sort_order')
 
   let q = adminSupabase
     .from('takeout_orders')

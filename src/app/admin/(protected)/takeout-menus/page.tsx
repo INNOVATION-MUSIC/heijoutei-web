@@ -12,7 +12,7 @@ export default async function AdminTakeoutMenusPage() {
       .order('sort_order'),
     adminSupabase.from('takeout_categories').select('id, name').order('sort_order'),
     adminSupabase.from('store_takeout_menu_stores').select('takeout_menu_id, store_id'),
-    adminSupabase.from('stores').select('id, name'),
+    adminSupabase.from('stores').select('id, name').eq('is_active', true),
   ])
 
   const catName = new Map((cats ?? []).map((c) => [c.id, c.name]))

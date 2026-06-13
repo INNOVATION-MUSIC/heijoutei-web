@@ -5,7 +5,7 @@ import CourseDeleteButton from '@/components/admin/CourseDeleteButton'
 export const dynamic = 'force-dynamic'
 
 export default async function AdminCoursesPage() {
-  const { data: stores } = await adminSupabase.from('stores').select('id, name').order('sort_order')
+  const { data: stores } = await adminSupabase.from('stores').select('id, name').eq('is_active', true).order('sort_order')
   const { data: courses } = await adminSupabase
     .from('courses')
     .select('id, store_id, name, type_label, price_label, is_active, sort_order')
