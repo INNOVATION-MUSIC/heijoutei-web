@@ -96,7 +96,7 @@ export default function Step4Confirm(p: Props) {
         )}
         {turnstileEnabled && <Turnstile onVerify={p.onVerify} />}
         <RedButton label={p.submitting ? "送信中..." : "予約を確定する"} onClick={p.onConfirm} disabled={p.submitting || (turnstileEnabled && !p.turnstileReady)} width={210} />
-        <OutlineButton label="情報入力へ戻る" onClick={p.onBack} width={172} />
+        <OutlineButton label="情報入力へ戻る" onClick={p.onBack} width={210} />
       </div>
 
       <div style={{ flex: 1 }} />
