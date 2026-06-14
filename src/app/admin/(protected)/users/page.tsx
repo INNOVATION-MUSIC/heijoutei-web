@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 import { adminSupabase } from '@/lib/supabase/admin'
 import { getUsers } from '@/lib/actions/users'
 import UserRoleSelect from '@/components/admin/UserRoleSelect'
+import UserAvatarCell from '@/components/admin/UserAvatarCell'
 
 export const dynamic = 'force-dynamic'
 
@@ -42,6 +43,7 @@ export default async function AdminUsersPage() {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-[#23232e] bg-[#1a1a22] text-left text-xs text-[#6f6f80]">
+              <th className="w-20 px-4 py-3 font-medium">アイコン</th>
               <th className="px-4 py-3 font-medium">メール</th>
               <th className="px-4 py-3 font-medium">氏名</th>
               <th className="px-4 py-3 font-medium">作成日</th>
@@ -51,10 +53,16 @@ export default async function AdminUsersPage() {
           <tbody>
             {users.map((u) => (
               <tr key={u.id} className="border-b border-[#1d1d26] last:border-0 hover:bg-white/[0.02]">
+                <td className="px-4 py-3"><UserAvatarCell id={u.id} avatarUrl={u.avatar_url} /></td>
                 <td className="px-4 py-3 text-[#ebe5db]">{u.email}</td>
                 <td className="px-4 py-3 text-[#9a9aa8]">{u.full_name ?? '—'}</td>
                 <td className="px-4 py-3 text-[#9a9aa8]">{u.created_at ? new Date(u.created_at).toLocaleDateString('ja-JP') : '—'}</td>
-                <td className="px-4 py-3"><UserRoleSelect id={u.id} role={u.role} email={u.email} /></td>
+                <td className="px-4 py-3">
+                  <div className="flex items-center justify-end gap-3">
+                    <Link href={`/admin/users/${u.id}/edit`} className="text-xs text-[#d9b86b] hover:underline">編集</Link>
+                    <UserRoleSelect id={u.id} role={u.role} email={u.email} />
+                  </div>
+                </td>
               </tr>
             ))}
           </tbody>

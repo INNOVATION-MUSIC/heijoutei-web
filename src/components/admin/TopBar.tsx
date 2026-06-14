@@ -25,9 +25,14 @@ export default function AdminTopBar({ user }: { user: AdminUser }) {
 
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#d9b86b]/20 text-sm font-bold text-[#d9b86b]">
-            {initial}
-          </div>
+          {user.avatar_url ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={user.avatar_url} alt="" className="h-8 w-8 flex-shrink-0 rounded-full object-cover" />
+          ) : (
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#d9b86b]/20 text-sm font-bold text-[#d9b86b]">
+              {initial}
+            </div>
+          )}
           <div className="text-right leading-tight">
             <p className="text-sm text-[#ebe5db]">{user.full_name || user.email}</p>
             <p className="text-[10px] text-[#6f6f80]">
