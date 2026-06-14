@@ -14,7 +14,12 @@ function StatCard({ label, value, href }: { label: string; value: number | strin
 }
 
 export default async function AdminDashboard() {
-  const today = new Date().toISOString().slice(0, 10)
+  // 「本日受け付けた注文」= JST(UTC+9) の本日 0:00〜翌0:00 に created_at が入る注文。
+  // toISOString は UTC 基準で日付がずれるため、JST の一日の範囲を UTC ISO で算出して照合する。
+  const jst = new Date(Date.now() + 9 * 3600_000)
+  const jstMidnightUtcMs = Date.UTC(jst.getUTCFullYear(), jst.getUTCMonth(), jst.getUTCDate()) - 9 * 3600_000
+  const todayStart = new Date(jstMidnightUtcMs).toISOString()
+  const todayEnd = new Date(jstMidnightUtcMs + 24 * 3600_000).toISOString()
 
   const [
     { count: publishedNews },
@@ -30,9 +35,9 @@ export default async function AdminDashboard() {
     adminSupabase.from('stores').select('id', { count: 'exact', head: true }).eq('is_active', true),
     adminSupabase.from('takeout_orders').select('id', { count: 'exact', head: true }).eq('is_read', false),
     adminSupabase.from('contact_messages').select('id', { count: 'exact', head: true }).eq('is_read', false),
-    adminSupabase.from('takeout_orders').select('total_price').eq('pickup_date', today),
-    adminSupabase.from('takeout_orders').select('id, customer_name, total_price, pickup_date, is_read, created_at').order('created_at', { ascending: false }).limit(5),
-    adminSupabase.from('contact_messages').select('id, name, subject, is_read, created_at').order('created_at', { ascending: false }).limit(3),
+    adminSupabase.from('takeout_orders').select('total_price').gte('created_at', todayStart).lt('created_at', todayEnd),
+    adminSupabase.from('takeout_orders').select('id, customer_name, total_price, pickup_date, is_read, created_at, stores(name)').order('created_at', { ascending: false }).limit(10),
+    adminSupabase.from('contact_messages').select('id, name, subject, message, is_read, created_at').order('created_at', { ascending: false }).limit(10),
     adminSupabase.from('news').select('id, title, is_published, published_at, news_tags(label, color, sort_order)').order('created_at', { ascending: false }).limit(5),
   ])
 
@@ -61,13 +66,17 @@ export default async function AdminDashboard() {
             <Link href="/admin/takeout-orders" className="text-xs text-[#d9b86b] hover:underline">すべて見る</Link>
           </div>
           <ul className="space-y-2">
-            {(recentOrders ?? []).map((o) => (
-              <li key={o.id} className="flex items-center gap-2 text-sm">
-                {!o.is_read && <span className="h-1.5 w-1.5 rounded-full bg-blue-500" />}
-                <span className="flex-1 truncate text-[#ebe5db]">{o.customer_name} 様</span>
-                <span className="text-xs text-[#9a9aa8]">{o.pickup_date} ・ {o.total_price.toLocaleString('ja-JP')}円</span>
-              </li>
-            ))}
+            {(recentOrders ?? []).map((o) => {
+              const storeName = Array.isArray(o.stores) ? o.stores[0]?.name : (o.stores as { name: string } | null)?.name
+              return (
+                <li key={o.id} className="flex items-center gap-2 text-sm">
+                  {!o.is_read && <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-blue-500" />}
+                  <span className="shrink-0 text-[#ebe5db]">{o.customer_name} 様</span>
+                  {storeName && <span className="truncate text-xs text-[#9a9aa8]">{storeName}</span>}
+                  <span className="ml-auto shrink-0 text-xs text-[#9a9aa8]">{o.pickup_date} ・ {o.total_price.toLocaleString('ja-JP')}円</span>
+                </li>
+              )
+            })}
             {(!recentOrders || recentOrders.length === 0) && <li className="text-sm text-[#6f6f80]">注文はまだありません</li>}
           </ul>
         </div>
@@ -80,10 +89,13 @@ export default async function AdminDashboard() {
           </div>
           <ul className="space-y-2">
             {(recentContacts ?? []).map((c) => (
-              <li key={c.id} className="flex items-center gap-2 text-sm">
-                {!c.is_read && <span className="h-1.5 w-1.5 rounded-full bg-blue-500" />}
-                <span className="flex-1 truncate text-[#ebe5db]">{c.name}</span>
-                <span className="truncate text-xs text-[#9a9aa8]">{c.subject ?? ''}</span>
+              <li key={c.id} className="text-sm">
+                <div className="flex items-center gap-2">
+                  {!c.is_read && <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-blue-500" />}
+                  <span className="shrink-0 text-[#ebe5db]">{c.name} 様</span>
+                  {c.subject && <span className="ml-auto truncate text-xs text-[#9a9aa8]">{c.subject}</span>}
+                </div>
+                {c.message && <p className="mt-0.5 truncate text-xs text-[#6f6f80]">{c.message}</p>}
               </li>
             ))}
             {(!recentContacts || recentContacts.length === 0) && <li className="text-sm text-[#6f6f80]">問い合わせはまだありません</li>}
