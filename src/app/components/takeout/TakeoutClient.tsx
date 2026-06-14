@@ -196,7 +196,12 @@ export default function TakeoutClient({
             dateIso={dateIso}
             onSelectDate={(iso) => {
               setDateIso(iso);
-              setTime(null); // 受取日を変えたら時間選択をリセット（DB枠で受付時間が異なるため）
+              // 受取日を変えても、新しい日の受付時間枠に選択中の時間が含まれていれば維持する。
+              // 含まれない場合のみクリア。日付の再クリックや微調整で時間選択が黙って消え、
+              // 「メニュー選択へ進む」が押せなくなるのを防ぐ（DB枠で時間が異なる日のみリセット）。
+              const slot = storeSlots?.[iso];
+              const nextSlots = slot ? slot.timeLabels : TAKEOUT_TIME_SLOTS;
+              setTime((prev) => (prev && nextSlots.includes(prev) ? prev : null));
             }}
             time={time}
             onSelectTime={setTime}
