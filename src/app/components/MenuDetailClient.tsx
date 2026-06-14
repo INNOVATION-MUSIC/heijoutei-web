@@ -7,7 +7,7 @@ import StickyButton from "./StickyButton";
 import Footer from "./Footer";
 import MenuDetailSection from "./MenuDetailSection";
 import { type StoreTab } from "./MenuShared";
-import { getMenuCategory, getMenuItems, MENU_STORES, type MenuCategory } from "@/app/lib/menuData";
+import { getMenuCategory, MENU_STORES, type MenuCategory } from "@/app/lib/menuData";
 
 const DESIGN_PC = 1440;
 
@@ -46,7 +46,11 @@ export default function MenuDetailClient({ category, allCategories, stores }: { 
   }, [storeTabs]);
 
   const cat = allCategories?.find((c) => c.slug === activeSlug) ?? getMenuCategory(activeSlug) ?? category;
-  const items = getMenuItems(cat, storeId); // 店舗別メニュー（無ければ既定にフォールバック）
+  // 店舗別メニュー。店舗ごとに登録のあるカテゴリ（itemsByStore にキーあり）は、選択店舗に
+  // 登録が無ければ空＝「お取り扱いなし」表示にする（既定店舗へのフォールバックはしない）。
+  // itemsByStore を持たない純静的カテゴリ（DB空時のフォールバック）は従来どおり items を使う。
+  const hasPerStore = !!cat.itemsByStore && Object.keys(cat.itemsByStore).length > 0;
+  const items = cat.itemsByStore?.[storeId] ?? (hasPerStore ? [] : cat.items);
   const height = detailHeight(items.length);
 
   // カテゴリ切替：パスのみ更新（?store= は維持）
@@ -71,6 +75,7 @@ export default function MenuDetailClient({ category, allCategories, stores }: { 
       <ScaledSection designWidth={DESIGN_PC} height={height}>
         <MenuDetailSection
           category={cat}
+          categories={allCategories}
           items={items}
           storeId={storeId}
           stores={stores}
