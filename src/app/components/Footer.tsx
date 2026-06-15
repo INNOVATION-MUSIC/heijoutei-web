@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import Link from "next/link";
 import { NAV_LINKS as NAV_DEFS, SECTION_LINKS } from "@/app/lib/navLinks";
 import OutlineButton from "./OutlineButton";
 
@@ -12,9 +13,9 @@ export default function Footer({ onOpenModal }: { onOpenModal: () => void }) {
   return (
     <footer className="relative overflow-hidden bg-[#0a0a0a]" style={{ width: 1440, height: 600 }}>
       {/* ロゴ（クリックでトップへ） */}
-      <a href="/" aria-label="トップへ" className="absolute block" style={{ left: 175, top: 90, width: 260, height: 148 }}>
+      <Link href="/" aria-label="トップへ" className="absolute block" style={{ left: 175, top: 90, width: 260, height: 148 }}>
         <Image src="/images/footer_logo.webp" alt="焼肉平壌亭" fill className="object-contain" sizes="260px" />
-      </a>
+      </Link>
 
       {/* キャッチコピー */}
       <p className="absolute" style={{ left: 175, top: 310, width: 260, textAlign: "center", fontFamily: mincho, fontSize: 13, letterSpacing: "0.4em", color: "rgba(235,229,219,0.65)", lineHeight: "normal" }}>

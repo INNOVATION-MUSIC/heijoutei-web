@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { HEADER_NAV_LINKS } from "@/app/lib/navLinks";
 import OutlineButton from "./OutlineButton";
 
@@ -95,9 +96,9 @@ export default function HeroSection({ onOpenModal }: { onOpenModal: () => void }
             </div>
 
             {/* ロゴ: width=247 → (587-247)/2=170 → x=170 に自動配置（クリックでトップへ） */}
-            <a href="/" aria-label="トップへ" style={{ display: "block", position: "relative", width: 247, height: 129 }}>
+            <Link href="/" aria-label="トップへ" style={{ display: "block", position: "relative", width: 247, height: 129 }}>
               <Image src="/images/logo.webp" alt="焼肉平壌亭" fill className="object-contain" sizes="247px" />
-            </a>
+            </Link>
           </div>
 
           {/* 下グループ: ナビ + 予約ボタン */}

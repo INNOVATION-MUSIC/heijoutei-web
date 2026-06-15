@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 const DESIGN_WIDTH = 390;
@@ -78,7 +79,7 @@ export default function SpStickyHeader({ onOpenMenu }: Props) {
         }}
       >
         {/* ロゴ（クリックでトップへ） */}
-        <a
+        <Link
           href="/"
           aria-label="トップへ"
           style={{
@@ -97,7 +98,7 @@ export default function SpStickyHeader({ onOpenMenu }: Props) {
             className="object-contain"
             sizes="168px"
           />
-        </a>
+        </Link>
 
         {/* ハンバーガーボタン */}
         <button

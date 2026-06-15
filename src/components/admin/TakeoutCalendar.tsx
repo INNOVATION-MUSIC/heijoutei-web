@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState } from 'react'
 import { getMonthSlots, saveDaySlot, saveMonthSlots, type DaySlot, type SlotTime } from '@/lib/actions/takeout-slots'
 import { defaultTimeLabels } from '@/lib/takeout-times'
 import type { StoreRef } from '@/lib/actions/refs'
@@ -45,19 +45,38 @@ export default function TakeoutCalendar({ stores }: { stores: StoreRef[] }) {
   const [monthCap, setMonthCap] = useState(DEFAULT_CAPACITY)
   const [monthSaving, setMonthSaving] = useState(false)
 
-  const load = useCallback(async () => {
-    if (!storeId) return
-    setLoading(true)
-    const data = await getMonthSlots(storeId, year, month)
-    setMonthData(data)
-    setLoading(false)
-  }, [storeId, year, month])
-
-  useEffect(() => {
-    load()
+  // 月・店舗が変わったらレンダー中に選択／編集を解除＋ローディング表示へ切り替える
+  // （effect 内の同期 setState を避ける React 公式の「描画中の state 調整」パターン）。
+  const loadKey = `${storeId}-${year}-${month}`
+  const [prevKey, setPrevKey] = useState(loadKey)
+  if (loadKey !== prevKey) {
+    setPrevKey(loadKey)
     setSelected(null)
     setEditing(null)
-  }, [load])
+    if (storeId) setLoading(true)
+  }
+
+  // データ取得は effect で行い、setState は await 後（非同期）のみ＝同期 setState を含めない。
+  useEffect(() => {
+    if (!storeId) return
+    let active = true
+    getMonthSlots(storeId, year, month).then((data) => {
+      if (!active) return
+      setMonthData(data)
+      setLoading(false)
+    })
+    return () => {
+      active = false
+    }
+  }, [storeId, year, month])
+
+  // 保存後の再取得（イベントハンドラからのみ呼ぶ＝同期 setState OK）。
+  async function reload() {
+    if (!storeId) return
+    setLoading(true)
+    setMonthData(await getMonthSlots(storeId, year, month))
+    setLoading(false)
+  }
 
   function selectDay(date: string) {
     setSelected(date)
@@ -91,7 +110,7 @@ export default function TakeoutCalendar({ stores }: { stores: StoreRef[] }) {
     const result = await saveDaySlot(storeId, editing)
     setSaving(false)
     if (result?.error) { alert(result.error); return }
-    await load()
+    await reload()
   }
 
   // 月単位の一括設定：基本は「全日を受付」にし、停止したい日だけ後からクリックで止める運用
@@ -105,7 +124,7 @@ export default function TakeoutCalendar({ stores }: { stores: StoreRef[] }) {
     if (result?.error) { alert(result.error); return }
     setSelected(null)
     setEditing(null)
-    await load()
+    await reload()
   }
 
   // カレンダーセル

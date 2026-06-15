@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import ScaledSection from "./ScaledSection";
 import ReserveModal from "./ReserveModal";
 import StickyButton from "./StickyButton";
 import Footer from "./Footer";
 import MenuDetailSection from "./MenuDetailSection";
-import { type StoreTab } from "./MenuShared";
-import { getMenuCategory, MENU_STORES, type MenuCategory } from "@/app/lib/menuData";
+import { useStoreParam, type StoreTab } from "./MenuShared";
+import { getMenuCategory, type MenuCategory } from "@/app/lib/menuData";
 
 const DESIGN_PC = 1440;
 
@@ -31,19 +31,11 @@ export default function MenuDetailClient({ category, allCategories, stores }: { 
   const openModal = () => setModalOpen(true);
   const closeModal = () => setModalOpen(false);
 
-  const storeTabs = stores && stores.length > 0 ? stores : MENU_STORES;
-  const DEFAULT_STORE = storeTabs[0].id;
-
-  // カテゴリ・店舗の切替はリロードせず state で行い、URL は history.replaceState で同期する
+  // カテゴリ切替はリロードせず state で行い、URL は history.replaceState で同期する
   // （スクロール位置を保ったまま中身だけ差し替え／リフレッシュ・共有でも整合）。
   const [activeSlug, setActiveSlug] = useState(category.slug);
-  const [storeId, setStoreId] = useState<string>(DEFAULT_STORE);
-
-  // 初回マウント時に URL の ?store= から選択店舗を復元する。
-  useEffect(() => {
-    const p = new URLSearchParams(window.location.search).get("store");
-    if (p && storeTabs.some((s) => s.id === p)) setStoreId(p);
-  }, [storeTabs]);
+  // 店舗選択は ?store= を真実の値として URL 駆動で保持（初回マウント時の URL 復元も内包）。
+  const [storeId, selectStore] = useStoreParam(stores);
 
   const cat = allCategories?.find((c) => c.slug === activeSlug) ?? getMenuCategory(activeSlug) ?? category;
   // 店舗別メニュー。店舗ごとに登録のあるカテゴリ（itemsByStore にキーあり）は、選択店舗に
@@ -61,14 +53,7 @@ export default function MenuDetailClient({ category, allCategories, stores }: { 
     window.history.replaceState({}, "", url);
   };
 
-  // 店舗切替：?store= のみ更新（現在のカテゴリは維持）。同じカテゴリのその店舗のメニューに切り替わる。
-  const selectStore = (id: string) => {
-    setStoreId(id);
-    const url = new URL(window.location.href);
-    if (id === DEFAULT_STORE) url.searchParams.delete("store");
-    else url.searchParams.set("store", id);
-    window.history.replaceState({}, "", url);
-  };
+  // 店舗切替（selectStore）は useStoreParam が ?store= 更新＋再描画を担う（現在のカテゴリは維持）。
 
   return (
     <>

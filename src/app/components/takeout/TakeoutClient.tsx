@@ -12,9 +12,8 @@ import Step3Form from "./Step3Form";
 import Step4Confirm from "./Step4Confirm";
 import Step5Complete from "./Step5Complete";
 
-import { TAKEOUT_CATEGORIES, TAKEOUT_MENU, TAKEOUT_STORES, TAKEOUT_TIME_SLOTS, buildCalendar, formatJpDate, type TakeoutStore, type TakeoutMenuItem, type DaySlotMap } from "@/app/lib/takeoutData";
+import { TAKEOUT_CATEGORIES, TAKEOUT_MENU, TAKEOUT_STORES, TAKEOUT_TIME_SLOTS, buildCalendar, type TakeoutStore, type TakeoutMenuItem, type DaySlotMap } from "@/app/lib/takeoutData";
 import type { TakeoutMenuData } from "@/app/lib/takeoutOrderDb";
-import type { OrderPayload } from "@/app/lib/takeoutMail";
 
 const DESIGN_PC = 1440;
 
@@ -122,16 +121,14 @@ export default function TakeoutClient({
   const handleConfirm = async () => {
     setSubmitting(true);
     setSubmitError(null);
-    const payload: OrderPayload = {
-      store: store.name,
-      storeTel: store.tel,
-      dateLabel: dateIso ? `${formatJpDate(dateIso)} ${time ? time.replace(/ /g, "") : ""}`.trim() : "",
-      items: cartLines.map((l) => ({ name: l.item.name, price: l.item.price, qty: l.qty })),
-      total: subtotal,
-      customer: { name: form.name, kana: form.kana, email: form.email, phone: form.phone, note: form.note },
+    // 価格・合計・商品名はサーバーが店舗メニューから再計算するため送らない（改ざん防止）。
+    // クライアントは「どの店舗で・いつ・どの商品を何個」だけを送る。
+    const payload = {
       storeSlug: store.id,
-      pickupDate: dateIso ?? undefined,
-      pickupTime: time ? time.replace(/ /g, "") : undefined,
+      pickupDate: dateIso ?? "",
+      pickupTime: time ? time.replace(/ /g, "") : "",
+      items: cartLines.map((l) => ({ id: l.item.id, qty: l.qty })),
+      customer: { name: form.name, kana: form.kana, email: form.email, phone: form.phone, note: form.note },
     };
     try {
       const res = await fetch("/api/takeout", {

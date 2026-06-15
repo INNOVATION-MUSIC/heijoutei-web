@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useIsMobile } from "@/app/lib/useIsMobile";
 import ScaledSection from "./ScaledSection";
 import ReserveModal from "./ReserveModal";
 import LineModal from "./LineModal";
@@ -38,10 +39,9 @@ import SpStickyHeader from "./sp/SpStickyHeader";
 
 const DESIGN_PC = 1440;
 const DESIGN_SP = 390;
-const BREAKPOINT = 1024;
 
 export default function ResponsivePage({ topNews, businessMonths, topCourses }: { topNews?: NewsItem[]; businessMonths?: BusinessMonth[]; topCourses?: TopCourse[] }) {
-  const [isMobile, setIsMobile] = useState<boolean | null>(null);
+  const isMobile = useIsMobile();
   const [modalOpen, setModalOpen] = useState(false);
   const [lineModalOpen, setLineModalOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -52,14 +52,6 @@ export default function ResponsivePage({ topNews, businessMonths, topCourses }: 
   const closeLineModal = () => setLineModalOpen(false);
   const openMenu = () => setMenuOpen(true);
   const closeMenu = () => setMenuOpen(false);
-
-  useEffect(() => {
-    const mq = window.matchMedia(`(max-width: ${BREAKPOINT - 1}px)`);
-    setIsMobile(mq.matches);
-    const onChange = (e: MediaQueryListEvent) => setIsMobile(e.matches);
-    mq.addEventListener("change", onChange);
-    return () => mq.removeEventListener("change", onChange);
-  }, []);
 
   if (isMobile === null) {
     return <div style={{ minHeight: "100vh", background: "#0a0a0a" }} />;

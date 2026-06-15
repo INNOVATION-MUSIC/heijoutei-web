@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import Image from "next/image";
 import PageHeader from "./PageHeader";
 import OutlineButton from "./OutlineButton";
@@ -13,27 +13,43 @@ function tabsOf(stores?: readonly StoreTab[]): readonly StoreTab[] {
   return stores && stores.length > 0 ? stores : MENU_STORES;
 }
 
+// ?store= の変更を購読するための内部イベント（history.replaceState は popstate を発火しないため）
+const STORE_PARAM_EVENT = "store-param-change";
+
+function readStoreParam(list: readonly StoreTab[], defaultStore: string): string {
+  const p = new URLSearchParams(window.location.search).get("store");
+  return p && list.some((s) => s.id === p) ? p : defaultStore;
+}
+
 /**
  * 選択中の受取店舗を URL クエリ（?store=）で保持するフック。
  * メニューは店舗ごとに変わる想定のため、ページ遷移しても選択を維持できるよう URL を真実の値とする。
  * 既定店舗（先頭店舗）のときはクエリを付けない。stores は DB 連動の店舗一覧（省略時は静的）。
+ * URL を唯一の真実とし useSyncExternalStore で購読する（ハイドレーション安全・effect で setState しない）。
  */
 export function useStoreParam(stores?: readonly StoreTab[]): [string, (id: string) => void] {
   const list = tabsOf(stores);
   const defaultStore = list[0]?.id ?? "";
-  const [storeId, setStoreId] = useState<string>(defaultStore);
 
-  useEffect(() => {
-    const p = new URLSearchParams(window.location.search).get("store");
-    if (p && list.some((s) => s.id === p)) setStoreId(p);
-  }, [list]);
+  const storeId = useSyncExternalStore(
+    (onChange) => {
+      window.addEventListener("popstate", onChange);
+      window.addEventListener(STORE_PARAM_EVENT, onChange);
+      return () => {
+        window.removeEventListener("popstate", onChange);
+        window.removeEventListener(STORE_PARAM_EVENT, onChange);
+      };
+    },
+    () => readStoreParam(list, defaultStore), // クライアント: URL から読む
+    () => defaultStore // サーバー/初回ハイドレーション: 既定店舗
+  );
 
   const update = (id: string) => {
-    setStoreId(id);
     const url = new URL(window.location.href);
     if (id === defaultStore) url.searchParams.delete("store");
     else url.searchParams.set("store", id);
     window.history.replaceState({}, "", url);
+    window.dispatchEvent(new Event(STORE_PARAM_EVENT));
   };
 
   return [storeId, update];

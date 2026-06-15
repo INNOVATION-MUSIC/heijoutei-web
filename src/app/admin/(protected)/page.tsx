@@ -3,6 +3,18 @@ import { adminSupabase } from '@/lib/supabase/admin'
 
 export const dynamic = 'force-dynamic'
 
+// 「本日受け付けた注文」= JST(UTC+9) の本日 0:00〜翌0:00 に created_at が入る注文。
+// toISOString は UTC 基準で日付がずれるため、JST の一日の範囲を UTC ISO で算出して照合する。
+// 時刻取得（impure）はレンダー本体の外に出す（react-hooks/purity 対策・リクエスト毎に評価）。
+function jstTodayRange(): { todayStart: string; todayEnd: string } {
+  const jst = new Date(Date.now() + 9 * 3600_000)
+  const jstMidnightUtcMs = Date.UTC(jst.getUTCFullYear(), jst.getUTCMonth(), jst.getUTCDate()) - 9 * 3600_000
+  return {
+    todayStart: new Date(jstMidnightUtcMs).toISOString(),
+    todayEnd: new Date(jstMidnightUtcMs + 24 * 3600_000).toISOString(),
+  }
+}
+
 function StatCard({ label, value, href }: { label: string; value: number | string; href?: string }) {
   const inner = (
     <div className="rounded-xl border border-[#23232e] bg-[#14141a] p-5 transition-colors hover:border-[#d9b86b]/30">
@@ -14,12 +26,7 @@ function StatCard({ label, value, href }: { label: string; value: number | strin
 }
 
 export default async function AdminDashboard() {
-  // 「本日受け付けた注文」= JST(UTC+9) の本日 0:00〜翌0:00 に created_at が入る注文。
-  // toISOString は UTC 基準で日付がずれるため、JST の一日の範囲を UTC ISO で算出して照合する。
-  const jst = new Date(Date.now() + 9 * 3600_000)
-  const jstMidnightUtcMs = Date.UTC(jst.getUTCFullYear(), jst.getUTCMonth(), jst.getUTCDate()) - 9 * 3600_000
-  const todayStart = new Date(jstMidnightUtcMs).toISOString()
-  const todayEnd = new Date(jstMidnightUtcMs + 24 * 3600_000).toISOString()
+  const { todayStart, todayEnd } = jstTodayRange()
 
   const [
     { count: publishedNews },

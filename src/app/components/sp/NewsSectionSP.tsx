@@ -172,10 +172,13 @@ export default function NewsSectionSP({ items }: { items?: NewsItem[] }) {
           onClick={() => handleArrow("left")}
           style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
         >
-          <img
+          <Image
             src="/images/news_arrow_l.svg"
-            alt="←"
-            style={{ width: 31, height: 14, filter: "brightness(0) invert(1)" }}
+            alt="前へ"
+            width={31}
+            height={14}
+            unoptimized
+            style={{ filter: "brightness(0) invert(1)" }}
           />
         </button>
         <button
@@ -183,10 +186,13 @@ export default function NewsSectionSP({ items }: { items?: NewsItem[] }) {
           onClick={() => handleArrow("right")}
           style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
         >
-          <img
+          <Image
             src="/images/news_arrow_r.svg"
-            alt="→"
-            style={{ width: 31, height: 14, filter: "brightness(0) invert(1)" }}
+            alt="次へ"
+            width={31}
+            height={14}
+            unoptimized
+            style={{ filter: "brightness(0) invert(1)" }}
           />
         </button>
       </div>

@@ -82,6 +82,7 @@ export async function fetchNewsArticle(id: string): Promise<NewsListItem | undef
       .select("slug, title, body, thumbnail_url, published_at, news_tags(label, color, sort_order)")
       .eq("slug", id)
       .eq("is_published", true)
+      .lte("published_at", new Date().toISOString()) // 予約公開（未来日時）は直リンクでも非公開
       .maybeSingle();
     if (!data) return NEWS_LIST_DATA.find((n) => n.id === id);
     return toItem(data as NewsRow);
@@ -105,7 +106,11 @@ export async function fetchTopNews(limit = 5): Promise<NewsItem[]> {
 export async function fetchNewsParams(): Promise<{ id: string }[]> {
   try {
     const supabase = createStaticClient();
-    const { data } = await supabase.from("news").select("slug").eq("is_published", true);
+    const { data } = await supabase
+      .from("news")
+      .select("slug")
+      .eq("is_published", true)
+      .lte("published_at", new Date().toISOString()); // 予約公開は到達後に ISR で静的化される
     if (!data || data.length === 0) return NEWS_LIST_DATA.map((n) => ({ id: n.id }));
     return data.map((r) => ({ id: r.slug }));
   } catch {

@@ -102,11 +102,12 @@ export default function MenuSectionSP() {
       <div style={{ width: "100%", overflow: "hidden", height: 310, flexShrink: 0 }}>
         <div
           ref={trackRef}
+          // 初期オフセットのみ静的指定（以降の位置は rAF が trackRef へ命令的に適用）
           style={{
             display: "flex",
             gap: GAP,
             width: "max-content",
-            transform: `translateX(-${posRef.current}px)`,
+            transform: "translateX(-50px)",
           }}
         >
           {[...MENU_PHOTOS, ...MENU_PHOTOS].map((photo, index) => (

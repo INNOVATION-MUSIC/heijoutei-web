@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useIsMobile } from "@/app/lib/useIsMobile";
 
 interface Props {
   open: boolean;
@@ -39,40 +40,33 @@ function CloseIcon() {
 }
 
 export default function ReserveModal({ open, onClose, isMobile: isMobileProp = false }: Props) {
-  const [visible, setVisible] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
-  const [isMobileVP, setIsMobileVP] = useState(isMobileProp);
 
-  // viewport 幅で SP/PC を自律検知（ScaledSection 外に置かれるため自前で判定）
+  // viewport 幅で SP/PC を自律検知（ScaledSection 外に置かれるため自前で判定）。
+  // 確定前（null）はプロップのフォールバックを使う。
+  const detected = useIsMobile();
+  const isMobile = detected ?? isMobileProp;
+
+  // body スクロールロックは外部システムの同期なので effect で行う（setState ではないため lint OK）。
   useEffect(() => {
-    const mq = window.matchMedia("(max-width: 1023px)");
-    setIsMobileVP(mq.matches);
-    const onChange = (e: MediaQueryListEvent) => setIsMobileVP(e.matches);
-    mq.addEventListener("change", onChange);
-    return () => mq.removeEventListener("change", onChange);
-  }, []);
-
-  const isMobile = isMobileVP;
-
-  useEffect(() => {
-    if (open) {
-      setIsClosing(false);
-      setVisible(true);
-      document.body.style.overflow = "hidden";
-    }
+    if (!open) return;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [open]);
 
   const handleClose = () => setIsClosing(true);
 
   const handlePanelAnimationEnd = () => {
     if (isClosing) {
-      setVisible(false);
-      document.body.style.overflow = "";
+      setIsClosing(false);
       onClose();
     }
   };
 
-  if (!visible) return null;
+  // open 中、または閉じるアニメーション中だけマウントする（visible state を effect で立てない）。
+  if (!open && !isClosing) return null;
 
   const overlayAnim = isClosing
     ? "modal-overlay-out 0.22s ease both"

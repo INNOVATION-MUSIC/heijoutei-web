@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { SECTION_LINKS } from "@/app/lib/navLinks";
 
 const mincho = "'Shippori Mincho', serif";
 const sans = "'Noto Sans JP', sans-serif";

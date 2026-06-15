@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState } from 'react'
 import {
   getBusinessMonth,
   saveBusinessDay,
@@ -38,16 +38,35 @@ export default function BusinessCalendar({ storeId, storeName }: { storeId: stri
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
 
-  const load = useCallback(async () => {
+  // 月・店舗が変わったらレンダー中に選択解除＋ローディング表示へ切り替える
+  // （effect 内の同期 setState を避ける React 公式の「描画中の state 調整」パターン）。
+  const loadKey = `${storeId}-${year}-${month}`
+  const [prevKey, setPrevKey] = useState(loadKey)
+  if (loadKey !== prevKey) {
+    setPrevKey(loadKey)
+    setSelected(null)
+    setLoading(true)
+  }
+
+  // データ取得は effect で行い、setState は await 後（非同期）のみ＝同期 setState を含めない。
+  useEffect(() => {
+    let active = true
+    getBusinessMonth(storeId, year, month).then((d) => {
+      if (!active) return
+      setData(d)
+      setLoading(false)
+    })
+    return () => {
+      active = false
+    }
+  }, [storeId, year, month])
+
+  // 保存・削除後の再取得（イベントハンドラからのみ呼ぶ＝同期 setState OK）。
+  async function reload() {
     setLoading(true)
     setData(await getBusinessMonth(storeId, year, month))
     setLoading(false)
-  }, [storeId, year, month])
-
-  useEffect(() => {
-    load()
-    setSelected(null)
-  }, [load])
+  }
 
   function selectDay(date: string) {
     setSelected(date)
@@ -65,21 +84,21 @@ export default function BusinessCalendar({ storeId, storeName }: { storeId: stri
     const result = await saveBusinessDay(storeId, selected, status, note)
     setSaving(false)
     if (result?.error) { alert(result.error); return }
-    await load()
+    await reload()
   }
   async function handleReset() {
     if (!selected) return
     setSaving(true)
     await deleteBusinessDay(storeId, selected)
     setSaving(false)
-    await load()
+    await reload()
   }
   async function handleBulkTuesday() {
     if (!confirm(`${year}年${month}月の毎週火曜日を定休日に設定します。よろしいですか？`)) return
     setSaving(true)
     await bulkSetWeekday(storeId, year, month, 2, 'closed')
     setSaving(false)
-    await load()
+    await reload()
   }
 
   const firstDow = new Date(year, month - 1, 1).getDay()

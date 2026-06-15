@@ -16,7 +16,10 @@ export default function Turnstile({ onVerify }: { onVerify: (token: string) => v
   const ref = useRef<HTMLDivElement>(null);
   const widgetId = useRef<string | null>(null);
   const cb = useRef(onVerify);
-  cb.current = onVerify;
+  // 最新の onVerify を ref に保持（render 中の ref 書き込みを避けるため毎レンダー後に更新）
+  useEffect(() => {
+    cb.current = onVerify;
+  });
 
   useEffect(() => {
     if (!SITE_KEY) return;

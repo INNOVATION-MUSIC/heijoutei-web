@@ -26,7 +26,6 @@ interface Props {
 
 export default function HamburgerMenuSP({ open, onClose, onOpenModal }: Props) {
   const [scale, setScale] = useState(1);
-  const [visible, setVisible] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
 
   useEffect(() => {
@@ -36,25 +35,26 @@ export default function HamburgerMenuSP({ open, onClose, onOpenModal }: Props) {
     return () => window.removeEventListener("resize", update);
   }, []);
 
+  // body スクロールロックは外部システムの同期なので effect で行う（setState ではないため lint OK）。
   useEffect(() => {
-    if (open) {
-      setIsClosing(false);
-      setVisible(true);
-      document.body.style.overflow = "hidden";
-    }
+    if (!open) return;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [open]);
 
   const handleClose = () => setIsClosing(true);
 
   const handleAnimationEnd = () => {
     if (isClosing) {
-      setVisible(false);
-      document.body.style.overflow = "";
+      setIsClosing(false);
       onClose();
     }
   };
 
-  if (!visible) return null;
+  // open 中、または閉じるアニメーション中だけマウントする（visible state を effect で立てない）。
+  if (!open && !isClosing) return null;
 
   const DESIGN_H = 844;
   const anim = isClosing

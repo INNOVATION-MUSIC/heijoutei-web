@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useIsMobile } from "@/app/lib/useIsMobile";
 import ScaledSection from "./ScaledSection";
 import ReserveModal from "./ReserveModal";
 import StickyButton from "./StickyButton";
@@ -21,7 +22,6 @@ import HamburgerMenuSP from "./sp/HamburgerMenuSP";
 
 const DESIGN_PC = 1440;
 const DESIGN_SP = 390;
-const BREAKPOINT = 1024;
 
 /**
  * /about ページのクライアントラッパー。
@@ -31,7 +31,7 @@ const BREAKPOINT = 1024;
  * 予約モーダルは ScaledSection 外で一元管理（overflow:hidden 内だと表示されないため）。
  */
 export default function AboutClient() {
-  const [isMobile, setIsMobile] = useState<boolean | null>(null);
+  const isMobile = useIsMobile();
   const [modalOpen, setModalOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -39,14 +39,6 @@ export default function AboutClient() {
   const closeModal = () => setModalOpen(false);
   const openMenu = () => setMenuOpen(true);
   const closeMenu = () => setMenuOpen(false);
-
-  useEffect(() => {
-    const mq = window.matchMedia(`(max-width: ${BREAKPOINT - 1}px)`);
-    setIsMobile(mq.matches);
-    const onChange = (e: MediaQueryListEvent) => setIsMobile(e.matches);
-    mq.addEventListener("change", onChange);
-    return () => mq.removeEventListener("change", onChange);
-  }, []);
 
   if (isMobile === null) {
     return <div style={{ minHeight: "100vh", background: "#0a0a0a" }} />;

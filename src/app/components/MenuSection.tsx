@@ -63,7 +63,8 @@ export default function MenuSection() {
       <div className="absolute" style={{ top: 538, left: 0, width: 1440, overflow: "hidden" }}>
         <div
           ref={trackRef}
-          style={{ display: "flex", gap: GAP, width: "max-content", transform: `translateX(-${posRef.current}px)` }}
+          // 初期オフセットのみ静的指定（以降の位置は rAF が trackRef へ命令的に適用）
+          style={{ display: "flex", gap: GAP, width: "max-content", transform: "translateX(-33px)" }}
           onMouseEnter={() => { pausedRef.current = true; }}
           onMouseLeave={() => { pausedRef.current = false; }}
         >

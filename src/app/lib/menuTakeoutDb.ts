@@ -1,5 +1,5 @@
 import { createStaticClient } from "@/lib/supabase/static";
-import { TAKEOUT_MENU_TABS, getTakeoutTabs, MENU_STORES, type TakeoutMenuTab, type MenuItem } from "./menuData";
+import { getTakeoutTabs, MENU_STORES, type TakeoutMenuTab, type MenuItem } from "./menuData";
 
 type MenuRow = {
   category_id: string | null;
@@ -33,7 +33,6 @@ export async function fetchTakeoutTabsByStore(): Promise<Record<string, TakeoutM
     ]);
     if (!cats || cats.length === 0 || !menus || menus.length === 0 || !stores) return fallback;
 
-    const slugById = new Map(stores.map((s) => [s.id, s.slug]));
     // category_id を slug に変換するため takeout_categories の id も必要
     const { data: catIds } = await supabase.from("takeout_categories").select("id, slug");
     const catSlugById = new Map((catIds ?? []).map((c) => [c.id, c.slug]));
