@@ -31,6 +31,20 @@ function resolvePublish(p: NewsPayload): { is_published: boolean; published_at: 
   return { is_published: true, published_at: p.published_at || new Date().toISOString() }
 }
 
+// slug の一意性を保証する。既存と衝突する場合は `-2`, `-3` … を付与（WordPress 同様）。
+// excludeId は更新時に自分自身を除外するため。news は小規模なので全 slug を取得して JS で判定。
+async function uniqueSlug(base: string, excludeId?: string): Promise<string> {
+  const clean = (base || `news-${Date.now()}`).slice(0, 100)
+  const { data } = await adminSupabase.from('news').select('id, slug')
+  const taken = new Set((data ?? []).filter((r) => r.id !== excludeId).map((r) => r.slug))
+  if (!taken.has(clean)) return clean
+  for (let i = 2; i < 1000; i++) {
+    const cand = `${clean.slice(0, 96)}-${i}`
+    if (!taken.has(cand)) return cand
+  }
+  return `${clean.slice(0, 80)}-${Date.now()}`
+}
+
 async function replaceTags(newsId: string, tags: NewsTagInput[]) {
   await adminSupabase.from('news_tags').delete().eq('news_id', newsId)
   const rows = tags
@@ -47,13 +61,15 @@ export async function getNewsTags(newsId: string): Promise<Tables<'news_tags'>[]
 export async function createNews(p: NewsPayload, tags: NewsTagInput[]) {
   if (!(await isAuthed())) return { error: '認証が必要です' }
   if (!p.title?.trim()) return { error: 'タイトルは必須です' }
-  const slug = p.slug?.trim() || generateSlug(p.title)
+  let slug = await uniqueSlug(p.slug?.trim() || generateSlug(p.title))
   const { is_published, published_at } = resolvePublish(p)
-  const { data, error } = await adminSupabase
-    .from('news')
-    .insert({ title: p.title.trim(), slug, body: p.body || null, thumbnail_url: p.thumbnail_url || null, is_published, published_at })
-    .select('id')
-    .single()
+  const base = { title: p.title.trim(), body: p.body || null, thumbnail_url: p.thumbnail_url || null, is_published, published_at }
+  let { data, error } = await adminSupabase.from('news').insert({ ...base, slug }).select('id').single()
+  // 同時実行などで一意制約に衝突した場合はタイムスタンプ付きで1回だけ再試行
+  if (error?.code === '23505') {
+    slug = `${slug.slice(0, 80)}-${Date.now()}`
+    ;({ data, error } = await adminSupabase.from('news').insert({ ...base, slug }).select('id').single())
+  }
   if (error || !data) return { error: error?.message ?? '作成に失敗しました' }
   await replaceTags(data.id, tags)
   revalidateNews()
@@ -63,7 +79,7 @@ export async function createNews(p: NewsPayload, tags: NewsTagInput[]) {
 export async function updateNews(id: string, p: NewsPayload, tags: NewsTagInput[]) {
   if (!(await isAuthed())) return { error: '認証が必要です' }
   if (!p.title?.trim()) return { error: 'タイトルは必須です' }
-  const slug = p.slug?.trim() || generateSlug(p.title)
+  const slug = await uniqueSlug(p.slug?.trim() || generateSlug(p.title), id)
   const { is_published, published_at } = resolvePublish(p)
   const { error } = await adminSupabase
     .from('news')
