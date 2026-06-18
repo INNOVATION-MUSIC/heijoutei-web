@@ -10,7 +10,7 @@ const display = "'Cormorant Garamond', serif";
 const sans = "'Noto Sans JP', sans-serif";
 
 /* ━━━ 店舗データ（DB 未連携時のフォールバック。hours は文字列配列） ━━━ */
-const STORES: Store[] = [
+export const STORES: Store[] = [
   {
     slug: "kameoka",
     enLabel: "HEIJOHTEI  KAMEOKA",
