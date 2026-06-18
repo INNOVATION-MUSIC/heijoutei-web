@@ -7,7 +7,8 @@ import { SECTION_LINKS } from "@/app/lib/navLinks";
 import { MenuHeading, StoreTabs, useStoreParam, withStore, mincho, sans, display, PANEL, GOLD, type StoreTab } from "./MenuShared";
 
 // カテゴリページ下部の3バナー（ランチ/テイクアウト/コース）。写真は既存アセットを流用。
-const PROMOS: MenuPromo[] = [
+// SP 版（MenuCategorySectionSP）と共有するため export する。
+export const PROMOS: MenuPromo[] = [
   {
     en: "Lunch",
     title: "ランチメニュー",
