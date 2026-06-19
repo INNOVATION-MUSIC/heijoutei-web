@@ -1,0 +1,18 @@
+# ローカルで `npm run preview`（Cloudflare Workers ランタイム = wrangler/miniflare）を
+# 動かすための環境変数テンプレート。これをコピーして `.dev.vars` を作り、実値を入れる。
+#   cp .dev.vars.example .dev.vars
+# `.dev.vars` は .gitignore 済み（コミットされない）。
+# ※ `next dev`（npm run dev）は従来どおり .env.local を読むので別管理。
+# 本番値は Cloudflare ダッシュボードの Secrets / 環境変数に登録する（docs/security/cloudflare-hardening.md 参照）。
+
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+
+BREVO_API_KEY=
+MAIL_FROM=焼肉平壌亭 <addr@example.com>
+ORDER_NOTIFY_TO=
+CONTACT_NOTIFY_TO=
+
+NEXT_PUBLIC_TURNSTILE_SITE_KEY=
+TURNSTILE_SECRET_KEY=

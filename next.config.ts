@@ -1,8 +1,8 @@
 import type { NextConfig } from "next";
+// OpenNext: `next dev` 中も Cloudflare バインディング(getCloudflareContext)を使えるようにする
+import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
 
 const nextConfig: NextConfig = {
-  // nodemailer は Node.js ネイティブ機能を使うため Server バンドルから除外
-  serverExternalPackages: ["nodemailer"],
   images: {
     // Supabase Storage（media バケット）の公開画像を next/image で扱えるように許可
     remotePatterns: [
@@ -16,3 +16,5 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+
+initOpenNextCloudflareForDev();

@@ -1,0 +1,21 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "main": ".open-next/worker.js",
+  "name": "heijoutei-web",
+  "compatibility_date": "2025-03-25",
+  // nodejs_compat: Next.js のサーバ実行に必要（Node 互換 API）
+  "compatibility_flags": ["nodejs_compat"],
+  // OpenNext が生成する静的アセット（_next/static など）を配信
+  "assets": {
+    "binding": "ASSETS",
+    "directory": ".open-next/assets"
+  },
+  "observability": {
+    "enabled": true
+  }
+  // ISR（revalidate=60）をインスタンス跨ぎで永続化する場合は R2 を追加し、
+  // open-next.config.ts の incrementalCache に r2IncrementalCache を設定する。
+  // "r2_buckets": [
+  //   { "binding": "NEXT_INC_CACHE_R2_BUCKET", "bucket_name": "heijoutei-web-cache" }
+  // ]
+}

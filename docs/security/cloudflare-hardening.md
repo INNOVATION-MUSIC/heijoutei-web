@@ -3,7 +3,41 @@
 heijoutei-web を Cloudflare にデプロイする前提での、セキュリティ設定とアカウント側の手順をまとめる。
 コード側の対応（認証ハードニング・anon権限縮小・Brevo HTTP API化・Turnstile実装）は適用済み。本書は **あなたがダッシュボードで行う設定** と **必要な環境変数** を示す。
 
-最終更新: 2026-06-12
+最終更新: 2026-06-19
+
+---
+
+## OpenNext デプロイ構成（2026-06-19 導入）
+
+Next.js 16 を Cloudflare Workers で動かすため `@opennextjs/cloudflare` を導入済み。
+
+### 追加・変更したファイル
+- `wrangler.jsonc`（Worker 名 `heijoutei-web` / `main=.open-next/worker.js` / `nodejs_compat` / ASSETS バインディング）
+- `open-next.config.ts`（最小構成。ISR を跨インスタンス永続化したくなったら R2 を追加）
+- `next.config.ts`（`initOpenNextCloudflareForDev()` を追加。死んでいた `serverExternalPackages:["nodemailer"]` を削除）
+- `package.json`（`preview`/`deploy`/`cf-typegen` スクリプト追加。未使用の `nodemailer`/`@types/nodemailer` を削除＝メールは Brevo HTTP API のみ）
+- `.dev.vars.example`（ローカル `npm run preview` 用の env テンプレ。実値は `.dev.vars` にコピー＝gitignore 済）
+
+### Cloudflare ダッシュボードの「Set up your application」での入力値
+| 項目 | 値 |
+|------|----|
+| Project name | `heijoutei-web` |
+| **Build command** | `npx opennextjs-cloudflare build` |
+| **Deploy command** | `npx opennextjs-cloudflare deploy` |
+
+> ウィザード既定の `npm run build` / `npx wrangler deploy` のままでは動かない（OpenNext のバンドルを経由しないため）。必ず上記に変更する。
+> 環境変数は「Advanced settings」または作成後の Settings → Variables and Secrets で本書 §0 のとおり登録する。
+
+### ⚠️ Proxy(middleware) を撤去した（重要・設計判断）
+- **Next.js 16 の Proxy(旧 middleware) は Node.js ランタイム固定**で、`runtime:'edge'` を指定するとビルドエラー（`Proxy does not support Edge runtime`）。一方 **OpenNext(現行) は Node.js middleware 未対応**でビルドが弾かれる＝両立不可。
+- 元の `src/proxy.ts` は **認可ではなく Supabase セッションの楽観的トークン更新だけ**（認可の本体は `layout` / 各 Server Action の `getUser()` 検証側）だったため **削除**した。**セキュリティ低下なし**（全保護リクエストは `getUser()` で署名/期限/失効を検証）。
+- 代償は **セッション延命のみ**：アクセストークン失効（既定1時間）後、Server Action を伴わない GET 遷移ではリフレッシュ後の Cookie を Server Component が書けず、再ログインが要る場合がある。
+  - **緩和（ダッシュボード設定のみ・コード不要）**：Supabase → Authentication → Sessions で **Refresh token reuse interval を延長**、必要なら **Refresh token rotation を無効化**（管理者専用 CMS のため実用上の影響は軽微）。
+  - 将来 OpenNext が Node middleware に対応したら `git revert` で `proxy.ts` を復活できる。
+
+### ローカル検証メモ
+- `npx opennextjs-cloudflare build` は **Node 20 で成功**（`.open-next/worker.js` 生成）。
+- ただし **wrangler 4.x は Node.js 22以上が必須**＝ローカルの `npm run preview` / `npm run deploy` は Node22 が要る（現環境は v20.19.4）。**Cloudflare の Workers Builds(CI) は Node22+ なのでデプロイ自体は問題なし**。ローカルでプレビューしたい場合のみ nvm/volta 等で Node22 を用意する。
 
 ---
 
