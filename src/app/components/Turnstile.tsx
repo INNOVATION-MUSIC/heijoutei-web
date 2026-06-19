@@ -29,6 +29,8 @@ export default function Turnstile({ onVerify }: { onVerify: (token: string) => v
       if (cancelled || !window.turnstile || !ref.current || widgetId.current) return;
       widgetId.current = window.turnstile.render(ref.current, {
         sitekey: SITE_KEY,
+        theme: "dark", // サイトの黒基調（#0a0a0a）に合わせる
+        language: "ja",
         callback: (token: string) => cb.current(token),
         "expired-callback": () => cb.current(""),
         "error-callback": () => cb.current(""),
