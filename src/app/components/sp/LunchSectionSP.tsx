@@ -20,14 +20,6 @@ export default function LunchSectionSP() {
         paddingBottom: 50,
       }}
     >
-      {/* サブ写真1・2: 特定位置に配置する構図のため absolute 許容 */}
-      <div style={{ position: "absolute", left: 0, top: 675, width: 238, height: 160, overflow: "hidden", background: "#241a14" }}>
-        <Image src="/images/lunch_sub1.webp" alt="" fill className="object-cover" sizes="238px" />
-      </div>
-      <div style={{ position: "absolute", left: 161, top: 865, width: 229, height: 186, overflow: "hidden", background: "#241a14" }}>
-        <Image src="/images/lunch_sub2.webp" alt="" fill className="object-cover" sizes="229px" />
-      </div>
-
       {/* ラベル + タイトル */}
       <div style={{ display: "flex", alignItems: "flex-start", paddingLeft: 40, gap: 28, flexShrink: 0 }}>
         <div
@@ -75,9 +67,23 @@ export default function LunchSectionSP() {
       </p>
 
       {/* gap to button */}
-      <div style={{ height: 50, flexShrink: 0 }} />
+      <div style={{ height: 36, flexShrink: 0 }} />
 
       <SpButton href={SECTION_LINKS.lunch} label="ランチメニュー" />
+
+      {/* ボタンとコラージュの間（説明文の折返し量を吸収して重なりを防ぐ） */}
+      <div style={{ flex: 1, minHeight: 36 }} />
+
+      {/* サブ写真コラージュ（左上→右下のずらし配置をflexboxで再現） */}
+      <div style={{ display: "flex", flexDirection: "column", flexShrink: 0 }}>
+        <div style={{ width: 238, height: 160, overflow: "hidden", background: "#241a14", position: "relative", alignSelf: "flex-start" }}>
+          <Image src="/images/lunch_sub1.webp" alt="" fill className="object-cover" sizes="238px" />
+        </div>
+        <div style={{ height: 30, flexShrink: 0 }} />
+        <div style={{ width: 229, height: 186, overflow: "hidden", background: "#241a14", position: "relative", alignSelf: "flex-end" }}>
+          <Image src="/images/lunch_sub2.webp" alt="" fill className="object-cover" sizes="229px" />
+        </div>
+      </div>
     </section>
   );
 }
