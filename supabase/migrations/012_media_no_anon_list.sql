@@ -1,0 +1,13 @@
+-- ========================================
+-- 平壌亭 CMS — 012 media バケットの匿名一覧を禁止（セキュリティ・advisor 対応）
+--
+-- public バケット `media` の画像配信は公開URL（/storage/v1/object/public/...）で
+-- 行われ RLS を経由しないため、storage.objects への匿名 SELECT は不要。
+-- このポリシー（004 で作成）は匿名での「ファイル一覧の列挙」を許してしまうため削除する。
+--
+-- 影響なし：
+--   - 公開画像の配信        … public バケットの公開URL（RLS不要）で継続
+--   - 管理画面のメディア一覧 … adminSupabase（service_role＝RLSバイパス）で継続
+--   - 管理画面のアップロード … "Auth users can upload media"（INSERT）ポリシーで継続
+-- ========================================
+DROP POLICY IF EXISTS "Public can read media" ON storage.objects;

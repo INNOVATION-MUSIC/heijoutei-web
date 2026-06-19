@@ -131,6 +131,8 @@ Supabase ダッシュボード → **Authentication**:
 DROP POLICY IF EXISTS "Public can read media" ON storage.objects;
 ```
 
+> **実施記録（2026-06-19）**：✅ 本番DBに適用済み（SQL Editor で実行・`Success. No rows returned`）。再現性のため `supabase/migrations/012_media_no_anon_list.sql` としてコミット。匿名の一覧列挙のみ禁止＝公開画像配信・管理画面のメディア一覧（service_role）・アップロード（INSERT ポリシー）には影響なし。
+
 ---
 
 ## 適用後の確認
