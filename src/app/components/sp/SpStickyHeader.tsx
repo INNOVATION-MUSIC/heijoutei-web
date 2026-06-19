@@ -89,6 +89,7 @@ export default function SpStickyHeader({ onOpenMenu }: Props) {
             height: logoH,
             transition: `width ${EASING}, height ${EASING}`,
             flexShrink: 0,
+            pointerEvents: "auto",
           }}
         >
           <Image
