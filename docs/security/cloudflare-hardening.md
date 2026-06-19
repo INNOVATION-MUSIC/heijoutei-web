@@ -33,6 +33,7 @@ Next.js 16 を Cloudflare Workers で動かすため `@opennextjs/cloudflare` �
 - 元の `src/proxy.ts` は **認可ではなく Supabase セッションの楽観的トークン更新だけ**（認可の本体は `layout` / 各 Server Action の `getUser()` 検証側）だったため **削除**した。**セキュリティ低下なし**（全保護リクエストは `getUser()` で署名/期限/失効を検証）。
 - 代償は **セッション延命のみ**：アクセストークン失効（既定1時間）後、Server Action を伴わない GET 遷移ではリフレッシュ後の Cookie を Server Component が書けず、再ログインが要る場合がある。
   - **緩和（ダッシュボード設定のみ・コード不要）**：Supabase → Authentication → Sessions で **Refresh token reuse interval を延長**、必要なら **Refresh token rotation を無効化**（管理者専用 CMS のため実用上の影響は軽微）。
+    - ✅ **2026-06-19 実施済み**：Supabase ダッシュボードでリフレッシュトークンの扱いを緩和し、proxy 撤去によるセッション延命問題に対応。
   - 将来 OpenNext が Node middleware に対応したら `git revert` で `proxy.ts` を復活できる。
 
 ### ローカル検証メモ
