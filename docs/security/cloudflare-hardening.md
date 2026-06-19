@@ -105,6 +105,12 @@ Cloudflare ダッシュボード → 対象ゾーン → **Security → WAF → 
 
 > 動作確認用のテスト鍵（Cloudflare公式）: 常に成功 `1x00000000000000000000AA` / 常に失敗 `2x00000000000000000000AA`（Secretは末尾AA違い）。本番では必ず実鍵に。
 
+> **実施記録（2026-06-19）**
+> - ✅ Turnstile ウィジェット `heijoutei-forms`（Managed・Hostname=`heijoutei-web.motoki-s.workers.dev`）を作成
+> - ✅ `NEXT_PUBLIC_TURNSTILE_SITE_KEY`（Text）/ `TURNSTILE_SECRET_KEY`（Secret）を Cloudflare の Variables and Secrets と Build 両方に登録 → 再ビルドで有効化
+> - ✅ `/contact`・`/takeout` 確認画面でウィジェット表示＆検証通過を確認
+> - ✅ ウィジェットを **dark テーマ＋日本語**化（`Turnstile.tsx`）してサイトの黒基調に統一（Cloudflare ロゴ・枠は無料版では非表示不可）
+
 ---
 
 ## 4. Supabase Auth のレート制限・パスワード保護（ログイン総当たり対策）
