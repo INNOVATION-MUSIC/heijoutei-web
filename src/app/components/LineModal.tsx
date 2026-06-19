@@ -141,8 +141,8 @@ export default function LineModal({ open, onClose }: Props) {
                 textDecoration: "none",
                 display: "flex",
                 alignItems: "center",
-                paddingLeft: 15,
-                gap: 10,
+                paddingLeft: 13,
+                gap: 8,
               }}
             >
               {/* LINEアイコン: Figma size=23×23 */}
@@ -164,6 +164,7 @@ export default function LineModal({ open, onClose }: Props) {
                   letterSpacing: "1px",
                   color: "#fff",
                   flex: 1,
+                  whiteSpace: "nowrap",
                 }}
               >
                 {name}
@@ -177,7 +178,9 @@ export default function LineModal({ open, onClose }: Props) {
                   fontWeight: 700,
                   letterSpacing: "1.5px",
                   color: "#ebe5db",
-                  paddingRight: 14,
+                  paddingRight: 12,
+                  whiteSpace: "nowrap",
+                  flexShrink: 0,
                 }}
               >
                 友だち追加

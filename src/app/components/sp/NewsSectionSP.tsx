@@ -167,33 +167,24 @@ export default function NewsSectionSP({ items }: { items?: NewsItem[] }) {
           flexShrink: 0,
         }}
       >
+        {/* 店舗情報と共通の細身シェブロン矢印 */}
         <button
           aria-label="前へ"
           onClick={() => handleArrow("left")}
-          style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
+          style={{ background: "none", border: "none", padding: 0, cursor: "pointer", display: "block", lineHeight: 0 }}
         >
-          <Image
-            src="/images/news_arrow_l.svg"
-            alt="前へ"
-            width={31}
-            height={14}
-            unoptimized
-            style={{ filter: "brightness(0) invert(1)" }}
-          />
+          <svg width="11" height="20" viewBox="0 0 11 20" fill="none" aria-hidden style={{ display: "block" }}>
+            <path d="M10 1 L1 10 L10 19" stroke="rgba(235,229,219,0.7)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
         </button>
         <button
           aria-label="次へ"
           onClick={() => handleArrow("right")}
-          style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
+          style={{ background: "none", border: "none", padding: 0, cursor: "pointer", display: "block", lineHeight: 0 }}
         >
-          <Image
-            src="/images/news_arrow_r.svg"
-            alt="次へ"
-            width={31}
-            height={14}
-            unoptimized
-            style={{ filter: "brightness(0) invert(1)" }}
-          />
+          <svg width="11" height="20" viewBox="0 0 11 20" fill="none" aria-hidden style={{ display: "block" }}>
+            <path d="M1 1 L10 10 L1 19" stroke="rgba(235,229,219,0.7)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
         </button>
       </div>
 

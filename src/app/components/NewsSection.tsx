@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { NEWS_DATA, type NewsItem } from "@/app/lib/newsData";
 import { SECTION_LINKS } from "@/app/lib/navLinks";
 import OutlineButton from "./OutlineButton";
@@ -9,6 +9,44 @@ import OutlineButton from "./OutlineButton";
 const mincho = "'Shippori Mincho', serif";
 const sans = "'Noto Sans JP', sans-serif";
 const display = "'Cormorant Garamond', serif";
+
+/** 店舗情報（店舗詳細スライダー）と共通の細身シェブロン矢印。 */
+function NewsArrow({ dir, onClick, style }: { dir: "left" | "right"; onClick: () => void; style?: React.CSSProperties }) {
+  const [hover, setHover] = useState(false);
+  const isLeft = dir === "left";
+  const stroke = hover ? "#ebe5db" : "rgba(235,229,219,0.55)";
+  return (
+    <button
+      onClick={onClick}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      aria-label={isLeft ? "前へ" : "次へ"}
+      className="absolute"
+      style={{ background: "transparent", border: "none", cursor: "pointer", padding: 0, zIndex: 10, lineHeight: 0, ...style }}
+    >
+      <svg
+        width="22"
+        height="40"
+        viewBox="0 0 11 20"
+        fill="none"
+        aria-hidden
+        style={{
+          display: "block",
+          transform: hover ? `translateX(${isLeft ? -5 : 5}px)` : "none",
+          transition: "transform 0.3s ease",
+        }}
+      >
+        <path
+          d={isLeft ? "M10 1 L1 10 L10 19" : "M1 1 L10 10 L1 19"}
+          stroke={stroke}
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </button>
+  );
+}
 
 const CARD_WIDTH = 340;
 const GAP = 55;
@@ -90,23 +128,11 @@ export default function NewsSection({ items }: { items?: NewsItem[] }) {
         <OutlineButton jp="お知らせ一覧" href={SECTION_LINKS.news} width={162} padL={32} />
       </div>
 
-      {/* 左矢印 */}
-      <button
-        onClick={() => handleArrow("left")}
-        className="absolute"
-        style={{ left: 70, top: 344, background: "transparent", border: "none", cursor: "pointer", padding: 0, zIndex: 10 }}
-      >
-        <Image src="/images/news_arrow_l.svg" alt="前へ" width={34} height={16} unoptimized />
-      </button>
+      {/* 左矢印（店舗情報と共通の細身シェブロン） */}
+      <NewsArrow dir="left" onClick={() => handleArrow("left")} style={{ left: 76, top: 332 }} />
 
-      {/* 右矢印 */}
-      <button
-        onClick={() => handleArrow("right")}
-        className="absolute"
-        style={{ left: 1336, top: 344, background: "transparent", border: "none", cursor: "pointer", padding: 0, zIndex: 10 }}
-      >
-        <Image src="/images/news_arrow_r.svg" alt="次へ" width={34} height={16} unoptimized />
-      </button>
+      {/* 右矢印（店舗情報と共通の細身シェブロン） */}
+      <NewsArrow dir="right" onClick={() => handleArrow("right")} style={{ left: 1343, top: 332 }} />
 
       {/* ニュースカード */}
       <div className="absolute" style={{ top: 411, left: 70, width: 1370, overflow: "hidden" }}>
