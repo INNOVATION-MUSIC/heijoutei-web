@@ -40,6 +40,25 @@ Next.js 16 を Cloudflare Workers で動かすため `@opennextjs/cloudflare` �
 - `npx opennextjs-cloudflare build` は **Node 20 で成功**（`.open-next/worker.js` 生成）。
 - ただし **wrangler 4.x は Node.js 22以上が必須**＝ローカルの `npm run preview` / `npm run deploy` は Node22 が要る（現環境は v20.19.4）。**Cloudflare の Workers Builds(CI) は Node22+ なのでデプロイ自体は問題なし**。ローカルでプレビューしたい場合のみ nvm/volta 等で Node22 を用意する。
 
+### ⚠️ 環境変数の落とし穴：Workers Builds は平文変数をデプロイ毎にワイプする（2026-06-19 ハマった）
+- **`wrangler deploy`（＝Workers Builds の deploy）は、デプロイのたびに平文(Text)変数を `wrangler.jsonc` 基準で上書き**する。ダッシュボードで手入力した **Text 変数は次のデプロイで消える**。**Secret は別管理で残る**。
+- 症状：再ビルド後に `MAIL_FROM`・`ORDER_NOTIFY_TO` が消え、テイクアウト/問い合わせ**メールが届かなくなった**（注文・問い合わせ自体は best-effort で 200 成立するため気づきにくい）。
+- **`NEXT_PUBLIC_*` はビルド時にコードへ焼き込まれる**ため、ランタイム env から消えても影響なし（サイトは動く）。ランタイムで `process.env` 参照する **非 `NEXT_PUBLIC_` 変数（`MAIL_FROM`/`ORDER_NOTIFY_TO`）だけが実害**を受ける。
+- **対処（このリポジトリは PUBLIC のため採用）**：`MAIL_FROM`・`ORDER_NOTIFY_TO` を **Secret として登録**（Secret はワイプされず、公開リポジトリにも晒れない）。→ ✅ 2026-06-19 実施・メール実送信を確認。
+- 別解（リポジトリが private の場合）：非機密の平文変数は `wrangler.jsonc` の `vars` に書けばデプロイで消えず版管理もされる。**公開リポジトリではメールアドレス等を `vars` に書かない**こと。
+
+#### 変数の置き場所まとめ（確定）
+| 変数 | ランタイム(Variables and Secrets) | Build(Settings→Build) | 備考 |
+|------|----------------------------------|----------------------|------|
+| `SUPABASE_SERVICE_ROLE_KEY` | ✅ Secret | — | ランタイム参照 |
+| `BREVO_API_KEY` | ✅ Secret | — | ランタイム参照 |
+| `TURNSTILE_SECRET_KEY` | ✅ Secret | — | ランタイム参照 |
+| `MAIL_FROM` | ✅ **Secret**（Textだと消える） | — | ランタイム参照 |
+| `ORDER_NOTIFY_TO` | ✅ **Secret**（同上） | — | ランタイム参照 |
+| `NEXT_PUBLIC_SUPABASE_URL` | 不要（焼き込み） | ✅ 必要 | ビルド時にコードへ埋め込み |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | 不要（焼き込み） | ✅ 必要 | 同上 |
+| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | 不要（焼き込み） | ✅ 必要 | 同上 |
+
 ---
 
 ## 0. 必要な環境変数（Cloudflare のプロジェクト設定 / Secrets に登録）
