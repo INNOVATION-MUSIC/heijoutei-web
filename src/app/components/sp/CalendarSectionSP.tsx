@@ -182,12 +182,14 @@ export default function CalendarSectionSP({ months }: { months?: BusinessMonth[]
         paddingTop: 33,
       }}
     >
-      {/* ラベル + タイトル */}
+      {/* ラベル + タイトル（ブロックごと中央寄せ） */}
       <div
         style={{
           display: "flex",
           alignItems: "flex-start",
-          paddingLeft: 40,
+          justifyContent: "center",
+          paddingLeft: 16,
+          paddingRight: 16,
           flexShrink: 0,
           gap: 28,
         }}
@@ -225,11 +227,12 @@ export default function CalendarSectionSP({ months }: { months?: BusinessMonth[]
         <p
           style={{
             fontFamily: display,
-            fontSize: 44,
+            fontSize: 38,
             letterSpacing: "-1px",
             color: "#ebe5db",
             lineHeight: "normal",
-            paddingTop: 20,
+            whiteSpace: "nowrap",
+            paddingTop: 26,
           }}
         >
           Business days
