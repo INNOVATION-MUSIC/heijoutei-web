@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import NewsDetailClient from "@/app/components/NewsDetailClient";
 import { fetchNewsArticle, fetchNewsList, fetchNewsParams } from "@/app/lib/newsDb";
 
@@ -6,6 +7,33 @@ export const revalidate = 60;
 
 export async function generateStaticParams() {
   return fetchNewsParams();
+}
+
+// 本文(HTML/プレーン)から description 用に抜粋（タグ除去・整形）
+function excerpt(body: string | undefined, fallback: string, max = 110): string {
+  const text = (body ?? "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+  if (!text) return fallback;
+  return text.length > max ? `${text.slice(0, max)}…` : text;
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  const article = await fetchNewsArticle(id);
+  if (!article) return {};
+  const title = `${article.title} | お知らせ | 焼肉平壌亭`;
+  const description = excerpt(article.body, `焼肉平壌亭のお知らせ「${article.title}」をご紹介します。`);
+  return {
+    title,
+    description,
+    alternates: { canonical: `/news/${id}` },
+    openGraph: {
+      type: "article",
+      title,
+      description,
+      url: `/news/${id}`,
+      ...(article.heroImg ? { images: [article.heroImg] } : {}),
+    },
+  };
 }
 
 export default async function NewsDetailPage({ params }: { params: Promise<{ id: string }> }) {

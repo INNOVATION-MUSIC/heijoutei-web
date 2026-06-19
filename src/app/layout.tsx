@@ -1,9 +1,20 @@
 import type { Metadata, Viewport } from "next";
+import { SITE_URL, SITE_NAME, SITE_DESCRIPTION } from "./lib/site";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "焼肉平壌亭 | 本格炭火焼肉",
-  description: "本格炭火焼肉で、特別なひとときを。京都・亀岡、園部、福知山で愛される焼肉平壌亭の公式サイト。",
+  description: SITE_DESCRIPTION,
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    siteName: SITE_NAME,
+    locale: "ja_JP",
+    url: SITE_URL,
+    title: "焼肉平壌亭 | 本格炭火焼肉",
+    description: SITE_DESCRIPTION,
+  },
 };
 
 export const viewport: Viewport = {

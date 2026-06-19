@@ -4,6 +4,14 @@ import StickyButton from "./components/StickyButton";
 import { fetchTopNews } from "./lib/newsDb";
 import { fetchBusinessCalendar } from "./lib/businessCalendarDb";
 import { fetchTopCourses } from "./lib/courseDb";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "焼肉平壌亭 | 本格炭火焼肉（亀岡・園部・福知山）",
+  description:
+    "本格炭火焼肉で、特別なひとときを。京都・亀岡、園部、福知山で愛される焼肉平壌亭の公式サイト。お品書き・コース・テイクアウト・店舗情報・ご予約はこちら。",
+  alternates: { canonical: "/" },
+};
 
 export const revalidate = 60;
 
