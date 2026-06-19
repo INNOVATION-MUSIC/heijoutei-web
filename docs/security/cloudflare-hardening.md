@@ -115,6 +115,12 @@ Supabase ダッシュボード → **Authentication**:
 - **Rate Limits**: sign-in / token / password-recovery / email の上限を引き下げ（既定より厳しめに）
 - **Policies / Passwords**: **Leaked password protection を有効化**（HaveIBeenPwned 照合）／最小文字数を 8 以上に
 
+> **実施記録（2026-06-19）**
+> - ✅ Minimum password length を 8 以上に設定（Auth Providers → Email）
+> - ✅ Allow new users to sign up を **OFF**（公開サインアップ無効化。管理者は service role スクリプトで作成するため影響なし）
+> - 🔶 **保留：Prevent use of leaked passwords（漏洩PW保護）** — 既存ユーザーへの影響があるため**先方確認後に対応**
+> - 🔶 未対応：Rate Limits の引き下げ
+
 ---
 
 ## 5.（任意）media バケットの一覧禁止
