@@ -225,12 +225,12 @@ export default function CalendarSectionSP({ months }: { months?: BusinessMonth[]
         <p
           style={{
             fontFamily: display,
-            fontSize: 38,
+            fontSize: 48,
             letterSpacing: "-1px",
             color: "#ebe5db",
             lineHeight: "normal",
             whiteSpace: "nowrap",
-            paddingTop: 26,
+            paddingTop: 20,
           }}
         >
           Business days
