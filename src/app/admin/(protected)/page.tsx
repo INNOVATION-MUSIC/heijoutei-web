@@ -57,7 +57,7 @@ export default async function AdminDashboard() {
         <p className="mt-1 text-sm text-[#6f6f80]">平壌亭 CMS 管理画面</p>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <StatCard label="未読の注文" value={unreadOrders ?? 0} href="/admin/takeout-orders" />
         <StatCard label={`本日の注文 / 合計`} value={`${(todayOrderRows ?? []).length}件 ${todayTotal.toLocaleString('ja-JP')}円`} href="/admin/takeout-orders" />
         <StatCard label="未読の問い合わせ" value={unreadContacts ?? 0} href="/admin/contact" />

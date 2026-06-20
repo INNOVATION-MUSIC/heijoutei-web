@@ -77,7 +77,7 @@ export default function CourseForm({
             <label className={labelClass}>コース名 *</label>
             <input className={inputClass} value={form.name} onChange={(e) => set('name', e.target.value)} required />
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
               <label className={labelClass}>コース種別ラベル</label>
               <input className={inputClass} value={form.type_label ?? ''} onChange={(e) => set('type_label', e.target.value)} placeholder="例: 野菜とヘルシーなコース" />

@@ -111,7 +111,7 @@ export default function StoreForm({ initial }: { initial?: Tables<'stores'> }) {
           <div className="rounded-xl border border-[#23232e] bg-[#14141a] p-5">
             <h2 className="mb-4 text-sm font-semibold text-[#ebe5db]">基本情報</h2>
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <Field label="店舗名 *">
                   <input className={inputClass} value={form.name} onChange={(e) => set('name', e.target.value)} required />
                 </Field>
@@ -160,7 +160,7 @@ export default function StoreForm({ initial }: { initial?: Tables<'stores'> }) {
               <Field label="住所">
                 <input className={inputClass} value={form.address ?? ''} onChange={(e) => set('address', e.target.value)} />
               </Field>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <Field label="電話番号">
                   <input className={inputClass} value={form.phone ?? ''} onChange={(e) => set('phone', e.target.value)} />
                 </Field>

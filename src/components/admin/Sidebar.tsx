@@ -156,10 +156,14 @@ export default function AdminSidebar({
   userRole,
   unreadOrders = 0,
   unreadContacts = 0,
+  open = false,
+  onClose,
 }: {
   userRole: string
   unreadOrders?: number
   unreadContacts?: number
+  open?: boolean
+  onClose?: () => void
 }) {
   const pathname = usePathname()
 
@@ -210,8 +214,16 @@ export default function AdminSidebar({
   }
 
   return (
-    <aside className="flex w-60 flex-shrink-0 flex-col overflow-y-auto border-r border-[#23232e] bg-[#14141a]">
-      <Link href="/admin" className="flex h-16 flex-shrink-0 items-center justify-center border-b border-[#23232e] px-5">
+    <aside
+      className={`fixed inset-y-0 left-0 z-50 flex w-60 flex-shrink-0 transform flex-col overflow-y-auto border-r border-[#23232e] bg-[#14141a] transition-transform duration-300 lg:static lg:z-auto lg:translate-x-0 ${
+        open ? 'translate-x-0' : '-translate-x-full'
+      }`}
+    >
+      <Link
+        href="/admin"
+        onClick={onClose}
+        className="flex h-16 flex-shrink-0 items-center justify-center border-b border-[#23232e] px-5"
+      >
         <Image src="/images/logo.webp" alt="焼肉平壌亭" width={104} height={54} className="object-contain" priority />
       </Link>
 
@@ -230,6 +242,7 @@ export default function AdminSidebar({
                     <li key={item.href}>
                       <Link
                         href={item.href}
+                        onClick={onClose}
                         className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors ${
                           active
                             ? 'border-l-2 border-[#d9b86b] bg-[#d9b86b]/10 font-medium text-[#ebe5db]'

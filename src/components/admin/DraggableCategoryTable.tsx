@@ -176,8 +176,8 @@ export default function DraggableCategoryTable({
         </div>
       )}
 
-      <div className="overflow-hidden rounded-xl border border-[#23232e] bg-[#14141a]">
-        <table className="w-full text-sm">
+      <div className="overflow-x-auto rounded-xl border border-[#23232e] bg-[#14141a]">
+        <table className="w-full min-w-[640px] text-sm">
           <thead>
             <tr className="border-b border-[#23232e] bg-[#1a1a22] text-left text-xs text-[#6f6f80]">
               <th className="w-10 px-2 py-3"></th>

@@ -77,7 +77,7 @@ export default function RecruitForm({
 
       <div className="space-y-5 lg:col-span-2">
         <div className="space-y-4 rounded-xl border border-[#23232e] bg-[#14141a] p-5">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
               <label className={labelClass}>店舗 *</label>
               <select className={inputClass} value={form.store_id} onChange={(e) => set('store_id', e.target.value)}>

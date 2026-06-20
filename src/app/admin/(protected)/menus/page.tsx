@@ -71,8 +71,8 @@ export default async function AdminMenusPage({
         <button type="submit" className="rounded-lg border border-[#2f2f3c] px-4 py-2 text-sm text-[#9a9aa8] hover:text-[#ebe5db]">絞り込み</button>
       </form>
 
-      <div className="overflow-hidden rounded-xl border border-[#23232e] bg-[#14141a]">
-        <table className="w-full text-sm">
+      <div className="overflow-x-auto rounded-xl border border-[#23232e] bg-[#14141a]">
+        <table className="w-full min-w-[640px] text-sm">
           <thead>
             <tr className="border-b border-[#23232e] bg-[#1a1a22] text-left text-xs text-[#6f6f80]">
               <th className="px-4 py-3 font-medium">店舗</th>
