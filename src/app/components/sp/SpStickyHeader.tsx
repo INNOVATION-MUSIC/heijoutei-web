@@ -101,18 +101,22 @@ export default function SpStickyHeader({ onOpenMenu }: Props) {
           />
         </Link>
 
-        {/* ハンバーガーボタン */}
+        {/* ハンバーガーボタン（見た目は据え置き・透明paddingでタップ領域を44×44に拡大／レビュー#10） */}
         <button
           onClick={onOpenMenu}
           aria-label="メニューを開く"
           style={{
             position: "absolute",
-            right: 17,
-            top: 19,
+            right: 17 - 8,
+            top: 19 - 11,
             background: "none",
             border: "none",
             cursor: "pointer",
-            padding: 0,
+            boxSizing: "content-box",
+            paddingTop: 11,
+            paddingBottom: 11,
+            paddingLeft: 8,
+            paddingRight: 8,
             width: MENU_BTN_W,
             display: "flex",
             flexDirection: "column",
