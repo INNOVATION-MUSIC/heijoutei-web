@@ -182,14 +182,12 @@ export default function CalendarSectionSP({ months }: { months?: BusinessMonth[]
         paddingTop: 33,
       }}
     >
-      {/* ラベル + タイトル（ブロックごと中央寄せ） */}
+      {/* ラベル + タイトル（左ラインを上の店舗セクションに合わせて paddingLeft:40 で左寄せ） */}
       <div
         style={{
           display: "flex",
           alignItems: "flex-start",
-          justifyContent: "center",
-          paddingLeft: 16,
-          paddingRight: 16,
+          paddingLeft: 40,
           flexShrink: 0,
           gap: 28,
         }}
