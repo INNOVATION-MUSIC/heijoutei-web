@@ -4,7 +4,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: "焼肉平壌亭 | 本格炭火焼肉",
+  title: "焼肉平壌亭 | 本格焼肉",
   description: SITE_DESCRIPTION,
   alternates: { canonical: "/" },
   openGraph: {
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     siteName: SITE_NAME,
     locale: "ja_JP",
     url: SITE_URL,
-    title: "焼肉平壌亭 | 本格炭火焼肉",
+    title: "焼肉平壌亭 | 本格焼肉",
     description: SITE_DESCRIPTION,
   },
 };

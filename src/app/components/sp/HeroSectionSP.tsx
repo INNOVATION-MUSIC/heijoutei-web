@@ -19,7 +19,7 @@ export default function HeroSectionSP({ onOpenModal, onOpenLineModal }: Props) {
     <section
       style={{
         width: 390,
-        height: 915,
+        height: 955,
         background: "#0a0a0a",
         overflow: "hidden",
         display: "flex",
@@ -113,9 +113,11 @@ export default function HeroSectionSP({ onOpenModal, onOpenLineModal }: Props) {
               paddingLeft: "6px", // letterSpacing末尾スペース補正でセンター合わせ
             }}
           >
-            本格炭火焼肉で、
+            創業50年。
             <br />
-            特別なひとときを。
+            受け継がれる伝統と、
+            <br />
+            変わらない美味しさ。
           </p>
           <div
             style={{
@@ -136,9 +138,9 @@ export default function HeroSectionSP({ onOpenModal, onOpenLineModal }: Props) {
               textAlign: "center",
             }}
           >
-            Savor unforgettable moments
+            Celebrating 50 years.
             <br />
-            over authentic charcoal-grilled yakiniku.
+            A time-honored tradition, a timeless flavor.
           </p>
         </div>
 

@@ -7,9 +7,9 @@ import { fetchTopCourses } from "./lib/courseDb";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "焼肉平壌亭 | 本格炭火焼肉（亀岡・園部・福知山）",
+  title: "焼肉平壌亭 | 本格焼肉（亀岡・園部・福知山）",
   description:
-    "本格炭火焼肉で、特別なひとときを。京都・亀岡、園部、福知山で愛される焼肉平壌亭の公式サイト。お品書き・コース・テイクアウト・店舗情報・ご予約はこちら。",
+    "創業50年。受け継がれる伝統と、変わらない美味しさ。京都・亀岡、園部、福知山で愛される焼肉平壌亭の公式サイト。お品書き・コース・テイクアウト・店舗情報・ご予約はこちら。",
   alternates: { canonical: "/" },
 };
 

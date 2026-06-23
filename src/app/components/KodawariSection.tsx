@@ -6,7 +6,7 @@ const mincho = "'Shippori Mincho', serif";
 export default function KodawariSection() {
   return (
     <>
-      {/* こだわり 1: 炭火が紡ぐ、至福の味わい。 */}
+      {/* こだわり 1: 目利きが選ぶ和牛と、受け継がれる秘伝の味。 */}
       <section className="relative overflow-hidden bg-[#0d0a0a]" style={{ width: 1440, height: 920 }}>
         <video
           autoPlay
@@ -18,22 +18,23 @@ export default function KodawariSection() {
           <source src="/images/concept.mp4" type="video/mp4" />
         </video>
         <div className="absolute inset-0 bg-black/70" />
-        {/* 縦書き: 炭火が紡ぐ、 */}
-        <div className="absolute flex items-start" style={{ left: 738, top: 224, width: 35 }}>
-          <div className="flex flex-col" style={{ gap: 4 }}>
-            {["炭","火","が","紡","ぐ"].map(ch => (
-              <p key={ch} style={{ fontFamily: mincho, fontSize: 34, color: "#fff", lineHeight: "normal", margin: 0 }}>{ch}</p>
-            ))}
-            <p style={{ fontFamily: mincho, fontSize: 34, color: "#fff", transform: "rotate(180deg)", margin: 0 }}>、</p>
-          </div>
-        </div>
-        {/* 縦書き: 至福の味わい。 */}
-        <div className="absolute flex items-start" style={{ left: 666, top: 323, width: 34 }}>
-          <div className="flex flex-col" style={{ gap: 4 }}>
-            {["至","福","の","味","わ","い"].map(ch => (
-              <p key={ch} style={{ fontFamily: mincho, fontSize: 34, color: "#fff", lineHeight: "normal", margin: 0 }}>{ch}</p>
-            ))}
-            <p style={{ fontFamily: mincho, fontSize: 34, color: "#fff", transform: "rotate(180deg)", margin: 0 }}>。</p>
+        {/* 縦書き2列を上下センター配置（右:目利きが選ぶ和牛と、 左:受け継がれる秘伝の味。・右列を99px上にずらした階段組み。文字数に依らず自動センター） */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="flex items-start" style={{ gap: 38 }}>
+            {/* 左列: 受け継がれる秘伝の味。（99px下げて階段配置） */}
+            <div className="flex flex-col" style={{ gap: 4, marginTop: 99 }}>
+              {["受","け","継","が","れ","る","秘","伝","の","味"].map(ch => (
+                <p key={ch} style={{ fontFamily: mincho, fontSize: 34, color: "#fff", lineHeight: "normal", margin: 0 }}>{ch}</p>
+              ))}
+              <p style={{ fontFamily: mincho, fontSize: 34, color: "#fff", transform: "rotate(180deg)", margin: 0 }}>。</p>
+            </div>
+            {/* 右列: 目利きが選ぶ和牛と、 */}
+            <div className="flex flex-col" style={{ gap: 4 }}>
+              {["目","利","き","が","選","ぶ","和","牛","と"].map(ch => (
+                <p key={ch} style={{ fontFamily: mincho, fontSize: 34, color: "#fff", lineHeight: "normal", margin: 0 }}>{ch}</p>
+              ))}
+              <p style={{ fontFamily: mincho, fontSize: 34, color: "#fff", transform: "rotate(180deg)", margin: 0 }}>、</p>
+            </div>
           </div>
         </div>
       </section>
@@ -54,7 +55,7 @@ export default function KodawariSection() {
 
 厳選された黒毛和牛、
 職人の手で丁寧にカットされた一枚一枚。
-備長炭が生み出す遠赤外線の力で、
+職人が見極める絶妙な火加減で、
 肉本来の旨みを最大限に引き出します。
 
 炎が肉を包み、香ばしい煙が立ち上る瞬間。
@@ -65,7 +66,7 @@ export default function KodawariSection() {
 大切な人と過ごす至福のひととき。
 
 ここでしか味わえない、
-本格炭火焼肉の真髄を。`}
+目利きが選ぶ和牛の真髄を。`}
         </p>
       </section>
     </>

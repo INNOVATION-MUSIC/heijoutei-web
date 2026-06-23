@@ -88,10 +88,10 @@ export default function HeroSection({ onOpenModal }: { onOpenModal: () => void }
                 {"YAKINIKU  HEIJOHTEI"}
               </p>
               <p style={{ fontFamily: mincho, fontSize: 22, fontWeight: 400, letterSpacing: "0.27em", lineHeight: "44px", color: "#ebe5db", textAlign: "center" }}>
-                本格炭火焼肉で、<br />特別なひとときを。
+                創業50年。<br />受け継がれる伝統と、<br />変わらない美味しさ。
               </p>
               <p style={{ fontFamily: sans, fontSize: 10, fontWeight: 300, letterSpacing: "0.15em", color: "#99948c", lineHeight: "22px", textAlign: "center" }}>
-                Savor unforgettable moments<br />over authentic charcoal-grilled yakiniku.
+                Celebrating 50 years.<br />A time-honored tradition, a timeless flavor.
               </p>
             </div>
 

@@ -40,7 +40,7 @@ export default function AboutSection({ onOpenModal }: { onOpenModal: () => void 
         </div>
       </div>
 
-      {/* こだわり1: 炭火動画（左）+ 縦書き「炭火が紡ぐ、至福の味わい。」（右） */}
+      {/* こだわり1: 炭火動画（左）+ 縦書き「目利きが選ぶ和牛と、受け継がれる秘伝の味。」（右） */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", paddingTop: 273, paddingRight: 142 }}>
         {/* 左: 動画背景 */}
         <div style={{ position: "relative", width: 938, height: 715, overflow: "hidden", background: "#472914", flexShrink: 0 }}>
@@ -48,10 +48,10 @@ export default function AboutSection({ onOpenModal }: { onOpenModal: () => void 
         </div>
         {/* 右: 縦書き2列 */}
         <div style={{ display: "flex", gap: 62, alignItems: "flex-start" }}>
-          {/* 左列: 至福の味わい。（下に129pxオフセット） */}
-          <p style={{ paddingTop: 129, writingMode: "vertical-rl" as const, fontFamily: mincho, fontSize: 40, lineHeight: "58px", color: "#fff", margin: 0 }}>至福の味わい。</p>
-          {/* 右列: 炭火が紡ぐ、 */}
-          <p style={{ writingMode: "vertical-rl" as const, fontFamily: mincho, fontSize: 40, lineHeight: "58px", color: "#fff", margin: 0 }}>炭火が紡ぐ、</p>
+          {/* 左列: 受け継がれる秘伝の味。（下に129pxオフセット） */}
+          <p style={{ paddingTop: 129, writingMode: "vertical-rl" as const, fontFamily: mincho, fontSize: 40, lineHeight: "58px", color: "#fff", margin: 0 }}>受け継がれる秘伝の味。</p>
+          {/* 右列: 目利きが選ぶ和牛と、 */}
+          <p style={{ writingMode: "vertical-rl" as const, fontFamily: mincho, fontSize: 40, lineHeight: "58px", color: "#fff", margin: 0 }}>目利きが選ぶ和牛と、</p>
         </div>
       </div>
 
@@ -62,7 +62,7 @@ export default function AboutSection({ onOpenModal }: { onOpenModal: () => void 
           「本物の焼肉」を追求すること。<br /><br />
           厳選された黒毛和牛、<br />
           職人の手で丁寧にカットされた一枚一枚。<br />
-          備長炭が生み出す遠赤外線の力で、<br />
+          職人が見極める絶妙な火加減で、<br />
           肉本来の旨みを最大限に引き出します。
         </p>
         <div style={{ position: "relative", width: 746, height: 504, overflow: "hidden", background: "#472914", flexShrink: 0 }}>
@@ -82,7 +82,7 @@ export default function AboutSection({ onOpenModal }: { onOpenModal: () => void 
           京都・丹波の地で、<br />
           大切な人と過ごす至福のひととき。<br /><br />
           ここでしか味わえない、<br />
-          本格炭火焼肉の真髄を。
+          目利きが選ぶ和牛の真髄を。
         </p>
       </div>
 

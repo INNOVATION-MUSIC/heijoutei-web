@@ -7,4 +7,4 @@ export const SITE_URL = (
 export const SITE_NAME = "焼肉平壌亭";
 
 export const SITE_DESCRIPTION =
-  "本格炭火焼肉で、特別なひとときを。京都・亀岡、園部、福知山で愛される焼肉平壌亭の公式サイト。";
+  "創業50年。受け継がれる伝統と、変わらない美味しさ。京都・亀岡、園部、福知山で愛される焼肉平壌亭の公式サイト。";

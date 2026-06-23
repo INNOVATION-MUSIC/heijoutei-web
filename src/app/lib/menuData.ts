@@ -118,7 +118,7 @@ export const MENU_CATEGORIES: MenuCategory[] = [
     cardPhoto: img("menu_cat_yakimono"),
     items: [
       { name: "牛タン焼き", desc: "香ばしく焼き上げる定番の一品。", price: 1580, photo: img("menu_cat_yakimono") },
-      { name: "豚バラ焼き", desc: "ジューシーな豚バラを炭火で。", price: 880, photo: img("menu_cat_yakimono") },
+      { name: "豚バラ焼き", desc: "ジューシーな豚バラを香ばしく焼き上げて。", price: 880, photo: img("menu_cat_yakimono") },
       { name: "鶏もも焼き", desc: "旨味たっぷりの鶏ももをこんがりと。", price: 780, photo: img("menu_cat_yakimono") },
     ],
   },
@@ -406,7 +406,7 @@ export const COURSES_BY_STORE: Partial<Record<string, CourseItem[]>> = {
   fukuchiyama: [
     { label: "黒毛和牛を堪能", title: "黒毛和牛フルコース", price: "¥9,800〜", desc: "福知山店こだわりの黒毛和牛を心ゆくまでご堪能いただけます。", photo: img("menu_course_full") },
     { label: "お肉と野菜をご用意", title: "焼き肉と野菜の盛り合わせ", price: "¥5,200〜", desc: "厳選したお肉と季節の野菜をご用意したコースです。", photo: img("menu_course_yasai") },
-    { label: "すべてセットになった安心コース", title: "飲み放題付 プレミアム宴会", price: "¥9,800〜", desc: "上質なお肉と飲み放題で特別なひとときを。", photo: img("menu_course_nomi") },
+    { label: "すべてセットになった安心コース", title: "飲み放題付 プレミアム宴会", price: "¥9,800〜", desc: "目利きの和牛と飲み放題で、特別なひとときを。", photo: img("menu_course_nomi") },
   ],
   yurano: [
     { label: "前菜からデザートまで", title: "ゆらの満喫フルコース", price: "¥8,000〜", desc: "焼肉ゆらの自慢の料理を一通り楽しめる満喫コース。", photo: img("menu_course_full") },

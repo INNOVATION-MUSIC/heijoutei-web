@@ -54,10 +54,10 @@ export default function AboutSectionSP() {
         </div>
       </div>
 
-      {/* タイトル「炭火が紡ぐ、／至福の味わい。」（2行ステア配置） */}
+      {/* タイトル「目利きが選ぶ和牛と、／受け継がれる秘伝の味。」（2行ステア配置・文字数増で2行目のインデントを縮小しはみ出し回避） */}
       <div style={{ display: "flex", flexDirection: "column", paddingTop: 36 }}>
-        <p style={{ paddingLeft: 37, fontFamily: mincho, fontSize: 22, letterSpacing: "6px", lineHeight: "50px", color: "#ebe5db", margin: 0 }}>炭火が紡ぐ、</p>
-        <p style={{ paddingLeft: 118, fontFamily: mincho, fontSize: 22, letterSpacing: "6px", lineHeight: "50px", color: "#ebe5db", margin: 0 }}>至福の味わい。</p>
+        <p style={{ paddingLeft: 37, fontFamily: mincho, fontSize: 22, letterSpacing: "6px", lineHeight: "50px", color: "#ebe5db", margin: 0 }}>目利きが選ぶ和牛と、</p>
+        <p style={{ paddingLeft: 60, fontFamily: mincho, fontSize: 22, letterSpacing: "6px", lineHeight: "50px", color: "#ebe5db", margin: 0 }}>受け継がれる秘伝の味。</p>
       </div>
 
       {/* ストーリー文1 */}
@@ -66,7 +66,7 @@ export default function AboutSectionSP() {
         「本物の焼肉」を追求すること。<br /><br />
         厳選された黒毛和牛、<br />
         職人の手で丁寧にカットされた一枚一枚。<br />
-        備長炭が生み出す遠赤外線の力で、<br />
+        職人が見極める絶妙な火加減で、<br />
         肉本来の旨みを最大限に引き出します。
       </p>
 
@@ -97,7 +97,7 @@ export default function AboutSectionSP() {
         京都・丹波の地で、<br />
         大切な人と過ごす至福のひととき。<br /><br />
         ここでしか味わえない、<br />
-        本格炭火焼肉の真髄を。
+        目利きが選ぶ和牛の真髄を。
       </p>
 
       {/* 店舗内観写真（279×318・右端配置） */}

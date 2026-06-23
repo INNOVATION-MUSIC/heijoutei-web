@@ -60,7 +60,7 @@ export default function ResponsivePage({ topNews, businessMonths, topCourses }: 
   if (isMobile) {
     return (
       <>
-        <ScaledSection designWidth={DESIGN_SP} height={915}>
+        <ScaledSection designWidth={DESIGN_SP} height={955}>
           <HeroSectionSP onOpenModal={openModal} onOpenLineModal={openLineModal} />
         </ScaledSection>
         <ScaledSection designWidth={DESIGN_SP} height={801}>

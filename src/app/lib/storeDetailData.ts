@@ -28,7 +28,7 @@ export const STORE_DETAILS: StoreDetail[] = [
     name: "平壌亭  亀岡店",
     desc: [
       "落ち着きのある空間の中で、",
-      "上質な焼肉と特別なひとときをお楽しみいただけます",
+      "目利きが選ぶ和牛と受け継がれる秘伝の味をお楽しみいただけます",
       "本店ならではのメニュー、ランチ&ディナーもご用意しております",
     ],
     photos: ["/images/storelist_kameoka.webp", "/images/about_interior.webp", "/images/about_zashiki.webp", "/images/hero_meat.webp"],
