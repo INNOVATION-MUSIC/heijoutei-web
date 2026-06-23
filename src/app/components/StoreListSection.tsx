@@ -197,7 +197,7 @@ export default function StoreListSection({ onOpenModal, height, stores }: Props)
         </div>
         {/* 右: ヒーロー画像 820×320 */}
         <div style={{ width: 820, height: 320, position: "relative", overflow: "hidden", flexShrink: 0 }}>
-          <Image src="/images/storelist_hero.webp" alt="焼肉平壌亭 店舗一覧" fill className="object-cover" sizes="820px" />
+          <Image src="/images/storelist_hero.webp" alt="焼肉平壌亭 店舗一覧" fill className="object-cover" sizes="820px" preload />
         </div>
       </div>
 

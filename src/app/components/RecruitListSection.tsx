@@ -115,7 +115,7 @@ export default function RecruitListSection({
 
         {/* 右: ヒーロー画像（820×320・薄い黒オーバーレイ） */}
         <div style={{ position: "relative", width: 820, height: 320, overflow: "hidden", flexShrink: 0, background: "#472914" }}>
-          <Image src="/images/recruit_hero_hd.webp" alt="焼肉平壌亭で働くスタッフ" fill className="object-cover" sizes="820px" priority />
+          <Image src="/images/recruit_hero_hd.webp" alt="焼肉平壌亭で働くスタッフ" fill className="object-cover" sizes="820px" preload />
           <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.25)" }} />
         </div>
       </div>

@@ -56,7 +56,7 @@ export default function RecruitDetailSectionSP({ job, height, onMeasured }: Prop
         {/* ヒーロー画像（350×300・左右20pxインセット） */}
         <div style={{ paddingLeft: 20 }}>
           <div style={{ position: "relative", width: 350, height: 300, overflow: "hidden", background: "#472914" }}>
-            <Image src={recruitHero(job)} alt={job.title} fill className="object-cover" sizes="350px" priority />
+            <Image src={recruitHero(job)} alt={job.title} fill className="object-cover" sizes="350px" preload />
           </div>
         </div>
 

@@ -28,7 +28,7 @@ export function MenuHeadingSP() {
       {/* ヒーロー画像ストリップ（351×130・左21pxインセット） */}
       <div style={{ paddingLeft: 19 }}>
         <div style={{ position: "relative", width: 351, height: 130, overflow: "hidden", background: "#472914" }}>
-          <Image src="/images/hero_meat.webp" alt="焼肉平壌亭 お品書き" fill className="object-cover" sizes="351px" priority />
+          <Image src="/images/hero_meat.webp" alt="焼肉平壌亭 お品書き" fill className="object-cover" sizes="351px" preload />
         </div>
       </div>
 

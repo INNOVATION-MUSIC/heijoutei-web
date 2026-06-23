@@ -29,7 +29,7 @@ export function TakeoutHeader({ onOpenModal }: { onOpenModal: () => void }) {
         </div>
         {/* ヒーロー画像（820×320） */}
         <div style={{ position: "relative", width: 820, height: 320, overflow: "hidden", flexShrink: 0, background: "#472914" }}>
-          <Image src="/images/takeout_hero.webp" alt="焼肉平壌亭 テイクアウト" fill className="object-cover" sizes="820px" priority />
+          <Image src="/images/takeout_hero.webp" alt="焼肉平壌亭 テイクアウト" fill className="object-cover" sizes="820px" preload />
         </div>
       </div>
     </>

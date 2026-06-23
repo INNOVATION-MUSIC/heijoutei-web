@@ -135,7 +135,7 @@ export default function HeroSection({ onOpenModal }: { onOpenModal: () => void }
         {/* 右カラム: ヒーロー画像（paddingTopで40px下げ、グラデーションはimage上のoverlay） */}
         <div style={{ flex: 1, overflow: "hidden", display: "flex", flexDirection: "column", paddingTop: 40 }}>
           <div style={{ flex: 1, position: "relative" }}>
-            <Image src="/images/hero_meat.webp" alt="焼肉平壌亭" fill className="object-cover" sizes="858px" priority />
+            <Image src="/images/hero_meat.webp" alt="焼肉平壌亭" fill className="object-cover" sizes="858px" preload />
             <div className="absolute inset-0" style={{ background: "linear-gradient(to right, #0a0a0a 0%, rgba(10,10,10,0.5) 20%, transparent 50%)" }} />
             <div className="absolute inset-0" style={{ background: "linear-gradient(to top, #0a0a0a 0%, transparent 40%)" }} />
           </div>

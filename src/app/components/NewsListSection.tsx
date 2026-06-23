@@ -96,7 +96,7 @@ export default function NewsListSection({ onOpenModal, height, visibleCount, has
 
         {/* 右: ヒーロー画像（820×320） */}
         <div style={{ position: "relative", width: 820, height: 320, overflow: "hidden", flexShrink: 0, background: "#472914" }}>
-          <Image src="/images/newslist_hero.webp" alt="京都・丹波の田園風景" fill className="object-cover" sizes="820px" />
+          <Image src="/images/newslist_hero.webp" alt="京都・丹波の田園風景" fill className="object-cover" sizes="820px" preload />
         </div>
       </div>
 

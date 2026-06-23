@@ -35,7 +35,7 @@ export default function AboutSection({ onOpenModal }: { onOpenModal: () => void 
 
         {/* 右: ヒーロー画像（820×320, 黒オーバーレイ0.4） */}
         <div style={{ position: "relative", width: 820, height: 320, overflow: "hidden", flexShrink: 0, background: "#472914" }}>
-          <Image src="/images/about_hero.webp" alt="黒毛和牛" fill className="object-cover" style={{ objectPosition: "center 35%" }} sizes="820px" />
+          <Image src="/images/about_hero.webp" alt="黒毛和牛" fill className="object-cover" style={{ objectPosition: "center 35%" }} sizes="820px" preload />
           <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.4)" }} />
         </div>
       </div>

@@ -53,7 +53,7 @@ export default function NewsDetailSectionSP({
       {/* ヒーロー画像（350×300） */}
       <div style={{ paddingLeft: 20 }}>
         <div style={{ position: "relative", width: 350, height: 300, overflow: "hidden", background: "#472914" }}>
-          <Image src={newsHero(article)} alt={article.title} fill className="object-cover" sizes="350px" priority />
+          <Image src={newsHero(article)} alt={article.title} fill className="object-cover" sizes="350px" preload />
         </div>
       </div>
 

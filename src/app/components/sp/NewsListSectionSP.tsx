@@ -78,7 +78,7 @@ export default function NewsListSectionSP({ height, visibleCount, hasMore, onSho
       {/* ヒーロー画像ストリップ（351×130・左右21pxインセット・黒オーバーレイ0.3） */}
       <div style={{ paddingLeft: 19 }}>
         <div style={{ position: "relative", width: 351, height: 130, overflow: "hidden", background: "#472914" }}>
-          <Image src="/images/newslist_hero.webp" alt="京都・丹波の田園風景" fill className="object-cover" sizes="351px" priority />
+          <Image src="/images/newslist_hero.webp" alt="京都・丹波の田園風景" fill className="object-cover" sizes="351px" preload />
           <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.3)" }} />
         </div>
       </div>

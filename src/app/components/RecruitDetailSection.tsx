@@ -59,7 +59,7 @@ export default function RecruitDetailSection({
 
         {/* 右: ヒーロー画像（500×500） */}
         <div style={{ position: "relative", width: 500, height: 500, overflow: "hidden", flexShrink: 0, background: "#472914" }}>
-          <Image src={recruitHero(job)} alt={job.title} fill className="object-cover" sizes="500px" priority />
+          <Image src={recruitHero(job)} alt={job.title} fill className="object-cover" sizes="500px" preload />
         </div>
       </div>
 

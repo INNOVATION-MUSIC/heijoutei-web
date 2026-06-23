@@ -30,7 +30,7 @@ export default function AboutSectionSP() {
       {/* ヒーロー画像ストリップ（351×130・左右21pxインセット・黒オーバーレイ0.3） */}
       <div style={{ paddingLeft: 19 }}>
         <div style={{ position: "relative", width: 351, height: 130, overflow: "hidden", background: "#472914" }}>
-          <Image src="/images/about_hero.webp" alt="黒毛和牛" fill className="object-cover" style={{ objectPosition: "center 35%" }} sizes="351px" priority />
+          <Image src="/images/about_hero.webp" alt="黒毛和牛" fill className="object-cover" style={{ objectPosition: "center 35%" }} sizes="351px" preload />
           <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.3)" }} />
         </div>
       </div>

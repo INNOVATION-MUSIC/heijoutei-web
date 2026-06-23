@@ -56,7 +56,7 @@ export default function PageHeader({ onOpenModal }: { onOpenModal: () => void })
 
       {/* 中央: ロゴ（139×73・クリックでトップへ） */}
       <Link href="/" aria-label="トップへ" style={{ position: "relative", width: 139, height: 73, flexShrink: 0, display: "block" }}>
-        <Image src="/images/logo.webp" alt="焼肉平壌亭" fill className="object-contain" sizes="139px" priority />
+        <Image src="/images/logo.webp" alt="焼肉平壌亭" fill className="object-contain" sizes="139px" />
       </Link>
 
       {/* 右: ご予約ボタン（171×50・共通 OutlineButton） */}

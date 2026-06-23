@@ -110,7 +110,7 @@ function PhotoSlider({ photos, name }: { photos: string[]; name: string }) {
         >
           {photos.map((src, i) => (
             <div key={i} style={{ position: "relative", width: 500, height: 500, flexShrink: 0, overflow: "hidden", background: "#1c110a" }}>
-              <Image src={src} alt={`${name} 写真${i + 1}`} fill className="object-cover" sizes="500px" />
+              <Image src={src} alt={`${name} 写真${i + 1}`} fill className="object-cover" sizes="500px" preload={i === 0} />
             </div>
           ))}
         </div>

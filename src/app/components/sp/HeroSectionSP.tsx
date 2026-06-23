@@ -47,7 +47,7 @@ export default function HeroSectionSP({ onOpenModal, onOpenLineModal }: Props) {
             fill
             className="object-cover"
             sizes="350px"
-            priority
+            preload
           />
         </div>
         {/* グラデーションオーバーレイ: 画像に重なる要素なので absolute 許容 */}

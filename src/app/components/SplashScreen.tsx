@@ -65,7 +65,7 @@ export default function SplashScreen({ onDone }: Props) {
           fill
           className="object-contain"
           sizes="300px"
-          priority
+          preload
         />
       </div>
     </div>

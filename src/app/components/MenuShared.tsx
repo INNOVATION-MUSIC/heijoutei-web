@@ -84,7 +84,7 @@ export function MenuHeading({ onOpenModal }: { onOpenModal: () => void }) {
         </div>
         {/* ヒーロー画像（820×320） */}
         <div style={{ position: "relative", width: 820, height: 320, overflow: "hidden", flexShrink: 0, background: "#472914" }}>
-          <Image src="/images/hero_meat.webp" alt="焼肉平壌亭 お品書き" fill className="object-cover" sizes="820px" priority />
+          <Image src="/images/hero_meat.webp" alt="焼肉平壌亭 お品書き" fill className="object-cover" sizes="820px" preload />
         </div>
       </div>
     </>
