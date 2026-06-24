@@ -19,7 +19,7 @@ export default function Footer({ onOpenModal }: { onOpenModal: () => void }) {
 
       {/* キャッチコピー */}
       <p className="absolute" style={{ left: 175, top: 310, width: 260, textAlign: "center", fontFamily: mincho, fontSize: 13, letterSpacing: "0.4em", color: "rgba(235,229,219,0.65)", lineHeight: "normal" }}>
-        創業30年の伝統と技術
+        創業50年の伝統と技術
       </p>
       <p className="absolute" style={{ left: 148, top: 346, width: 316, textAlign: "center", fontFamily: mincho, fontSize: 13, letterSpacing: "0.3em", color: "rgba(235,229,219,0.65)", lineHeight: "normal" }}>
         京都・亀岡、園部、福知山で愛される味

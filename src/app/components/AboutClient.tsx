@@ -47,7 +47,7 @@ export default function AboutClient() {
   if (isMobile) {
     return (
       <>
-        <ScaledSection designWidth={DESIGN_SP} height={3026}>
+        <ScaledSection designWidth={DESIGN_SP} height={3520}>
           <AboutSectionSP />
         </ScaledSection>
         <ScaledSection designWidth={DESIGN_SP} height={671}>

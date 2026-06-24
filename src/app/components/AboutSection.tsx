@@ -56,14 +56,15 @@ export default function AboutSection({ onOpenModal }: { onOpenModal: () => void 
       </div>
 
       {/* テキスト1（左）+ 肉カット写真（右） */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", paddingLeft: 117, paddingTop: 176 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingLeft: 117, paddingTop: 176 }}>
         <p style={{ fontFamily: mincho, fontSize: 18, fontWeight: 400, letterSpacing: "6px", lineHeight: "50px", color: "#ebe5db", margin: 0 }}>
-          創業以来、私たちが大切にしてきたのは<br />
-          「本物の焼肉」を追求すること。<br /><br />
-          厳選された黒毛和牛、<br />
-          職人の手で丁寧にカットされた一枚一枚。<br />
-          職人が見極める絶妙な火加減で、<br />
-          肉本来の旨みを最大限に引き出します。
+          平壌亭は創業50年以来、<br />
+          「美味い」を追求し続けています。<br /><br />
+          厳選された和牛<br /><br />
+          長年培った経験を持つ熟練の目利きが、<br />
+          自社の厳しい基準を満たした牛肉のみを厳選。<br />
+          使用する牛肉はA4・A5ランクに限定し、<br />
+          品質・肉質・脂の甘みにこだわっています。
         </p>
         <div style={{ position: "relative", width: 746, height: 504, overflow: "hidden", background: "#472914", flexShrink: 0 }}>
           <Image src="/images/about_cut.webp" alt="職人がカットする黒毛和牛" fill className="object-cover" sizes="746px" />
@@ -71,23 +72,31 @@ export default function AboutSection({ onOpenModal }: { onOpenModal: () => void 
       </div>
 
       {/* 座敷写真（左）+ テキスト2（右） */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", paddingTop: 243, paddingRight: 162 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: 243, paddingRight: 162 }}>
         <div style={{ position: "relative", width: 600, height: 715, overflow: "hidden", background: "#472914", flexShrink: 0 }}>
           <Image src="/images/about_zashiki.webp" alt="店内のテーブル席" fill className="object-cover" sizes="600px" />
         </div>
         <p style={{ fontFamily: mincho, fontSize: 18, fontWeight: 400, letterSpacing: "6px", lineHeight: "50px", color: "#ebe5db", margin: 0, textAlign: "left" }}>
-          炎が肉を包み、香ばしい煙が立ち上る瞬間。<br />
-          そこにあるのは、<br />
-          ただの食事ではなく、特別な体験です。<br /><br />
-          京都・丹波の地で、<br />
-          大切な人と過ごす至福のひととき。<br /><br />
-          ここでしか味わえない、<br />
-          目利きが選ぶ和牛の真髄を。
+          創業50年受け継がれる秘伝のタレ<br /><br />
+          焼肉店の命とも言われるタレは、<br />
+          創業以来50年にわたり受け継がれてきた<br />
+          秘伝の味。<br />
+          厳選した和牛の旨みを<br />
+          最大限に引き出します。
         </p>
       </div>
 
-      {/* 店舗内観写真（右下） */}
-      <div style={{ display: "flex", justifyContent: "flex-end", paddingTop: 0 }}>
+      {/* テキスト3（左）+ 店舗内観写真（右） */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingLeft: 117 }}>
+        <p style={{ fontFamily: mincho, fontSize: 18, fontWeight: 400, letterSpacing: "6px", lineHeight: "50px", color: "#ebe5db", margin: 0 }}>
+          一品一品へのこだわり<br /><br />
+          平壌亭のこだわりは肉だけではありません。<br /><br />
+          キムチ、ナムル、冷麺、スープ、<br />
+          韓国料理など、豊富なアラカルトメニューも<br />
+          一品一品丁寧に仕込み、<br />
+          素材選びから味付けまで<br />
+          妥協することなく追求しています。
+        </p>
         <div style={{ position: "relative", width: 531, height: 715, overflow: "hidden", background: "#472914", flexShrink: 0 }}>
           <Image src="/images/about_interior.webp" alt="店舗内観" fill className="object-cover" sizes="531px" />
         </div>

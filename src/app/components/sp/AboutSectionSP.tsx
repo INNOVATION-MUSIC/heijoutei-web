@@ -7,7 +7,7 @@ const display = "'Cormorant Garamond', serif";
 
 /**
  * /about ページ SP 版メインコンテンツ。
- * Figma 設計幅 390 / 全高 3026px（CTA 開始位置まで）。
+ * Figma 設計幅 390 / 全高 3520px（CTA 開始位置まで）。
  * flex column で各ブロックを積み、縦位置は paddingTop（gap）で制御。marginTop 不使用。
  * ヘッダーは SpStickyHeader が固定表示するため先頭に 153px spacer のみ置く。
  * 写真枠内の画像トリミング・動画背景・グラデーションオーバーレイのみ absolute 許容。
@@ -19,7 +19,7 @@ export default function AboutSectionSP() {
         display: "flex",
         flexDirection: "column",
         width: 390,
-        height: 3026,
+        height: 3520,
         background: "#0a0a0a",
         overflow: "hidden",
       }}
@@ -62,12 +62,8 @@ export default function AboutSectionSP() {
 
       {/* ストーリー文1 */}
       <p style={{ paddingLeft: 37, paddingTop: 54, fontFamily: mincho, fontSize: 14, fontWeight: 400, letterSpacing: "3px", lineHeight: "38px", color: "#ebe5db", margin: 0 }}>
-        創業以来、私たちが大切にしてきたのは<br />
-        「本物の焼肉」を追求すること。<br /><br />
-        厳選された黒毛和牛、<br />
-        職人の手で丁寧にカットされた一枚一枚。<br />
-        職人が見極める絶妙な火加減で、<br />
-        肉本来の旨みを最大限に引き出します。
+        平壌亭は創業50年以来、<br />
+        「美味い」を追求し続けています。
       </p>
 
       {/* 肉カット写真（266×229） */}
@@ -79,10 +75,13 @@ export default function AboutSectionSP() {
 
       {/* ストーリー文2 */}
       <p style={{ paddingLeft: 37, paddingTop: 60, fontFamily: mincho, fontSize: 14, fontWeight: 400, letterSpacing: "3px", lineHeight: "38px", color: "#ebe5db", margin: 0 }}>
-        炎が肉を包み、<br />
-        香ばしい煙が立ち上る瞬間。<br />
-        そこにあるのは、<br />
-        ただの食事ではなく、特別な体験です。
+        厳選された和牛<br /><br />
+        長年培った経験を持つ熟練の目利きが、<br />
+        自社の厳しい基準を満たした<br />
+        牛肉のみを厳選。<br /><br />
+        使用する牛肉はA4・A5ランクに限定し、<br />
+        品質・肉質・脂の甘みに<br />
+        こだわっています。
       </p>
 
       {/* 座敷写真（279×318・左端ブリード） */}
@@ -94,10 +93,12 @@ export default function AboutSectionSP() {
 
       {/* ストーリー文3 */}
       <p style={{ paddingLeft: 37, paddingTop: 59, fontFamily: mincho, fontSize: 14, fontWeight: 400, letterSpacing: "3px", lineHeight: "38px", color: "#ebe5db", margin: 0 }}>
-        京都・丹波の地で、<br />
-        大切な人と過ごす至福のひととき。<br /><br />
-        ここでしか味わえない、<br />
-        目利きが選ぶ和牛の真髄を。
+        創業50年受け継がれる秘伝のタレ<br /><br />
+        焼肉店の命とも言われるタレは、<br />
+        創業以来50年にわたり<br />
+        受け継がれてきた秘伝の味。<br />
+        厳選した和牛の旨みを<br />
+        最大限に引き出します。
       </p>
 
       {/* 店舗内観写真（279×318・右端配置） */}
@@ -107,7 +108,19 @@ export default function AboutSectionSP() {
         </div>
       </div>
 
-      {/* 残余スペーサー（全高3026まで） */}
+      {/* ストーリー文4（一品一品へのこだわり） */}
+      <p style={{ paddingLeft: 37, paddingTop: 60, fontFamily: mincho, fontSize: 14, fontWeight: 400, letterSpacing: "3px", lineHeight: "38px", color: "#ebe5db", margin: 0 }}>
+        一品一品へのこだわり<br /><br />
+        平壌亭のこだわりは肉だけではありません。<br /><br />
+        キムチ、ナムル、冷麺、スープ、<br />
+        韓国料理など、豊富な<br />
+        アラカルトメニューも一品一品<br />
+        丁寧に仕込み、素材選びから<br />
+        味付けまで妥協することなく<br />
+        追求しています。
+      </p>
+
+      {/* 残余スペーサー（全高3520まで） */}
       <div style={{ flex: 1 }} />
     </div>
   );

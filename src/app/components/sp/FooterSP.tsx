@@ -50,7 +50,7 @@ export default function FooterSP({ onOpenModal }: { onOpenModal: () => void }) {
             margin: 0,
           }}
         >
-          創業30年の伝統と技術
+          創業50年の伝統と技術
         </p>
         <p
           style={{
