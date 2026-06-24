@@ -3,7 +3,7 @@
 CMS 管理画面・Supabase 連携・フロント動的化など **実装/検証が完了済みの機能** を対象としたテストケース仕様書です。
 未実装・据え置き・SP 未対応の機能（ミスリストの「未解決」項目）は対象外です。
 
-最終更新: 2026-06-12
+最終更新: 2026-06-24
 
 ---
 
@@ -57,7 +57,7 @@ CMS 管理画面・Supabase 連携・フロント動的化など **実装/検証
 | [admin-recruit.md](./admin-recruit.md) | 採用情報 CRUD | RCRT |
 | [admin-takeout-orders-contact.md](./admin-takeout-orders-contact.md) | 注文受付・問い合わせ・受付枠・営業カレンダー | ORD / CNT / SLOT / BCAL |
 | [admin-media-users.md](./admin-media-users.md) | メディア(Storage)・ユーザー管理(admin限定) | MEDIA / USER |
-| [front-dynamic.md](./front-dynamic.md) | フロント動的化（DB描画・店舗別切替・フォールバック・ISR）・/contact お問い合わせフロー（PC/SP） | FRONT |
+| [front-dynamic.md](./front-dynamic.md) | フロント動的化（DB描画・店舗別切替・フォールバック・ISR）・/contact お問い合わせフロー（PC/SP）・/takeout テイクアウト注文フロー（PC/SP） | FRONT |
 | [api-contact-takeout.md](./api-contact-takeout.md) | /api/contact・/api/takeout（INSERT・メール・検証） | API |
 | [security.md](./security.md) | 認証ハードニング・RLS/anon権限・Turnstile・Brevo・Cloudflare強化 | SEC |
 
