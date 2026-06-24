@@ -182,14 +182,14 @@ export default function CalendarSectionSP({ months }: { months?: BusinessMonth[]
         paddingTop: 33,
       }}
     >
-      {/* ラベル + タイトル（左ラインを上の店舗セクションに合わせて paddingLeft:40 で左寄せ） */}
+      {/* ラベル + タイトル（「Business days」は2語で最長のため paddingLeft:19 で左寄せして画面内に収める） */}
       <div
         style={{
           display: "flex",
           alignItems: "flex-start",
-          paddingLeft: 40,
+          paddingLeft: 19,
           flexShrink: 0,
-          gap: 28,
+          gap: 24,
         }}
       >
         <div
@@ -225,12 +225,12 @@ export default function CalendarSectionSP({ months }: { months?: BusinessMonth[]
         <p
           style={{
             fontFamily: display,
-            fontSize: 48,
-            letterSpacing: "-1px",
+            fontSize: 44,
+            letterSpacing: "-1.5px",
             color: "#ebe5db",
             lineHeight: "normal",
             whiteSpace: "nowrap",
-            paddingTop: 20,
+            paddingTop: 22,
           }}
         >
           Business days
