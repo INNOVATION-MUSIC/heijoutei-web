@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ReserveModal from "./ReserveModal";
 import { SECTION_LINKS } from "@/app/lib/navLinks";
 import { useIsMobile } from "@/app/lib/useIsMobile";
@@ -51,8 +51,19 @@ export default function StickyButton() {
   const [modalOpen, setModalOpen] = useState(false);
   const isMobile = useIsMobile();
 
+  // SP のみ：少しスクロールしてから表示する（PC は常時表示）
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    if (!isMobile) return;
+    const onScroll = () => setScrolled(window.scrollY > 300);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [isMobile]);
+
   const btnStyle = isMobile ? spBtnStyle : pcBtnStyle;
   const arrowSize = isMobile ? 12 : 10;
+  const visible = !isMobile || scrolled;
 
   return (
     <>
@@ -64,6 +75,10 @@ export default function StickyButton() {
           display: "flex",
           gap: isMobile ? 12 : 10,
           zIndex: 50,
+          opacity: visible ? 1 : 0,
+          transform: visible ? "translateY(0)" : "translateY(16px)",
+          pointerEvents: visible ? "auto" : "none",
+          transition: "opacity 0.3s ease, transform 0.3s ease",
         }}
       >
         <button onClick={() => setModalOpen(true)} style={btnStyle}>
