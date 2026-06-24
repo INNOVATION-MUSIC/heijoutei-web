@@ -5,7 +5,7 @@ export const NAV_LINKS = [
   { label: "メニュー",           href: "/menu" },
   { label: "店舗一覧",           href: "/store" },
   { label: "ご予約",             href: "/reserve" },
-  { label: "公式オンラインストア", href: "/online-shop" },
+  // { label: "公式オンラインストア", href: "/online-shop" }, // OnlineShop非公開中（公開後に解除）
   { label: "採用情報",           href: "/recruit" },
   { label: "お問い合せ",         href: "/contact" },
 ] as const;
@@ -16,7 +16,7 @@ export type NavLink = (typeof NAV_LINKS)[number];
 export const HEADER_NAV_LINKS = [
   { label: "お問い合せ",         href: "/contact" },
   { label: "採用情報",           href: "/recruit" },
-  { label: "公式オンラインストア", href: "/online-shop" },
+  // { label: "公式オンラインストア", href: "/online-shop" }, // OnlineShop非公開中（公開後に解除）
   { label: "店舗情報",           href: "/store" },
   { label: "メニュー",           href: "/menu" },
   { label: "お知らせ",           href: "/news" },

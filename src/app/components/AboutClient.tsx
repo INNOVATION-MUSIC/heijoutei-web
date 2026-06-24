@@ -9,13 +9,13 @@ import StickyButton from "./StickyButton";
 // Desktop
 import AboutSection from "./AboutSection";
 import CtaSection from "./CtaSection";
-import OnlineSection from "./OnlineSection";
+// import OnlineSection from "./OnlineSection"; // OnlineShop非公開中（公開後に解除）
 import Footer from "./Footer";
 
 // SP
 import AboutSectionSP from "./sp/AboutSectionSP";
 import CtaSectionSP from "./sp/CtaSectionSP";
-import OnlineSectionSP from "./sp/OnlineSectionSP";
+// import OnlineSectionSP from "./sp/OnlineSectionSP"; // OnlineShop非公開中（公開後に解除）
 import FooterSP from "./sp/FooterSP";
 import SpStickyHeader from "./sp/SpStickyHeader";
 import HamburgerMenuSP from "./sp/HamburgerMenuSP";
@@ -53,9 +53,11 @@ export default function AboutClient() {
         <ScaledSection designWidth={DESIGN_SP} height={671}>
           <CtaSectionSP />
         </ScaledSection>
+        {/* OnlineShop: リリース時は非公開。公開後にコメント解除する
         <ScaledSection designWidth={DESIGN_SP} height={973}>
           <OnlineSectionSP />
         </ScaledSection>
+        */}
         <ScaledSection designWidth={DESIGN_SP} height={973}>
           <FooterSP onOpenModal={openModal} />
         </ScaledSection>
@@ -78,9 +80,11 @@ export default function AboutClient() {
       <ScaledSection designWidth={DESIGN_PC} height={620}>
         <CtaSection />
       </ScaledSection>
+      {/* OnlineShop: リリース時は非公開。公開後にコメント解除する
       <ScaledSection designWidth={DESIGN_PC} height={700}>
         <OnlineSection />
       </ScaledSection>
+      */}
       <ScaledSection designWidth={DESIGN_PC} height={600}>
         <Footer onOpenModal={openModal} />
       </ScaledSection>

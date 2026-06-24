@@ -19,7 +19,7 @@ import CourseSection from "./CourseSection";
 import StoreSection from "./StoreSection";
 import CalendarSection from "./CalendarSection";
 import CtaSection from "./CtaSection";
-import OnlineSection from "./OnlineSection";
+// import OnlineSection from "./OnlineSection"; // OnlineShop非公開中（公開後に解除）
 import Footer from "./Footer";
 
 // SP
@@ -32,7 +32,7 @@ import CourseSectionSP from "./sp/CourseSectionSP";
 import StoreSectionSP from "./sp/StoreSectionSP";
 import CalendarSectionSP from "./sp/CalendarSectionSP";
 import CtaSectionSP from "./sp/CtaSectionSP";
-import OnlineSectionSP from "./sp/OnlineSectionSP";
+// import OnlineSectionSP from "./sp/OnlineSectionSP"; // OnlineShop非公開中（公開後に解除）
 import FooterSP from "./sp/FooterSP";
 import HamburgerMenuSP from "./sp/HamburgerMenuSP";
 import SpStickyHeader from "./sp/SpStickyHeader";
@@ -87,9 +87,11 @@ export default function ResponsivePage({ topNews, businessMonths, topCourses }: 
         <ScaledSection designWidth={DESIGN_SP} height={671}>
           <CtaSectionSP />
         </ScaledSection>
+        {/* OnlineShop: リリース時は非公開。公開後にコメント解除する
         <ScaledSection designWidth={DESIGN_SP} height={973}>
           <OnlineSectionSP />
         </ScaledSection>
+        */}
         <ScaledSection designWidth={DESIGN_SP} height={973}>
           <FooterSP onOpenModal={openModal} />
         </ScaledSection>
@@ -134,9 +136,11 @@ export default function ResponsivePage({ topNews, businessMonths, topCourses }: 
       <ScaledSection designWidth={DESIGN_PC} height={620}>
         <CtaSection />
       </ScaledSection>
+      {/* OnlineShop: リリース時は非公開。公開後にコメント解除する
       <ScaledSection designWidth={DESIGN_PC} height={700}>
         <OnlineSection />
       </ScaledSection>
+      */}
       <ScaledSection designWidth={DESIGN_PC} height={600}>
         <Footer onOpenModal={openModal} />
       </ScaledSection>

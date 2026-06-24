@@ -11,7 +11,7 @@ import { NAV_LINKS, SECTION_LINKS } from "@/app/lib/navLinks";
 const NAV_ITEMS = [
   { label: "お問い合せ",           href: NAV_LINKS.find(l => l.label === "お問い合せ")!.href },
   { label: "採用情報",             href: NAV_LINKS.find(l => l.label === "採用情報")!.href },
-  { label: "公式オンラインストア", href: NAV_LINKS.find(l => l.label === "公式オンラインストア")!.href },
+  // { label: "公式オンラインストア", href: NAV_LINKS.find(l => l.label === "公式オンラインストア")!.href }, // OnlineShop非公開中（公開後に解除）
   { label: "店舗情報",             href: SECTION_LINKS.store },
   { label: "メニュー",             href: NAV_LINKS.find(l => l.label === "メニュー")!.href },
   { label: "お知らせ",             href: NAV_LINKS.find(l => l.label === "お知らせ")!.href },
