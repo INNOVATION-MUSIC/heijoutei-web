@@ -37,7 +37,7 @@ export function TakeoutHeader({ onOpenModal }: { onOpenModal: () => void }) {
 }
 
 /* ─────────── ステップアイコン ─────────── */
-function StepIcon({ type, color }: { type: string; color: string }) {
+export function StepIcon({ type, color }: { type: string; color: string }) {
   const s = { width: 13, height: 13, fill: "none", stroke: color, strokeWidth: 1.6, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
   switch (type) {
     case "calendar":
@@ -65,7 +65,7 @@ function StepIcon({ type, color }: { type: string; color: string }) {
   }
 }
 
-const STEPS = [
+export const STEPS = [
   { label: "日時選択", icon: "calendar" },
   { label: "メニュー", icon: "menu" },
   { label: "情報入力", icon: "person" },

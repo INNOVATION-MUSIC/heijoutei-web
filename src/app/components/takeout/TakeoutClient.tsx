@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useIsMobile } from "@/app/lib/useIsMobile";
 import ScaledSection from "../ScaledSection";
 import ReserveModal from "../ReserveModal";
 import StickyButton from "../StickyButton";
@@ -12,10 +13,21 @@ import Step3Form from "./Step3Form";
 import Step4Confirm from "./Step4Confirm";
 import Step5Complete from "./Step5Complete";
 
+// SP
+import { Step1DateTimeSP, Step2MenuSP, Step3FormSP, Step4ConfirmSP, Step5CompleteSP } from "../sp/TakeoutSP";
+import FooterSP from "../sp/FooterSP";
+import SpStickyHeader from "../sp/SpStickyHeader";
+import HamburgerMenuSP from "../sp/HamburgerMenuSP";
+
 import { TAKEOUT_CATEGORIES, TAKEOUT_MENU, TAKEOUT_STORES, TAKEOUT_TIME_SLOTS, buildCalendar, type TakeoutStore, type TakeoutMenuItem, type DaySlotMap } from "@/app/lib/takeoutData";
 import type { TakeoutMenuData } from "@/app/lib/takeoutOrderDb";
 
 const DESIGN_PC = 1440;
+const DESIGN_SP = 390;
+
+// SP: ヘッダースペーサー(153)を除いたコンテンツの初期推定（実測前の初回描画用・ResizeObserver で確定）
+const SP_HEADER = 153;
+const SP_EST = [3300, 3700, 2300, 2800, 2000]; // step1〜5
 
 export type TakeoutForm = {
   name: string;
@@ -50,11 +62,19 @@ export default function TakeoutClient({
   const MENU_BY_STORE = menuByStore ?? {};
   const SLOTS = slotsByStore ?? {};
 
+  const isMobile = useIsMobile();
+
   const [modalOpen, setModalOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const openModal = () => setModalOpen(true);
   const closeModal = () => setModalOpen(false);
+  const openMenu = () => setMenuOpen(true);
+  const closeMenu = () => setMenuOpen(false);
 
   const [step, setStep] = useState(1);
+  // SP: ステップ毎にコンテンツ高さが変わるため ResizeObserver で実測（PC は未使用）
+  const [measured, setMeasured] = useState<number | null>(null);
+  const onMeasured = (h: number) => setMeasured((prev) => (prev === h ? prev : h));
 
   // 受取情報
   const [store, setStore] = useState<TakeoutStore>(STORES[0]);
@@ -110,6 +130,7 @@ export default function TakeoutClient({
 
   const goStep = (n: number) => {
     setStep(n);
+    setMeasured(null); // SP: ステップ毎にコンテンツ高さが変わるため実測値をリセット
     if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -165,6 +186,106 @@ export default function TakeoutClient({
     2060, // step5
   ];
   const height = heights[step - 1];
+
+  if (isMobile === null) {
+    return <div style={{ minHeight: "100vh", background: "#0a0a0a" }} />;
+  }
+
+  if (isMobile) {
+    const spHeight = SP_HEADER + (measured ?? SP_EST[step - 1]);
+    return (
+      <>
+        <ScaledSection designWidth={DESIGN_SP} height={spHeight}>
+          {step === 1 && (
+            <Step1DateTimeSP
+              height={spHeight}
+              onMeasured={onMeasured}
+              stores={STORES}
+              store={store}
+              onSelectStore={(s) => {
+                setStore(s);
+                setDateIso(null);
+                setTime(null);
+                setCart({});
+                const m = MENU_BY_STORE[s.id];
+                const newCats = m && m.categories.length > 0 ? m.categories : [...TAKEOUT_CATEGORIES];
+                setActiveCategory(newCats[0]);
+              }}
+              calendar={calendar}
+              view={view}
+              onPrevMonth={goPrevMonth}
+              onNextMonth={goNextMonth}
+              dateIso={dateIso}
+              onSelectDate={(iso) => {
+                setDateIso(iso);
+                const slot = storeSlots?.[iso];
+                const nextSlots = slot ? slot.timeLabels : TAKEOUT_TIME_SLOTS;
+                setTime((prev) => (prev && nextSlots.includes(prev) ? prev : null));
+              }}
+              time={time}
+              onSelectTime={setTime}
+              timeSlots={timeSlots}
+              onNext={() => goStep(2)}
+            />
+          )}
+          {step === 2 && (
+            <Step2MenuSP
+              height={spHeight}
+              onMeasured={onMeasured}
+              menuItems={ITEMS}
+              categories={CATS}
+              activeCategory={activeCategory}
+              onSelectCategory={setActiveCategory}
+              cart={cart}
+              onSetQty={setQty}
+              cartLines={cartLines}
+              subtotal={subtotal}
+              cartCount={cartCount}
+              onBack={() => goStep(1)}
+              onNext={() => goStep(3)}
+            />
+          )}
+          {step === 3 && (
+            <Step3FormSP
+              height={spHeight}
+              onMeasured={onMeasured}
+              form={form}
+              onChange={setForm}
+              onBack={() => goStep(2)}
+              onNext={() => goStep(4)}
+            />
+          )}
+          {step === 4 && (
+            <Step4ConfirmSP
+              height={spHeight}
+              onMeasured={onMeasured}
+              store={store}
+              dateIso={dateIso}
+              time={time}
+              cartLines={cartLines}
+              subtotal={subtotal}
+              form={form}
+              onBack={() => goStep(3)}
+              onConfirm={handleConfirm}
+              submitting={submitting}
+              submitError={submitError}
+              onVerify={setTurnstileToken}
+              turnstileReady={!!turnstileToken}
+            />
+          )}
+          {step === 5 && <Step5CompleteSP height={spHeight} onMeasured={onMeasured} store={store} />}
+        </ScaledSection>
+
+        <ScaledSection designWidth={DESIGN_SP} height={973}>
+          <FooterSP onOpenModal={openModal} />
+        </ScaledSection>
+
+        <SpStickyHeader onOpenMenu={openMenu} />
+        <HamburgerMenuSP open={menuOpen} onClose={closeMenu} onOpenModal={openModal} />
+        <ReserveModal open={modalOpen} onClose={closeModal} isMobile />
+      </>
+    );
+  }
 
   return (
     <>
