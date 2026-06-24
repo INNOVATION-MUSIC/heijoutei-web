@@ -42,11 +42,11 @@ export type TakeoutForm = {
 const EMPTY_FORM: TakeoutForm = { name: "", kana: "", email: "", emailConfirm: "", phone: "", note: "", agreed: false };
 
 /**
- * /takeout テイクアウト注文フロー（PC専用）。
+ * /takeout テイクアウト注文フロー。
  * 5 ステップ（日時選択→メニュー→情報入力→注文確認→完了）の状態を一元管理し、
  * 受取店舗・受取日時・カート・入力フォームをステップ間で引き継ぐ。
- * SP はデザイン未確定のため未実装（PC 設計を ScaledSection で縮小表示）。
- * 予約モーダルは ScaledSection 外で一元管理。
+ * useIsMobile で PC（1440）/ SP（390）を切り替え、状態と送信ロジックは共通化する。
+ * SP は ResizeObserver で各ステップの高さを実測し、予約モーダル等は ScaledSection 外で一元管理する。
  */
 export default function TakeoutClient({
   stores,
