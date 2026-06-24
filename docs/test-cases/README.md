@@ -57,7 +57,7 @@ CMS 管理画面・Supabase 連携・フロント動的化など **実装/検証
 | [admin-recruit.md](./admin-recruit.md) | 採用情報 CRUD | RCRT |
 | [admin-takeout-orders-contact.md](./admin-takeout-orders-contact.md) | 注文受付・問い合わせ・受付枠・営業カレンダー | ORD / CNT / SLOT / BCAL |
 | [admin-media-users.md](./admin-media-users.md) | メディア(Storage)・ユーザー管理(admin限定) | MEDIA / USER |
-| [front-dynamic.md](./front-dynamic.md) | フロント動的化（DB描画・店舗別切替・フォールバック・ISR） | FRONT |
+| [front-dynamic.md](./front-dynamic.md) | フロント動的化（DB描画・店舗別切替・フォールバック・ISR）・/contact お問い合わせフロー（PC/SP） | FRONT |
 | [api-contact-takeout.md](./api-contact-takeout.md) | /api/contact・/api/takeout（INSERT・メール・検証） | API |
 | [security.md](./security.md) | 認証ハードニング・RLS/anon権限・Turnstile・Brevo・Cloudflare強化 | SEC |
 

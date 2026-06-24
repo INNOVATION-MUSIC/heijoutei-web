@@ -1,6 +1,6 @@
 # フロント動的化 テストケース（FRONT）
 
-対象: `/news`・`/news/[id]`・トップ NewsSection・`/store`・`/store/[id]`・`/recruit`・`/recruit/[id]`・`/menu` 系（`/menu`・`/menu/[category]`・`/menu/lunch`・`/menu/course`・`/menu/takeout`）・`/takeout` 注文フロー。
+対象: `/news`・`/news/[id]`・トップ NewsSection・`/store`・`/store/[id]`・`/recruit`・`/recruit/[id]`・`/menu` 系（`/menu`・`/menu/[category]`・`/menu/lunch`・`/menu/course`・`/menu/takeout`）・`/takeout` 注文フロー・`/contact` お問い合わせフロー（PC/SP）。
 
 関連コード:
 - `src/app/lib/newsDb.ts`・`storeDb.ts`・`storeListDb.ts`・`recruitDb.ts`・`menuDb.ts`・`courseDb.ts`・`menuTakeoutDb.ts`・`takeoutOrderDb.ts`
@@ -124,3 +124,39 @@
 | FRONT-042 | お知らせカードの遷移（PC） | トップに公開記事 | PC `NewsSection` のお知らせカードをクリック | `/news/<id>`（該当記事詳細）に遷移する | 高 |
 | FRONT-043 | お知らせカードの遷移（SP） | トップに公開記事 | SP `NewsSectionSP` のお知らせカードをタップ | `/news/<id>` に遷移する（`<div>`→`<a>` 化済） | 中 |
 | FRONT-044 | LINE ボタンは未配線（既知） | — | Hero の LINE 友だち追加ボタン（PC）を確認 | `href="#"` のまま（実 URL 未提供＝未解決項目）。誤遷移しないこと | 低 |
+
+## お問い合わせフロー（/contact・PC/SP）（2026-06-24）
+
+対象: `/contact` の入力 → 確認 → 完了の 3 ステップフロー。`useIsMobile()` で PC（設計幅1440・`contact/ContactForm`/`ContactConfirm`/`ContactComplete`）と SP（設計幅390・`sp/ContactSP` の `ContactFormSP`/`ContactConfirmSP`/`ContactCompleteSP`）を切替。
+
+関連コード:
+- `src/app/components/ContactClient.tsx`（PC/SP 分岐・フォーム状態の一元管理・`/api/contact` 送信ロジック共通）
+- `src/app/components/sp/ContactSP.tsx`（SP 3 ステップ。`SectionShell` がヘッダースペーサー153px + ResizeObserver で実測高さ確定）
+- `src/app/components/contact/ContactForm.tsx`・`ContactConfirm.tsx`・`ContactComplete.tsx`（PC 3 ステップ）
+- 共通: `src/app/lib/useIsMobile.ts`・`SpStickyHeader`・`HamburgerMenuSP`・`FooterSP`・`ReserveModal`・`Turnstile`
+
+設計メモ:
+- フォーム状態（`name`/`kana`/`email`/`emailConfirm`/`phone`/`inquiryType`/`store`/`message`/`agreed`）・送信処理（`handleConfirm` → `POST /api/contact`）・ステップ遷移（`goStep`）は PC/SP 共通。`goStep` でページ先頭へスクロールし実測値をリセット。
+- 入力フォームの「確認画面へ進む」活性条件（`valid`）: 氏名・フリガナ・メール・メール確認が一致（`emailMatch`）かつ同意チェック ON。電話番号・お問合せ内容は任意。
+- API 検証・DB INSERT・メール送信は **API-CNT-001〜009** を参照（本節は UI フロー観点）。
+
+| ID | テスト項目 | 前提条件 | 操作手順 | 期待結果 | 優先度 |
+|----|-----------|----------|----------|----------|--------|
+| FRONT-045 | PC/SP 表示切替 | — | `/contact` を PC 幅（≧1024px）と SP 幅（<1024px）で開く | PC は 1440 設計・SP は 390 設計のレイアウトで描画される（`useIsMobile` 判定。判定確定前は黒画面プレースホルダ） | 高 |
+| FRONT-046 | SP 入力フォーム描画 | SP 幅 | `/contact`（ステップ1）を開く | ヒーロー(351×130)＋「お問合せ/Contact」見出し＋各入力欄（氏名/フリガナ/メール/メール確認/電話/種別/店舗/内容）＋同意チェック＋「確認画面へ進む」が全 flexbox で縦に並ぶ | 高 |
+| FRONT-047 | SP 必須項目バリデーション | SP ステップ1 | 氏名・フリガナ・メールのいずれかを空のまま操作 | 「確認画面へ進む」ボタンが非活性（`disabled`）のまま。全必須＋一致＋同意が揃うと活性化 | 高 |
+| FRONT-048 | SP メール一致チェック | SP ステップ1 | メールと確認メールに異なる値を入力 | 確認欄下に「メールアドレスが一致しません」（赤）が表示され、ボタンは非活性。一致させると注意文が消える | 高 |
+| FRONT-049 | SP 同意チェックでボタン活性 | SP ステップ1・必須＋メール一致済 | 「プライバシーポリシーに同意する」を ON/OFF | ON でボタン活性・OFF で非活性に切替わる | 高 |
+| FRONT-050 | SP 確認画面の内容表示 | SP ステップ1 で入力済 | 「確認画面へ進む」を押下 | ステップ2 に遷移し、入力値（氏名/フリガナ/メール/電話/種別/店舗/内容）がカードに表示される。未入力の任意項目は「—」表示 | 高 |
+| FRONT-051 | SP 入力画面へ戻る | SP ステップ2 | 「入力画面へ戻る」を押下 | ステップ1 に戻り、入力済みの内容が保持されている | 高 |
+| FRONT-052 | SP 送信 → 完了遷移 | SP ステップ2・正常入力 | 「送信する」を押下 | `/api/contact` に POST され成功時にステップ3（完了）へ遷移。送信中はボタン文言が「送信中...」になり非活性 | 高 |
+| FRONT-053 | SP 送信失敗時のエラー表示 | SP ステップ2・API が 4xx/5xx を返す状況 | 「送信する」を押下 | ステップ2 に留まり、ボタン上部にエラーメッセージ（API の `error`）が表示される（API-CNT-009 連動） | 中 |
+| FRONT-054 | SP 完了画面の電話 tel: リンク | SP ステップ3 | 完了画面の電話番号をタップ | 選択店舗の電話番号が `tel:`（数字のみ）リンクになっており発信できる。受付時間「10:00〜21:30」が併記される | 中 |
+| FRONT-055 | SP 完了画面トップへ | SP ステップ3 | 「トップページへ」を押下 | `/`（トップ）へ遷移する | 中 |
+| FRONT-056 | SP 入力欄のタップ操作性（自動ズーム防止） | SP 幅・実機/エミュレータ | 各入力欄（input/textarea）をタップしてフォーカス | `fontSize:16`・高さ48px のため iOS のフォーカス時自動ズームが起きず、タップしやすい（レビュー#5 関連） | 中 |
+| FRONT-057 | SP ヘッダー固定・ハンバーガー | SP 幅 | `/contact` をスクロール・ハンバーガーを開閉 | `SpStickyHeader` が固定表示（各セクション先頭153pxスペーサー）。ハンバーガーで `HamburgerMenuSP` が開閉する | 中 |
+| FRONT-058 | SP 予約モーダル | SP 幅 | ヘッダー/メニュー/フッターの予約導線を押下 | `ReserveModal`（`isMobile`）が ScaledSection 外で開く。フォーム入力中でも状態を保持して開閉できる | 中 |
+| FRONT-059 | SP セクション高さ実測 | SP 幅 | 各ステップを表示・本文を長文入力 | `ResizeObserver` がコンテンツ実測高さを `onMeasured` で報告し、ScaledSection 全高が `153 + 実測` に確定（ステップ毎にリセット）。レイアウトが切れたり余白過多にならない | 中 |
+| FRONT-060 | SP ステップ遷移でページ先頭へ | SP 幅 | ステップ1→2→3 と遷移 | `goStep` で各遷移時にページ先頭へスムーズスクロールする | 低 |
+| FRONT-061 | PC フロー（入力→確認→完了） | PC 幅 | `/contact` で入力 → 確認 → 送信 | PC でも 3 ステップが成立し、確認・戻る・完了（電話 tel: リンク）が SP と同等に動作する（状態・送信ロジック共通） | 中 |
+| FRONT-062 | Turnstile 有効時の送信ゲート（PC/SP 共通） | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` 設定済 | 確認画面で Turnstile を完了せず送信 | Turnstile 未完了時は「送信する」が非活性。検証完了でトークンが入り活性化する（鍵未設定時はウィジェット非表示で送信可・SEC-020 連動） | 中 |
