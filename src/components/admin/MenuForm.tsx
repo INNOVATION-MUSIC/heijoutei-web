@@ -21,6 +21,7 @@ export default function MenuForm({
   defaultCategoryId,
   lunchMode = false,
   forcedCategoryId,
+  menuIndex,
 }: {
   stores: StoreRef[]
   categories: CategoryRef[]
@@ -32,10 +33,22 @@ export default function MenuForm({
   // ランチ専用画面から呼ぶときはカテゴリを lunch 固定にして遷移先を /admin/lunch にする
   lunchMode?: boolean
   forcedCategoryId?: string | null
+  // 編集画面で店舗×カテゴリを切り替えたとき、該当メニューへ遷移するための索引
+  menuIndex?: { id: string; store_id: string; category_id: string | null }[]
 }) {
   const router = useRouter()
   const isEdit = Boolean(initial)
   const returnPath = lunchMode ? '/admin/lunch' : '/admin/menus'
+  const [dirty, setDirty] = useState(false)
+
+  // 編集画面で店舗/カテゴリを切り替えたら、その組み合わせのメニュー編集へ遷移（無ければ新規作成）。
+  // 編集中の変更があれば確認する。
+  function switchTo(nextStoreId: string, nextCategoryId: string | null) {
+    if (dirty && !window.confirm('編集中の内容は保存されません。切り替えますか？')) return
+    const found = menuIndex?.find((m) => m.store_id === nextStoreId && (m.category_id ?? '') === (nextCategoryId ?? ''))
+    if (found) router.push(`/admin/menus/${found.id}/edit`)
+    else router.push(`/admin/menus/new?store=${nextStoreId}${nextCategoryId ? `&category=${nextCategoryId}` : ''}`)
+  }
   const [form, setForm] = useState<StoreMenuPayload>({
     store_id: initial?.store_id ?? defaultStoreId ?? stores[0]?.id ?? '',
     category_id: initial?.category_id ?? forcedCategoryId ?? defaultCategoryId ?? categories[0]?.id ?? null,
@@ -49,6 +62,7 @@ export default function MenuForm({
 
   function set<K extends keyof StoreMenuPayload>(k: K, v: StoreMenuPayload[K]) {
     setForm((f) => ({ ...f, [k]: v }))
+    setDirty(true)
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -89,26 +103,37 @@ export default function MenuForm({
           <div className={lunchMode ? '' : 'grid grid-cols-1 gap-4 sm:grid-cols-2'}>
             <div>
               <label className={labelClass}>店舗 *</label>
-              <select className={inputClass} value={form.store_id} onChange={(e) => set('store_id', e.target.value)}>
+              <select
+                className={inputClass}
+                value={form.store_id}
+                onChange={(e) => (isEdit && menuIndex ? switchTo(e.target.value, form.category_id ?? null) : set('store_id', e.target.value))}
+              >
                 {stores.map((s) => (<option key={s.id} value={s.id}>{s.name}</option>))}
               </select>
             </div>
             {!lunchMode && (
               <div>
                 <label className={labelClass}>カテゴリ</label>
-                <select className={inputClass} value={form.category_id ?? ''} onChange={(e) => set('category_id', e.target.value || null)}>
+                <select
+                  className={inputClass}
+                  value={form.category_id ?? ''}
+                  onChange={(e) => (isEdit && menuIndex ? switchTo(form.store_id, e.target.value || null) : set('category_id', e.target.value || null))}
+                >
                   <option value="">（未分類）</option>
                   {categories.map((c) => (<option key={c.id} value={c.id}>{c.name}</option>))}
                 </select>
               </div>
             )}
           </div>
+          {isEdit && menuIndex && (
+            <p className="text-xs text-[#6f6f80]">店舗・カテゴリを変更すると、その組み合わせのメニュー編集に切り替わります（無ければ新規作成）。</p>
+          )}
         </div>
 
         {/* メニュー項目 */}
         <div className="space-y-4 rounded-xl border border-[#23232e] bg-[#14141a] p-5">
           <h2 className="text-sm font-semibold text-[#ebe5db]">メニュー項目</h2>
-          <MenuItemsEditor items={items} onChange={setItems} />
+          <MenuItemsEditor items={items} onChange={(v) => { setItems(v); setDirty(true) }} />
         </div>
       </div>
 

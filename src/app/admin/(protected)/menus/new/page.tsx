@@ -17,7 +17,7 @@ export default async function NewMenuPage({
         <Link href="/admin/menus" className="text-xs text-[#6f6f80] hover:text-[#ebe5db]">← メニュー一覧へ</Link>
         <h1 className="mt-1 text-2xl font-bold text-[#ebe5db]">新規メニュー</h1>
       </div>
-      <MenuForm stores={stores} categories={categories} defaultStoreId={store} defaultCategoryId={category} />
+      <MenuForm key={`${store ?? ''}-${category ?? ''}`} stores={stores} categories={categories} defaultStoreId={store} defaultCategoryId={category} />
     </div>
   )
 }
