@@ -6,6 +6,7 @@ import ImageUploader from '@/components/admin/ImageUploader'
 import RichTextEditor from '@/components/admin/RichTextEditor'
 import DateTimePicker from '@/components/admin/DateTimePicker'
 import NewsTagsEditor from '@/components/admin/NewsTagsEditor'
+import SaveSuccessBanner from '@/components/admin/SaveSuccessBanner'
 import { createNews, updateNews, type NewsPayload, type NewsStatus, type NewsTagInput } from '@/lib/actions/news'
 import { generateSlug } from '@/lib/slug'
 import type { Tables } from '@/types/supabase'
@@ -48,6 +49,7 @@ export default function NewsForm({
   const [tags, setTags] = useState<NewsTagInput[]>(initialTags)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [saved, setSaved] = useState(false)
 
   function onTitleChange(v: string) {
     setTitle(v)
@@ -57,6 +59,7 @@ export default function NewsForm({
   async function submit(forceStatus?: NewsStatus) {
     setSaving(true)
     setError(null)
+    setSaved(false)
     const finalStatus = forceStatus ?? status
     const payload: NewsPayload = {
       title,
@@ -73,12 +76,21 @@ export default function NewsForm({
       window.scrollTo({ top: 0, behavior: 'smooth' })
       return
     }
+    // 編集は一覧に遷移せず詳細画面に留まり「更新しました」を表示。新規作成は一覧へ
+    if (isEdit) {
+      setSaving(false)
+      setSaved(true)
+      router.refresh()
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      return
+    }
     router.push('/admin/news')
     router.refresh()
   }
 
   return (
     <form onSubmit={(e) => { e.preventDefault(); submit() }} className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+      <SaveSuccessBanner show={saved} className="lg:col-span-3" />
       {error && (
         <div className="rounded-lg border border-red-800/50 bg-red-900/20 px-4 py-3 text-sm text-red-400 lg:col-span-3">{error}</div>
       )}

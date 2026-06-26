@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import ImageUploader from '@/components/admin/ImageUploader'
+import SaveSuccessBanner from '@/components/admin/SaveSuccessBanner'
 import { createTakeoutMenu, updateTakeoutMenu, type TakeoutMenuPayload } from '@/lib/actions/takeout-menus'
 import type { Tables } from '@/types/supabase'
 import type { StoreRef, CategoryRef } from '@/lib/actions/refs'
@@ -36,6 +37,7 @@ export default function TakeoutMenuForm({
   })
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [saved, setSaved] = useState(false)
 
   function set<K extends keyof TakeoutMenuPayload>(k: K, v: TakeoutMenuPayload[K]) {
     setForm((f) => ({ ...f, [k]: v }))
@@ -52,10 +54,19 @@ export default function TakeoutMenuForm({
     e.preventDefault()
     setSaving(true)
     setError(null)
+    setSaved(false)
     const result = isEdit ? await updateTakeoutMenu(initial!.id, form) : await createTakeoutMenu(form)
     if (result?.error) {
       setError(result.error)
       setSaving(false)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      return
+    }
+    // 編集は一覧に遷移せず詳細画面に留まり「更新しました」を表示。新規作成は一覧へ
+    if (isEdit) {
+      setSaving(false)
+      setSaved(true)
+      router.refresh()
       window.scrollTo({ top: 0, behavior: 'smooth' })
       return
     }
@@ -65,6 +76,7 @@ export default function TakeoutMenuForm({
 
   return (
     <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+      <SaveSuccessBanner show={saved} className="lg:col-span-3" />
       {error && (
         <div className="rounded-lg border border-red-800/50 bg-red-900/20 px-4 py-3 text-sm text-red-400 lg:col-span-3">{error}</div>
       )}

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import MenuItemsEditor from '@/components/admin/MenuItemsEditor'
+import SaveSuccessBanner from '@/components/admin/SaveSuccessBanner'
 import { createStoreMenu, updateStoreMenu, type StoreMenuPayload, type MenuItemInput } from '@/lib/actions/menus'
 import type { Tables } from '@/types/supabase'
 import type { StoreRef, CategoryRef } from '@/lib/actions/refs'
@@ -41,6 +42,7 @@ export default function MenuForm({
   const [items, setItems] = useState<MenuItemInput[]>(initialItems)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [saved, setSaved] = useState(false)
 
   function set<K extends keyof StoreMenuPayload>(k: K, v: StoreMenuPayload[K]) {
     setForm((f) => ({ ...f, [k]: v }))
@@ -50,6 +52,7 @@ export default function MenuForm({
     e.preventDefault()
     setSaving(true)
     setError(null)
+    setSaved(false)
     const result = isEdit
       ? await updateStoreMenu(initial!.id, form, items)
       : await createStoreMenu(form, items)
@@ -59,12 +62,21 @@ export default function MenuForm({
       window.scrollTo({ top: 0, behavior: 'smooth' })
       return
     }
+    // 編集は一覧に遷移せず詳細画面に留まり「更新しました」を表示。新規作成は一覧へ
+    if (isEdit) {
+      setSaving(false)
+      setSaved(true)
+      router.refresh()
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      return
+    }
     router.push(returnPath)
     router.refresh()
   }
 
   return (
     <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+      <SaveSuccessBanner show={saved} className="lg:col-span-3" />
       {error && (
         <div className="rounded-lg border border-red-800/50 bg-red-900/20 px-4 py-3 text-sm text-red-400 lg:col-span-3">{error}</div>
       )}

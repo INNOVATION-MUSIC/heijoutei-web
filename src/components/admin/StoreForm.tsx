@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import ImageUploader from '@/components/admin/ImageUploader'
 import GalleryUploader from '@/components/admin/GalleryUploader'
+import SaveSuccessBanner from '@/components/admin/SaveSuccessBanner'
 import { createStore, updateStore, type StorePayload } from '@/lib/actions/stores'
 import type { Tables } from '@/types/supabase'
 
@@ -46,6 +47,7 @@ export default function StoreForm({ initial }: { initial?: Tables<'stores'> }) {
   })
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [saved, setSaved] = useState(false)
 
   // 郵便番号は住所自動入力の補助のみ（DB 保存・フロント表示はしない）
   const [postal, setPostal] = useState('')
@@ -85,10 +87,19 @@ export default function StoreForm({ initial }: { initial?: Tables<'stores'> }) {
     e.preventDefault()
     setSaving(true)
     setError(null)
+    setSaved(false)
     const result = isEdit ? await updateStore(initial!.id, form) : await createStore(form)
     if (result?.error) {
       setError(result.error)
       setSaving(false)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      return
+    }
+    // 編集は一覧に遷移せず詳細画面に留まり「更新しました」を表示。新規作成は一覧へ
+    if (isEdit) {
+      setSaving(false)
+      setSaved(true)
+      router.refresh()
       window.scrollTo({ top: 0, behavior: 'smooth' })
       return
     }
@@ -98,6 +109,7 @@ export default function StoreForm({ initial }: { initial?: Tables<'stores'> }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      <SaveSuccessBanner show={saved} />
       {error && (
         <div className="flex items-start gap-3 rounded-lg border border-red-800/50 bg-red-900/20 px-4 py-3">
           <span className="mt-0.5 text-red-400">⚠️</span>

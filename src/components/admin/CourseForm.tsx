@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import ImageUploader from '@/components/admin/ImageUploader'
+import SaveSuccessBanner from '@/components/admin/SaveSuccessBanner'
 import { createCourse, updateCourse, type CoursePayload } from '@/lib/actions/courses'
 import type { Tables } from '@/types/supabase'
 import type { StoreRef } from '@/lib/actions/refs'
@@ -35,6 +36,7 @@ export default function CourseForm({
   })
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [saved, setSaved] = useState(false)
 
   function set<K extends keyof CoursePayload>(k: K, v: CoursePayload[K]) {
     setForm((f) => ({ ...f, [k]: v }))
@@ -44,10 +46,19 @@ export default function CourseForm({
     e.preventDefault()
     setSaving(true)
     setError(null)
+    setSaved(false)
     const result = isEdit ? await updateCourse(initial!.id, form) : await createCourse(form)
     if (result?.error) {
       setError(result.error)
       setSaving(false)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      return
+    }
+    // 編集は一覧に遷移せず詳細画面に留まり「更新しました」を表示。新規作成は一覧へ
+    if (isEdit) {
+      setSaving(false)
+      setSaved(true)
+      router.refresh()
       window.scrollTo({ top: 0, behavior: 'smooth' })
       return
     }
@@ -57,6 +68,7 @@ export default function CourseForm({
 
   return (
     <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+      <SaveSuccessBanner show={saved} className="lg:col-span-3" />
       {error && (
         <div className="rounded-lg border border-red-800/50 bg-red-900/20 px-4 py-3 text-sm text-red-400 lg:col-span-3">
           {error}

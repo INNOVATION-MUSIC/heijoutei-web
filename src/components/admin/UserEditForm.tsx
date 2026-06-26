@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import AvatarUploader from '@/components/admin/AvatarUploader'
+import SaveSuccessBanner from '@/components/admin/SaveSuccessBanner'
 import { updateUserProfile, type AdminUserRow } from '@/lib/actions/users'
 
 const inputClass =
@@ -18,11 +19,13 @@ export default function UserEditForm({ user }: { user: AdminUserRow }) {
   const [password, setPassword] = useState('')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [saved, setSaved] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setSaving(true)
     setError(null)
+    setSaved(false)
     const res = await updateUserProfile(user.id, {
       full_name: fullName,
       role,
@@ -36,12 +39,17 @@ export default function UserEditForm({ user }: { user: AdminUserRow }) {
       setSaving(false)
       return
     }
-    router.push('/admin/users')
+    // 一覧に遷移せず編集画面に留まり「更新しました」を表示
+    setSaving(false)
+    setSaved(true)
+    setPassword('')
     router.refresh()
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   return (
     <form onSubmit={handleSubmit} className="max-w-lg space-y-4 rounded-xl border border-[#23232e] bg-[#14141a] p-5">
+      <SaveSuccessBanner show={saved} />
       {error && <div className="rounded-lg border border-red-800/50 bg-red-900/20 px-4 py-2.5 text-sm text-red-400">{error}</div>}
       <div>
         <label className={labelClass}>アイコン</label>
