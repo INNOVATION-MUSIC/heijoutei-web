@@ -45,7 +45,7 @@ export default function MenuLunchSectionSP({ items, storeId, stores, onSelectSto
 
         <div style={{ display: "flex", flexDirection: "column", gap: 20, paddingLeft: 20, paddingRight: 20, paddingTop: 20, paddingBottom: 80 }}>
           {items.map((it, i) => (
-            <ItemCardSP key={`${it.name}-${i}`} item={it} imageWidth={146} imageHeight={110} nameNoWrap />
+            <ItemCardSP key={`${it.name}-${i}`} item={it} imageWidth={146} imageHeight={110} nameClamp={2} />
           ))}
         </div>
       </div>
