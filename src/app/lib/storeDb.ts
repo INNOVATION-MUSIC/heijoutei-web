@@ -28,9 +28,18 @@ function shortName(name: string): string {
   return name.replace(/^平壌亭\s*/, "").replace(/^焼肉/, "");
 }
 
+// 管理画面の line_id 入力を LINE 友だち追加 URL に解決する。
+// 実URL（http/https）はそのまま使用。後方互換で kameoka 等のキー指定も許容。
+function resolveLineUrl(raw: string | null): string | undefined {
+  const v = raw?.trim();
+  if (!v) return undefined;
+  if (/^https?:\/\//i.test(v)) return v;
+  if (v in LINE_STORE_LINKS) return LINE_STORE_LINKS[v as keyof typeof LINE_STORE_LINKS];
+  return undefined;
+}
+
 function toDetail(row: StoreRow): StoreDetail {
-  const lineKey = (row.line_id ?? "") as keyof typeof LINE_STORE_LINKS;
-  const lineUrl = row.line_id && LINE_STORE_LINKS[lineKey] ? LINE_STORE_LINKS[lineKey] : undefined;
+  const lineUrl = resolveLineUrl(row.line_id);
   const photos = row.gallery_image_urls && row.gallery_image_urls.length > 0
     ? row.gallery_image_urls
     : row.hero_image_url

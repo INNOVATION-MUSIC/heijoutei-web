@@ -189,8 +189,8 @@ export default function StoreForm({ initial }: { initial?: Tables<'stores'> }) {
               <Field label="座席の説明" hint="店舗詳細ページの「お席」欄に表示">
                 <input className={inputClass} value={form.seat_description ?? ''} onChange={(e) => set('seat_description', e.target.value)} />
               </Field>
-              <Field label="LINE ID / URL">
-                <input className={inputClass} value={form.line_id ?? ''} onChange={(e) => set('line_id', e.target.value)} />
+              <Field label="LINE 友だち追加 URL" hint="https:// から始まる友だち追加URL（例: https://lin.ee/xxxx）。入力すると店舗詳細ページにLINEボタンが表示されます">
+                <input className={inputClass} value={form.line_id ?? ''} onChange={(e) => set('line_id', e.target.value)} placeholder="https://lin.ee/xxxx" />
               </Field>
             </div>
           </div>
