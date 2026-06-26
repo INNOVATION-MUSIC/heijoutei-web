@@ -296,6 +296,17 @@ export const POKKIRI_OPTION = {
 // ポッキリ宴会オプションを表示するコースカテゴリの slug。
 export const POKKIRI_OPTION_CATEGORY_SLUGS = ["enkai"];
 
+// ポッキリ宴会の案内（マイクロバス送迎＋宴会注意事項）。enkai 選択時にオプションと併せて表示。
+export const ENKAI_INFO = {
+  headline: "8名様よりマイクロバス送迎あります。",
+  headlineSub: "一部有料エリア",
+  notes: [
+    "宴会料理は4名様以上より承ります。",
+    "前日までにご予約ください。",
+    "飲み放題は2時間以内です。",
+  ],
+};
+
 /* ══════════ テイクアウトメニュー（/menu/takeout・Figma 2020:488） ══════════ */
 export type TakeoutMenuTab = { slug: string; name: string; items: MenuItem[] };
 

@@ -1,11 +1,29 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { COURSE_NOTES, DRINK_PLAN_TITLE, DRINK_PLANS, POKKIRI_OPTION, type CourseItem } from "@/app/lib/menuData";
+import { COURSE_NOTES, DRINK_PLAN_TITLE, DRINK_PLANS, POKKIRI_OPTION, ENKAI_INFO, type CourseItem } from "@/app/lib/menuData";
 import { type StoreTab } from "../MenuShared";
 import { MenuHeadingSP, StoreTabsSP, MenuSelectBoxSP, mincho, sans, PANEL, GOLD } from "./MenuSharedSP";
 
 const DRINK_BAR = "#9e4b3d"; // 飲み放題プラン見出しバーのテラコッタ
+const ENKAI_BAR = "#5e2a25"; // 宴会案内見出しバーのマルーン
+
+/* ─────────── ポッキリ宴会の案内（SP・マイクロバス送迎＋宴会注意事項） ─────────── */
+function EnkaiInfoPanelSP() {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", background: PANEL }}>
+      <div style={{ background: ENKAI_BAR, padding: "18px 20px", display: "flex", flexDirection: "column", gap: 5 }}>
+        <span style={{ fontFamily: mincho, fontSize: 16, letterSpacing: "0.04em", lineHeight: "24px", color: "#f3ece0" }}>{ENKAI_INFO.headline}</span>
+        <span style={{ fontFamily: mincho, fontSize: 13, letterSpacing: "0.04em", color: "#d8cfc4" }}>{ENKAI_INFO.headlineSub}</span>
+      </div>
+      <div style={{ padding: "20px 20px", display: "flex", flexDirection: "column", gap: 8 }}>
+        {ENKAI_INFO.notes.map((n) => (
+          <p key={n} style={{ margin: 0, fontFamily: mincho, fontSize: 13, letterSpacing: "0.04em", lineHeight: "22px", color: "#ebe5db" }}>{n}</p>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 /* ─────────── ポッキリ宴会オプション（SP・ポッキリ宴会カテゴリ選択時のみ・注意書きの上） ─────────── */
 function PokkiriOptionPanelSP() {
@@ -179,10 +197,11 @@ export default function MenuCourseSectionSP({
           </div>
         )}
 
-        {/* ポッキリ宴会オプション（ポッキリ宴会選択時のみ・注記の上） */}
+        {/* ポッキリ宴会オプション + 宴会案内（ポッキリ宴会選択時のみ・注記の上） */}
         {showPokkiriOption && (
-          <div style={{ paddingLeft: 20, paddingRight: 20, paddingTop: 40 }}>
+          <div style={{ paddingLeft: 20, paddingRight: 20, paddingTop: 40, display: "flex", flexDirection: "column", gap: 20 }}>
             <PokkiriOptionPanelSP />
+            <EnkaiInfoPanelSP />
           </div>
         )}
 
