@@ -43,11 +43,17 @@ export default function MenuLunchSectionSP({ items, storeId, stores, onSelectSto
 
         <p style={{ fontFamily: sans, fontSize: 12, letterSpacing: "0.04em", color: "#99948c", paddingLeft: 20, paddingTop: 20, margin: 0 }}>※ 価格はすべて税込表示です</p>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: 20, paddingLeft: 20, paddingRight: 20, paddingTop: 20, paddingBottom: 80 }}>
-          {items.map((it, i) => (
-            <ItemCardSP key={`${it.name}-${i}`} item={it} imageWidth={146} imageHeight={110} nameClamp={2} />
-          ))}
-        </div>
+        {items.length === 0 ? (
+          <p style={{ fontFamily: sans, fontSize: 14, letterSpacing: "0.06em", color: "#99948c", textAlign: "center", paddingTop: 60, paddingBottom: 80, margin: 0 }}>
+            現在この店舗のランチメニューはございません。
+          </p>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: 20, paddingLeft: 20, paddingRight: 20, paddingTop: 20, paddingBottom: 80 }}>
+            {items.map((it, i) => (
+              <ItemCardSP key={`${it.name}-${i}`} item={it} imageWidth={146} imageHeight={110} nameClamp={2} />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

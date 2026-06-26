@@ -8,7 +8,7 @@ import StickyButton from "./StickyButton";
 import Footer from "./Footer";
 import MenuLunchSection from "./MenuLunchSection";
 import { useStoreParam, type StoreTab } from "./MenuShared";
-import { getLunchItems, type MenuItem } from "@/app/lib/menuData";
+import { type MenuItem } from "@/app/lib/menuData";
 
 // SP
 import MenuLunchSectionSP from "./sp/MenuLunchSectionSP";
@@ -52,7 +52,9 @@ export default function MenuLunchClient({ lunchByStore, stores }: { lunchByStore
   const closeModal = () => setModalOpen(false);
 
   const [storeId, setStore] = useStoreParam(stores);
-  const items = lunchByStore?.[storeId] ?? getLunchItems(storeId);
+  // 非公開店は fetchLunchByStore 側で除外済み＝map に無い店は空表示にする。
+  // （DB 未設定時は fetchLunchByStore が全店の静的 map を返すためフォールバック不要）
+  const items = lunchByStore?.[storeId] ?? [];
 
   if (isMobile === null) {
     return <div style={{ minHeight: "100vh", background: "#0a0a0a" }} />;

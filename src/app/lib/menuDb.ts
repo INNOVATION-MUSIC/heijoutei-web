@@ -9,6 +9,7 @@ type MenuItemRow = {
   sort_order: number | null;
 };
 type StoreMenuRow = {
+  is_active: boolean | null;
   stores: { slug: string } | null;
   menu_items: MenuItemRow[];
 };
@@ -33,11 +34,12 @@ function sortItems(items: MenuItemRow[]): MenuItem[] {
 }
 
 const CAT_SELECT =
-  "slug, name, card_image_url, sort_order, store_menus(stores(slug), menu_items(name, description, image_url, price_label, sort_order))";
+  "slug, name, card_image_url, sort_order, store_menus(is_active, stores(slug), menu_items(name, description, image_url, price_label, sort_order))";
 
 function toCategory(r: CategoryRow): MenuCategory {
   const itemsByStore: Record<string, MenuItem[]> = {};
   for (const sm of r.store_menus ?? []) {
+    if (sm.is_active === false) continue; // 店舗ごとに非公開なメニューは除外
     const slug = sm.stores?.slug;
     if (!slug) continue;
     itemsByStore[slug] = sortItems(sm.menu_items ?? []);
@@ -96,12 +98,13 @@ export async function fetchLunchByStore(): Promise<Record<string, MenuItem[]>> {
     const supabase = createStaticClient();
     const { data, error } = await supabase
       .from("menu_categories")
-      .select("store_menus(stores(slug), menu_items(name, description, image_url, price_label, sort_order))")
+      .select("store_menus(is_active, stores(slug), menu_items(name, description, image_url, price_label, sort_order))")
       .eq("slug", "lunch")
       .maybeSingle();
     if (error || !data) return fallback;
     const map: Record<string, MenuItem[]> = {};
     for (const sm of ((data as unknown as { store_menus: StoreMenuRow[] }).store_menus ?? [])) {
+      if (sm.is_active === false) continue; // 店舗ごとに非公開なランチは除外
       const slug = sm.stores?.slug;
       if (!slug) continue;
       map[slug] = sortItems(sm.menu_items ?? []);

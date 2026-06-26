@@ -36,12 +36,18 @@ export default function MenuLunchSection({
       {/* 税込注記 */}
       <p style={{ fontFamily: sans, fontSize: 13, letterSpacing: "0.04em", color: "#99948c", paddingLeft: 50, paddingTop: 27, margin: 0 }}>※ 価格はすべて税込表示です</p>
 
-      {/* 項目グリッド（3列・gap40） */}
-      <div style={{ display: "flex", flexWrap: "wrap", columnGap: 40, rowGap: 40, paddingLeft: 50, paddingRight: 50, paddingTop: 18 }}>
-        {items.map((it, i) => (
-          <ItemCard key={`${it.name}-${i}`} item={it} imageWidth={196} height={140} nameSize={22} nameClamp={2} />
-        ))}
-      </div>
+      {/* 項目グリッド（3列・gap40）。非公開店は items が空 */}
+      {items.length === 0 ? (
+        <p style={{ fontFamily: mincho, fontSize: 18, letterSpacing: "0.08em", color: "#99948c", textAlign: "center", paddingTop: 80, margin: 0 }}>
+          現在この店舗のランチメニューはございません。
+        </p>
+      ) : (
+        <div style={{ display: "flex", flexWrap: "wrap", columnGap: 40, rowGap: 40, paddingLeft: 50, paddingRight: 50, paddingTop: 18 }}>
+          {items.map((it, i) => (
+            <ItemCard key={`${it.name}-${i}`} item={it} imageWidth={196} height={140} nameSize={22} nameClamp={2} />
+          ))}
+        </div>
+      )}
 
       <div style={{ flex: 1 }} />
       <BackToMenuButton />
