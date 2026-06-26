@@ -39,7 +39,7 @@ export default function MenuLunchSection({
       {/* 項目グリッド（3列・gap40） */}
       <div style={{ display: "flex", flexWrap: "wrap", columnGap: 40, rowGap: 40, paddingLeft: 50, paddingRight: 50, paddingTop: 18 }}>
         {items.map((it, i) => (
-          <ItemCard key={`${it.name}-${i}`} item={it} imageWidth={280} />
+          <ItemCard key={`${it.name}-${i}`} item={it} imageWidth={168} height={120} nameSize={22} nameNoWrap />
         ))}
       </div>
 

@@ -131,14 +131,14 @@ export function MenuSelectBoxSP({
 }
 
 /* ─────────── メニュー項目カード（SP・350×150・写真150 + 名称/説明/価格） ─────────── */
-export function ItemCardSP({ item, imageWidth = 150 }: { item: MenuItem; imageWidth?: number }) {
+export function ItemCardSP({ item, imageWidth = 150, imageHeight = 150, nameNoWrap = false }: { item: MenuItem; imageWidth?: number; imageHeight?: number; nameNoWrap?: boolean }) {
   return (
-    <div style={{ display: "flex", width: 350, minHeight: 150, background: PANEL }}>
-      <div style={{ position: "relative", width: imageWidth, height: 150, overflow: "hidden", background: "#22140c", flexShrink: 0 }}>
+    <div style={{ display: "flex", width: 350, minHeight: imageHeight, background: PANEL }}>
+      <div style={{ position: "relative", width: imageWidth, height: imageHeight, overflow: "hidden", background: "#22140c", flexShrink: 0 }}>
         <Image src={item.photo} alt={item.name} fill className="object-cover" sizes={`${imageWidth}px`} />
       </div>
       <div style={{ flex: 1, display: "flex", flexDirection: "column", paddingLeft: 19, paddingRight: 12, paddingTop: 14, paddingBottom: 14 }}>
-        <span style={{ fontFamily: mincho, fontSize: 18, fontWeight: 600, letterSpacing: "1px", color: "#fff", lineHeight: 1.3 }}>{item.name}</span>
+        <span style={{ fontFamily: mincho, fontSize: 18, fontWeight: 600, letterSpacing: "1px", color: "#fff", lineHeight: 1.3, whiteSpace: nameNoWrap ? "nowrap" : "normal" }}>{item.name}</span>
         <div style={{ flex: 1 }} />
         <div style={{ display: "flex", alignItems: "baseline", justifyContent: "flex-end", gap: 4 }}>
           <span style={{ fontFamily: mincho, fontSize: 20, fontWeight: 600, letterSpacing: "1px", color: "#ebe5db" }}>{item.price.toLocaleString()}</span>

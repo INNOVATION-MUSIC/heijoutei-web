@@ -23,13 +23,13 @@ const TRAILING = 265;
 
 function lunchHeight(itemCount: number) {
   const rows = Math.max(1, Math.ceil(itemCount / 3));
-  return GRID_TOP + rows * 200 + (rows - 1) * 40 + TRAILING;
+  return GRID_TOP + rows * 120 + (rows - 1) * 40 + TRAILING;
 }
 
 // SP: ヘッダースペーサー(153)を除いたコンテンツの初期推定。
 const SP_HEADER = 153;
 const SP_HEAD_BLOCK = 130 + 73 + 94 + 60 + 49 + 89 + 52 + 20 + 13;
-const SP_ITEM_H = 150;
+const SP_ITEM_H = 110;
 const SP_ITEM_GAP = 20;
 
 function spEstimateContent(itemCount: number) {
