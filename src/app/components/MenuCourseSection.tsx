@@ -2,7 +2,35 @@
 
 import { useEffect, useRef } from "react";
 import { MenuHeading, StoreTabs, BackToMenuButton, mincho, sans, PANEL, GOLD, type StoreTab } from "./MenuShared";
-import { COURSE_NOTES, type CourseItem } from "@/app/lib/menuData";
+import { COURSE_NOTES, DRINK_PLAN_TITLE, DRINK_PLANS, type CourseItem } from "@/app/lib/menuData";
+
+const DRINK_BAR = "#9e4b3d"; // 飲み放題プラン見出しバーのテラコッタ
+
+/* ─────────── 2時間飲み放題プラン（指定カテゴリ選択時のみ・注意書きの上） ─────────── */
+function DrinkPlanPanel() {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", background: PANEL }}>
+      <div style={{ background: DRINK_BAR, padding: "16px 0", textAlign: "center" }}>
+        <span style={{ fontFamily: mincho, fontSize: 24, fontWeight: 600, letterSpacing: "0.12em", color: "#f3ece0" }}>{DRINK_PLAN_TITLE}</span>
+      </div>
+      {DRINK_PLANS.map((p, i) => (
+        <div
+          key={p.name}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            padding: "26px 48px",
+            borderTop: i > 0 ? "1px solid rgba(234,229,219,0.12)" : "none",
+          }}
+        >
+          <span style={{ width: 240, flexShrink: 0, fontFamily: mincho, fontSize: 19, letterSpacing: "0.06em", color: "#ebe5db" }}>{p.name}</span>
+          <span style={{ width: 150, flexShrink: 0, fontFamily: mincho, fontSize: 26, fontWeight: 600, letterSpacing: "0.04em", color: GOLD }}>{p.price}</span>
+          <p style={{ flex: 1, fontFamily: sans, fontSize: 14, lineHeight: "26px", letterSpacing: "0.04em", color: "#99948c", margin: 0, whiteSpace: "pre-wrap" }}>{p.desc}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 /* ─────────── 「飯物付き」ラベル（カテゴリ風の金枠タグ） ─────────── */
 function RiceBadge() {
@@ -70,6 +98,7 @@ export default function MenuCourseSection({
   categoryTabs,
   activeCategory = 0,
   onSelectCategory,
+  showDrinkPlan = false,
   onOpenModal,
   height,
   onMeasured,
@@ -81,6 +110,7 @@ export default function MenuCourseSection({
   categoryTabs?: string[];
   activeCategory?: number;
   onSelectCategory?: (i: number) => void;
+  showDrinkPlan?: boolean;
   onOpenModal: () => void;
   height: number;
   onMeasured?: (h: number) => void;
@@ -118,6 +148,13 @@ export default function MenuCourseSection({
             <CourseCard key={c.title} course={c} />
           ))}
         </div>
+
+        {/* 2時間飲み放題プラン（指定カテゴリ選択時のみ・注記の上） */}
+        {showDrinkPlan && (
+          <div style={{ paddingLeft: 146, paddingRight: 134, paddingTop: 55 }}>
+            <DrinkPlanPanel />
+          </div>
+        )}
 
         {/* 注記パネル */}
         <div style={{ paddingLeft: 146, paddingRight: 134, paddingTop: 55 }}>

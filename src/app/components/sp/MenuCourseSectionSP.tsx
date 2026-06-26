@@ -1,9 +1,40 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { COURSE_NOTES, type CourseItem } from "@/app/lib/menuData";
+import { COURSE_NOTES, DRINK_PLAN_TITLE, DRINK_PLANS, type CourseItem } from "@/app/lib/menuData";
 import { type StoreTab } from "../MenuShared";
 import { MenuHeadingSP, StoreTabsSP, MenuSelectBoxSP, mincho, sans, PANEL, GOLD } from "./MenuSharedSP";
+
+const DRINK_BAR = "#9e4b3d"; // 飲み放題プラン見出しバーのテラコッタ
+
+/* ─────────── 2時間飲み放題プラン（SP・指定カテゴリ選択時のみ・注意書きの上） ─────────── */
+function DrinkPlanPanelSP() {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", background: PANEL }}>
+      <div style={{ background: DRINK_BAR, padding: "12px 0", textAlign: "center" }}>
+        <span style={{ fontFamily: mincho, fontSize: 18, fontWeight: 600, letterSpacing: "0.1em", color: "#f3ece0" }}>{DRINK_PLAN_TITLE}</span>
+      </div>
+      {DRINK_PLANS.map((p, i) => (
+        <div
+          key={p.name}
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 8,
+            padding: "20px 20px",
+            borderTop: i > 0 ? "1px solid rgba(234,229,219,0.12)" : "none",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 10 }}>
+            <span style={{ fontFamily: mincho, fontSize: 16, letterSpacing: "0.04em", color: "#ebe5db" }}>{p.name}</span>
+            <span style={{ fontFamily: mincho, fontSize: 22, fontWeight: 600, letterSpacing: "0.04em", color: GOLD }}>{p.price}</span>
+          </div>
+          <p style={{ fontFamily: sans, fontSize: 12, lineHeight: "22px", letterSpacing: "0.04em", color: "#99948c", margin: 0, whiteSpace: "pre-wrap" }}>{p.desc}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 /* ─────────── 「飯物付き」ラベル（カテゴリ風の金枠タグ） ─────────── */
 function RiceBadgeSP() {
@@ -66,6 +97,7 @@ type Props = {
   categoryTabs?: string[];
   activeCategory?: number;
   onSelectCategory?: (i: number) => void;
+  showDrinkPlan?: boolean;
   height: number;
   onMeasured?: (h: number) => void;
 };
@@ -83,6 +115,7 @@ export default function MenuCourseSectionSP({
   categoryTabs,
   activeCategory = 0,
   onSelectCategory,
+  showDrinkPlan = false,
   height,
   onMeasured,
 }: Props) {
@@ -118,6 +151,13 @@ export default function MenuCourseSectionSP({
             <CourseCardSP key={c.title} course={c} />
           ))}
         </div>
+
+        {/* 2時間飲み放題プラン（指定カテゴリ選択時のみ・注記の上） */}
+        {showDrinkPlan && (
+          <div style={{ paddingLeft: 20, paddingRight: 20, paddingTop: 40 }}>
+            <DrinkPlanPanelSP />
+          </div>
+        )}
 
         {/* 注記パネル（・マーカー） */}
         <div style={{ paddingLeft: 20, paddingRight: 20, paddingTop: 40, paddingBottom: 80 }}>

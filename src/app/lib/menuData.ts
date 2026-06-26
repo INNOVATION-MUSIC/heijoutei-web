@@ -272,6 +272,20 @@ export const COURSE_NOTES: string[] = [
   "当日のキャンセルはご予約時のお料理代金100％を申し受けます。",
 ];
 
+/* ══════════ 2時間飲み放題プラン（/menu/course・指定カテゴリ選択時のみ注意書きの上に表示） ══════════ */
+export type DrinkPlan = { name: string; price: string; desc: string };
+export const DRINK_PLAN_TITLE = "2時間飲み放題プラン";
+export const DRINK_PLANS: DrinkPlan[] = [
+  {
+    name: "標準プラン",
+    price: "2,750円",
+    desc: "瓶ビール・焼酎・チューハイ・日本酒・カクテル\n果実酒・ハイボール・マッコリ・ソフトドリンク",
+  },
+  { name: "生ビール付きプラン", price: "3,300円", desc: "上記内容プラス生ビール" },
+];
+// 飲み放題プランを表示するコースカテゴリの slug（カテゴリ管理で slug を変える場合はここも更新）。
+export const DRINK_PLAN_CATEGORY_SLUGS = ["full", "moriawase"];
+
 /* ══════════ テイクアウトメニュー（/menu/takeout・Figma 2020:488） ══════════ */
 export type TakeoutMenuTab = { slug: string; name: string; items: MenuItem[] };
 
