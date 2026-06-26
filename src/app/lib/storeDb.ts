@@ -76,6 +76,31 @@ export async function fetchStoreDetail(slug: string): Promise<StoreDetail | unde
   }
 }
 
+// トップページの LINE バー/モーダル用：LINE URL が登録済みの店舗のみ返す（未登録は非表示）。
+export type StoreLineLink = { name: string; href: string };
+
+// LINE バー/モーダルの表示名（"平壌亭 亀岡店" → "亀岡店"、"焼肉ゆらの" はそのまま）
+function lineBarName(name: string): string {
+  return name.replace(/^平壌亭\s*/, "");
+}
+
+export async function fetchStoreLineLinks(): Promise<StoreLineLink[]> {
+  try {
+    const supabase = createStaticClient();
+    const { data } = await supabase
+      .from("stores")
+      .select("name, line_id, sort_order")
+      .eq("is_active", true)
+      .order("sort_order", { ascending: true });
+    if (!data) return [];
+    return data
+      .map((r) => ({ name: lineBarName(r.name), href: resolveLineUrl(r.line_id) }))
+      .filter((s): s is StoreLineLink => Boolean(s.href));
+  } catch {
+    return [];
+  }
+}
+
 export async function fetchStoreParams(): Promise<{ id: string }[]> {
   try {
     const supabase = createStaticClient();

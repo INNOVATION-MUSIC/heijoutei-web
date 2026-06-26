@@ -12,6 +12,7 @@ import NewsSection from "./NewsSection";
 import { type NewsItem } from "@/app/lib/newsData";
 import { type BusinessMonth } from "@/app/lib/businessCalendarDb";
 import { type TopCourse } from "@/app/lib/courseDb";
+import { type StoreLineLink } from "@/app/lib/storeDb";
 import KodawariSection from "./KodawariSection";
 import MenuSection from "./MenuSection";
 import LunchSection from "./LunchSection";
@@ -40,7 +41,7 @@ import SpStickyHeader from "./sp/SpStickyHeader";
 const DESIGN_PC = 1440;
 const DESIGN_SP = 390;
 
-export default function ResponsivePage({ topNews, businessMonths, topCourses }: { topNews?: NewsItem[]; businessMonths?: BusinessMonth[]; topCourses?: TopCourse[] }) {
+export default function ResponsivePage({ topNews, businessMonths, topCourses, lineLinks }: { topNews?: NewsItem[]; businessMonths?: BusinessMonth[]; topCourses?: TopCourse[]; lineLinks?: StoreLineLink[] }) {
   const isMobile = useIsMobile();
   const [modalOpen, setModalOpen] = useState(false);
   const [lineModalOpen, setLineModalOpen] = useState(false);
@@ -102,7 +103,7 @@ export default function ResponsivePage({ topNews, businessMonths, topCourses }: 
         {/* ハンバーガーメニュー: fixed overlay（ScaledSection の外側） */}
         <HamburgerMenuSP open={menuOpen} onClose={closeMenu} onOpenModal={openModal} />
         <ReserveModal open={modalOpen} onClose={closeModal} isMobile />
-        <LineModal open={lineModalOpen} onClose={closeLineModal} />
+        <LineModal open={lineModalOpen} onClose={closeLineModal} stores={lineLinks} />
       </>
     );
   }
@@ -110,7 +111,7 @@ export default function ResponsivePage({ topNews, businessMonths, topCourses }: 
   return (
     <>
       <ScaledSection designWidth={DESIGN_PC} height={1000}>
-        <HeroSection onOpenModal={openModal} />
+        <HeroSection onOpenModal={openModal} lineLinks={lineLinks} />
       </ScaledSection>
       <ScaledSection designWidth={DESIGN_PC} height={1000}>
         <NewsSection items={topNews} />

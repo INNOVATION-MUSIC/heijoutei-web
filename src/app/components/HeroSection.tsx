@@ -4,14 +4,16 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { HEADER_NAV_LINKS } from "@/app/lib/navLinks";
+import { type StoreLineLink } from "@/app/lib/storeDb";
 import OutlineButton from "./OutlineButton";
 
-const LINE_BTNS = [
-  { label: "亀岡店", width: 185 },
-  { label: "園部店", width: 185 },
-  { label: "福知山店", width: 192 },
-  { label: "焼肉ゆらの", width: 200 },
-];
+// 既知店舗のボタン幅（デザイン踏襲）。未知名は既定幅。
+const LINE_BTN_WIDTHS: Record<string, number> = {
+  "亀岡店": 185,
+  "園部店": 185,
+  "福知山店": 192,
+  "焼肉ゆらの": 200,
+};
 
 const mincho = "'Shippori Mincho', serif";
 const sans = "'Noto Sans JP', sans-serif";
@@ -20,11 +22,13 @@ const LINE_GREEN = "#06C755"; // LINE 公式ブランドカラー（ホバー塗
 
 /** LINE バーの友だち追加ボタン。
  *  ホバーで枠色（緑）に塗りつぶし・テキストを白/太字に（詳細ページと同方式）。 */
-function LineBarButton({ label, width }: { label: string; width: number }) {
+function LineBarButton({ label, width, href }: { label: string; width: number; href: string }) {
   const [hover, setHover] = useState(false);
   return (
     <a
-      href="#"
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       style={{
@@ -51,7 +55,7 @@ function LineBarButton({ label, width }: { label: string; width: number }) {
   );
 }
 
-export default function HeroSection({ onOpenModal }: { onOpenModal: () => void }) {
+export default function HeroSection({ onOpenModal, lineLinks = [] }: { onOpenModal: () => void; lineLinks?: StoreLineLink[] }) {
   return (
     <>
       {/* section全体をflex-rowで左右カラムに分割 */}
@@ -147,9 +151,10 @@ export default function HeroSection({ onOpenModal }: { onOpenModal: () => void }
         <p style={{ fontFamily: sans, fontSize: 16, fontWeight: 500, letterSpacing: "0.25em", lineHeight: "44px", color: "#ebe5db" }}>
           LINE登録でお得情報GET　ともだち募集中!!
         </p>
+        {/* LINE URL が登録済みの店舗のみ表示（未登録は非表示） */}
         <div style={{ display: "flex", gap: 30 }}>
-          {LINE_BTNS.map(({ label, width }) => (
-            <LineBarButton key={label} label={label} width={width} />
+          {lineLinks.map(({ name, href }) => (
+            <LineBarButton key={name} label={name} width={LINE_BTN_WIDTHS[name] ?? 185} href={href} />
           ))}
         </div>
       </div>

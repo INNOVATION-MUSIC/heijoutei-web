@@ -2,19 +2,14 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { LINE_STORE_LINKS } from "@/app/lib/navLinks";
+import { type StoreLineLink } from "@/app/lib/storeDb";
 
 interface Props {
   open: boolean;
   onClose: () => void;
+  // LINE URL が登録済みの店舗のみ（未登録は親で除外済み）
+  stores?: StoreLineLink[];
 }
-
-const LINE_STORES = [
-  { name: "亀岡店",    href: LINE_STORE_LINKS.kameoka },
-  { name: "園部店",    href: LINE_STORE_LINKS.sonobe },
-  { name: "福知山店",  href: LINE_STORE_LINKS.fukuchiyama },
-  { name: "焼肉ゆらの", href: LINE_STORE_LINKS.yurano },
-];
 
 const mincho = "'Shippori Mincho', serif";
 const sans = "'Noto Sans JP', sans-serif";
@@ -28,7 +23,7 @@ function CloseIcon() {
   );
 }
 
-export default function LineModal({ open, onClose }: Props) {
+export default function LineModal({ open, onClose, stores = [] }: Props) {
   const [isClosing, setIsClosing] = useState(false);
 
   // body スクロールロックは外部システムの同期なので effect で行う（setState ではないため lint OK）。
@@ -128,10 +123,12 @@ export default function LineModal({ open, onClose }: Props) {
 
         {/* 店舗ボタン: gap=30 (345→415→485→555 = 70px間隔, 70-40=30px gap) */}
         <div style={{ display: "flex", flexDirection: "column", gap: 30, alignItems: "center" }}>
-          {LINE_STORES.map(({ name, href }) => (
+          {stores.map(({ name, href }) => (
             <a
               key={name}
               href={href}
+              target="_blank"
+              rel="noopener noreferrer"
               style={{
                 width: 200,
                 height: 40,
