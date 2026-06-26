@@ -13,6 +13,7 @@ export type CoursePayload = {
   notes?: string | null
   image_url?: string | null
   course_category_id?: string | null
+  with_rice?: boolean
   is_active?: boolean
   sort_order?: number
 }
@@ -32,6 +33,7 @@ function normalize(p: CoursePayload) {
     notes: p.notes?.trim() || null,
     image_url: p.image_url?.trim() || null,
     course_category_id: p.course_category_id || null,
+    with_rice: p.with_rice ?? false,
     is_active: p.is_active ?? true,
     sort_order: p.sort_order ?? 0,
   }

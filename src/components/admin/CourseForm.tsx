@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import ImageUploader from '@/components/admin/ImageUploader'
 import SaveSuccessBanner from '@/components/admin/SaveSuccessBanner'
 import { createCourse, updateCourse, type CoursePayload } from '@/lib/actions/courses'
 import type { Tables } from '@/types/supabase'
@@ -32,8 +31,8 @@ export default function CourseForm({
     price_label: initial?.price_label ?? '',
     description: initial?.description ?? '',
     notes: initial?.notes ?? '',
-    image_url: initial?.image_url ?? '',
     course_category_id: initial?.course_category_id ?? '',
+    with_rice: initial?.with_rice ?? false,
     is_active: initial?.is_active ?? true,
     sort_order: initial?.sort_order ?? 0,
   })
@@ -123,13 +122,15 @@ export default function CourseForm({
             <textarea className={`${inputClass} min-h-16`} value={form.notes ?? ''} onChange={(e) => set('notes', e.target.value)} />
           </div>
         </div>
-        <div className="rounded-xl border border-[#23232e] bg-[#14141a] p-5">
-          <ImageUploader label="一覧カード画像" value={form.image_url ?? ''} onChange={(url) => set('image_url', url)} />
-        </div>
       </div>
 
       <div className="space-y-5">
         <div className="space-y-4 rounded-xl border border-[#23232e] bg-[#14141a] p-5">
+          <label className="flex items-center gap-2 text-sm text-[#ebe5db]">
+            <input type="checkbox" checked={form.with_rice ?? false} onChange={(e) => set('with_rice', e.target.checked)} className="accent-[#d9b86b]" />
+            飯物付き
+          </label>
+          <p className="text-xs text-[#6f6f80]">チェックすると、フロントのコースカードに「飯物付き」ラベルが表示されます。</p>
           <label className="flex items-center gap-2 text-sm text-[#ebe5db]">
             <input type="checkbox" checked={form.is_active ?? true} onChange={(e) => set('is_active', e.target.checked)} className="accent-[#d9b86b]" />
             公開する

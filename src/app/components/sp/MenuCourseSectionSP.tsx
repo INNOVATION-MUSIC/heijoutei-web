@@ -1,25 +1,29 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useRef } from "react";
 import { COURSE_NOTES, type CourseItem } from "@/app/lib/menuData";
 import { type StoreTab } from "../MenuShared";
 import { MenuHeadingSP, StoreTabsSP, MenuSelectBoxSP, mincho, sans, PANEL, GOLD } from "./MenuSharedSP";
 
-/* ─────────── コースカード（SP・350幅・写真350×320上 + 見出し/価格/説明） ─────────── */
+/* ─────────── 「飯物付き」ラベル（カテゴリ風の金枠タグ） ─────────── */
+function RiceBadgeSP() {
+  return (
+    <span style={{ alignSelf: "flex-start", border: `1px solid ${GOLD}`, color: GOLD, fontFamily: mincho, fontSize: 12, fontWeight: 600, letterSpacing: "0.12em", padding: "4px 12px", marginBottom: 14 }}>
+      飯物付き
+    </span>
+  );
+}
+
+/* ─────────── コースカード（SP・350幅・画像なし・テキストのみ + 任意「飯物付き」） ─────────── */
 function CourseCardSP({ course }: { course: CourseItem }) {
   return (
-    <div style={{ display: "flex", flexDirection: "column", width: 350, background: PANEL }}>
-      <div style={{ position: "relative", width: 350, height: 320, overflow: "hidden", background: "#22140c" }}>
-        <Image src={course.photo} alt={course.title} fill className="object-cover" sizes="350px" />
-      </div>
-      <div style={{ display: "flex", flexDirection: "column", paddingLeft: 24, paddingRight: 24, paddingTop: 26, paddingBottom: 30 }}>
-        <span style={{ fontFamily: sans, fontSize: 12, letterSpacing: "0.08em", color: "#99948c" }}>{course.label}</span>
-        <div style={{ width: 32, height: 1, background: GOLD, marginTop: 12 }} />
-        <span style={{ fontFamily: mincho, fontSize: 24, letterSpacing: "0.04em", color: "#ebe5db", marginTop: 12 }}>{course.title}</span>
-        <span style={{ fontFamily: mincho, fontSize: 22, fontWeight: 600, letterSpacing: "0.04em", color: GOLD, marginTop: 10 }}>{course.price}</span>
-        <p style={{ fontFamily: sans, fontSize: 13, lineHeight: "24px", letterSpacing: "0.04em", color: "#99948c", marginTop: 12, margin: 0 }}>{course.desc}</p>
-      </div>
+    <div style={{ display: "flex", flexDirection: "column", width: 350, background: PANEL, paddingLeft: 24, paddingRight: 24, paddingTop: 26, paddingBottom: 30 }}>
+      {course.withRice && <RiceBadgeSP />}
+      {course.label && <span style={{ fontFamily: sans, fontSize: 12, letterSpacing: "0.08em", color: "#99948c" }}>{course.label}</span>}
+      <div style={{ width: 32, height: 1, background: GOLD, marginTop: 12 }} />
+      <span style={{ fontFamily: mincho, fontSize: 24, letterSpacing: "0.04em", color: "#ebe5db", marginTop: 12 }}>{course.title}</span>
+      <span style={{ fontFamily: mincho, fontSize: 22, fontWeight: 600, letterSpacing: "0.04em", color: GOLD, marginTop: 10 }}>{course.price}</span>
+      <p style={{ fontFamily: sans, fontSize: 13, lineHeight: "24px", letterSpacing: "0.04em", color: "#99948c", marginTop: 12 }}>{course.desc}</p>
     </div>
   );
 }

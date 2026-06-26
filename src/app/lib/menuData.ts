@@ -238,6 +238,7 @@ export type CourseItem = {
   price: string; // 「¥8,500〜」表記
   desc: string;
   photo: string;
+  withRice?: boolean; // 「飯物付き」ラベルを表示するか（DB courses.with_rice）
 };
 
 export const COURSES: CourseItem[] = [

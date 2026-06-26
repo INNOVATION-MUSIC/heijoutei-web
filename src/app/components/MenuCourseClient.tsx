@@ -19,12 +19,12 @@ import HamburgerMenuSP from "./sp/HamburgerMenuSP";
 
 const DESIGN_PC = 1440;
 const DESIGN_SP = 390;
-const PC_HEIGHT_EST = 2060; // PC 初期推定（実測前）。見出し+店舗タブ+コースカード3枚+注記+戻るボタン
+const PC_HEIGHT_EST = 1500; // PC 初期推定（実測前）。見出し+店舗タブ+コースカード(画像なし)+注記+戻るボタン
 
 // SP: ヘッダースペーサー(153)を除いたコンテンツの初期推定（実測前の初回描画用）。
 const SP_HEADER = 153;
 const SP_HEAD_BLOCK = 130 + 73 + 94 + 60 + 49 + 89 + 52; // ヒーロー〜店舗タブ〜見出しボックス
-const SP_COURSE_CARD = 320 + 240; // 写真 + テキスト概算
+const SP_COURSE_CARD = 240; // テキストのみカード概算（画像なし）
 const SP_NOTES = 40 + 240 + 80;
 
 function spEstimateContent(courseCount: number) {

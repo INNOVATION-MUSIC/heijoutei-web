@@ -130,6 +130,7 @@ export type Database = {
           store_id: string
           type_label: string | null
           updated_at: string | null
+          with_rice: boolean
         }
         Insert: {
           course_category_id?: string | null
@@ -145,6 +146,7 @@ export type Database = {
           store_id: string
           type_label?: string | null
           updated_at?: string | null
+          with_rice?: boolean
         }
         Update: {
           course_category_id?: string | null
@@ -160,6 +162,7 @@ export type Database = {
           store_id?: string
           type_label?: string | null
           updated_at?: string | null
+          with_rice?: boolean
         }
         Relationships: [
           {

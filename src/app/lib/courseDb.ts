@@ -7,6 +7,7 @@ type CourseRowDb = {
   price_label: string | null;
   description: string | null;
   image_url: string | null;
+  with_rice: boolean | null;
   sort_order: number | null;
   stores: { slug: string } | null;
   course_categories?: { slug: string; name: string; sort_order: number | null } | null;
@@ -22,6 +23,7 @@ function toItem(r: CourseRowDb): CourseItem {
     price: r.price_label ?? "",
     desc: r.description ?? "",
     photo: r.image_url ?? "",
+    withRice: r.with_rice ?? false,
   };
 }
 
@@ -56,7 +58,7 @@ export async function fetchCoursesByStore(): Promise<Record<string, CourseItem[]
     const supabase = createStaticClient();
     const { data, error } = await supabase
       .from("courses")
-      .select("name, type_label, price_label, description, image_url, sort_order, stores(slug)")
+      .select("name, type_label, price_label, description, image_url, with_rice, sort_order, stores(slug)")
       .eq("is_active", true)
       .order("sort_order", { ascending: true });
     if (error || !data || data.length === 0) return fallback;
@@ -83,7 +85,7 @@ export async function fetchCourseGroupsByStore(): Promise<Record<string, CourseG
     const { data, error } = await supabase
       .from("courses")
       .select(
-        "name, type_label, price_label, description, image_url, sort_order, stores(slug), course_categories(slug, name, sort_order)"
+        "name, type_label, price_label, description, image_url, with_rice, sort_order, stores(slug), course_categories(slug, name, sort_order)"
       )
       .eq("is_active", true)
       .order("sort_order", { ascending: true });
