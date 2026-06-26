@@ -47,7 +47,10 @@ export default async function AdminMenusPage({
           <h1 className="text-2xl font-bold text-[#ebe5db]">メニュー管理</h1>
           <p className="text-sm text-[#6f6f80]">店舗×カテゴリのメニューセクション</p>
         </div>
-        <Link href="/admin/menus/new" className="inline-flex items-center gap-2 rounded-lg bg-[#d9b86b] px-4 py-2 text-sm font-medium text-[#1a1410] hover:opacity-90">
+        <Link
+          href={`/admin/menus/new${(() => { const q = new URLSearchParams(); if (store) q.set('store', store); if (category) q.set('category', category); const s = q.toString(); return s ? `?${s}` : ''; })()}`}
+          className="inline-flex items-center gap-2 rounded-lg bg-[#d9b86b] px-4 py-2 text-sm font-medium text-[#1a1410] hover:opacity-90"
+        >
           ＋ 新規メニュー
         </Link>
       </div>

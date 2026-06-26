@@ -18,6 +18,7 @@ export default function MenuForm({
   initial,
   initialItems = [],
   defaultStoreId,
+  defaultCategoryId,
   lunchMode = false,
   forcedCategoryId,
 }: {
@@ -26,6 +27,8 @@ export default function MenuForm({
   initial?: Tables<'store_menus'>
   initialItems?: MenuItemInput[]
   defaultStoreId?: string
+  // 新規作成時のカテゴリ初期値（一覧の絞り込みから引き継ぐ）。ドロップダウンで変更可。
+  defaultCategoryId?: string
   // ランチ専用画面から呼ぶときはカテゴリを lunch 固定にして遷移先を /admin/lunch にする
   lunchMode?: boolean
   forcedCategoryId?: string | null
@@ -35,7 +38,7 @@ export default function MenuForm({
   const returnPath = lunchMode ? '/admin/lunch' : '/admin/menus'
   const [form, setForm] = useState<StoreMenuPayload>({
     store_id: initial?.store_id ?? defaultStoreId ?? stores[0]?.id ?? '',
-    category_id: initial?.category_id ?? forcedCategoryId ?? categories[0]?.id ?? null,
+    category_id: initial?.category_id ?? forcedCategoryId ?? defaultCategoryId ?? categories[0]?.id ?? null,
     is_active: initial?.is_active ?? true,
     sort_order: initial?.sort_order ?? 0,
   })

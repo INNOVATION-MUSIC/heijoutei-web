@@ -36,8 +36,9 @@ function normalize(p: StoreMenuPayload) {
   }
 }
 
-async function replaceItems(storeMenuId: string, items: MenuItemInput[]) {
-  await adminSupabase.from('menu_items').delete().eq('store_menu_id', storeMenuId)
+async function replaceItems(storeMenuId: string, items: MenuItemInput[]): Promise<{ error?: string }> {
+  const { error: delErr } = await adminSupabase.from('menu_items').delete().eq('store_menu_id', storeMenuId)
+  if (delErr) return { error: delErr.message }
   const rows = items
     .filter((it) => it.name.trim())
     .map((it, idx) => ({
@@ -48,7 +49,11 @@ async function replaceItems(storeMenuId: string, items: MenuItemInput[]) {
       image_url: it.image_url?.trim() || null,
       sort_order: idx,
     }))
-  if (rows.length) await adminSupabase.from('menu_items').insert(rows)
+  if (rows.length) {
+    const { error: insErr } = await adminSupabase.from('menu_items').insert(rows)
+    if (insErr) return { error: insErr.message }
+  }
+  return {}
 }
 
 export async function getMenuItems(storeMenuId: string): Promise<Tables<'menu_items'>[]> {
@@ -69,7 +74,8 @@ export async function createStoreMenu(p: StoreMenuPayload, items: MenuItemInput[
     .select('id')
     .single()
   if (error || !data) return { error: error?.message ?? '作成に失敗しました' }
-  await replaceItems(data.id, items)
+  const itemsResult = await replaceItems(data.id, items)
+  if (itemsResult.error) return { error: `品目の保存に失敗しました: ${itemsResult.error}` }
   revalidateMenus()
   return { success: true }
 }
@@ -78,7 +84,8 @@ export async function updateStoreMenu(id: string, p: StoreMenuPayload, items: Me
   if (!(await isAuthed())) return { error: '認証が必要です' }
   const { error } = await adminSupabase.from('store_menus').update(normalize(p)).eq('id', id)
   if (error) return { error: error.message }
-  await replaceItems(id, items)
+  const itemsResult = await replaceItems(id, items)
+  if (itemsResult.error) return { error: `品目の保存に失敗しました: ${itemsResult.error}` }
   revalidateMenus()
   return { success: true }
 }
