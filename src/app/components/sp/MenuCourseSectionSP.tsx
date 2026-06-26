@@ -23,7 +23,7 @@ function CourseCardSP({ course }: { course: CourseItem }) {
       <div style={{ width: 32, height: 1, background: GOLD, marginTop: 12 }} />
       <span style={{ fontFamily: mincho, fontSize: 24, letterSpacing: "0.04em", color: "#ebe5db", marginTop: 12 }}>{course.title}</span>
       <span style={{ fontFamily: mincho, fontSize: 22, fontWeight: 600, letterSpacing: "0.04em", color: GOLD, marginTop: 10 }}>{course.price}</span>
-      <p style={{ fontFamily: sans, fontSize: 13, lineHeight: "24px", letterSpacing: "0.04em", color: "#99948c", marginTop: 12 }}>{course.desc}</p>
+      <p style={{ fontFamily: sans, fontSize: 13, lineHeight: "24px", letterSpacing: "0.04em", color: "#99948c", marginTop: 12, whiteSpace: "pre-wrap" }}>{course.desc}</p>
     </div>
   );
 }
