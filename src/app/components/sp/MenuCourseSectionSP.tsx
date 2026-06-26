@@ -1,11 +1,29 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { COURSE_NOTES, DRINK_PLAN_TITLE, DRINK_PLANS, type CourseItem } from "@/app/lib/menuData";
+import { COURSE_NOTES, DRINK_PLAN_TITLE, DRINK_PLANS, POKKIRI_OPTION, type CourseItem } from "@/app/lib/menuData";
 import { type StoreTab } from "../MenuShared";
 import { MenuHeadingSP, StoreTabsSP, MenuSelectBoxSP, mincho, sans, PANEL, GOLD } from "./MenuSharedSP";
 
 const DRINK_BAR = "#9e4b3d"; // 飲み放題プラン見出しバーのテラコッタ
+
+/* ─────────── ポッキリ宴会オプション（SP・ポッキリ宴会カテゴリ選択時のみ・注意書きの上） ─────────── */
+function PokkiriOptionPanelSP() {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", background: PANEL }}>
+      <div style={{ background: GOLD, padding: "12px 0", textAlign: "center" }}>
+        <span style={{ fontFamily: mincho, fontSize: 17, fontWeight: 600, letterSpacing: "0.08em", color: "#1a1410" }}>{POKKIRI_OPTION.title}</span>
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, padding: "24px 20px" }}>
+        <p style={{ margin: 0, display: "flex", alignItems: "baseline", gap: 3 }}>
+          <span style={{ fontFamily: mincho, fontSize: 32, fontWeight: 700, color: GOLD }}>{POKKIRI_OPTION.price}</span>
+          <span style={{ fontFamily: mincho, fontSize: 16, color: "#ebe5db" }}>{POKKIRI_OPTION.priceSuffix}</span>
+        </p>
+        <p style={{ margin: 0, fontFamily: mincho, fontSize: 16, fontWeight: 600, letterSpacing: "0.04em", color: "#ebe5db", textAlign: "center" }}>{POKKIRI_OPTION.desc}</p>
+      </div>
+    </div>
+  );
+}
 
 /* ─────────── 2時間飲み放題プラン（SP・指定カテゴリ選択時のみ・注意書きの上） ─────────── */
 function DrinkPlanPanelSP() {
@@ -98,6 +116,7 @@ type Props = {
   activeCategory?: number;
   onSelectCategory?: (i: number) => void;
   showDrinkPlan?: boolean;
+  showPokkiriOption?: boolean;
   height: number;
   onMeasured?: (h: number) => void;
 };
@@ -116,6 +135,7 @@ export default function MenuCourseSectionSP({
   activeCategory = 0,
   onSelectCategory,
   showDrinkPlan = false,
+  showPokkiriOption = false,
   height,
   onMeasured,
 }: Props) {
@@ -152,10 +172,17 @@ export default function MenuCourseSectionSP({
           ))}
         </div>
 
-        {/* 2時間飲み放題プラン（指定カテゴリ選択時のみ・注記の上） */}
+        {/* 2時間飲み放題プラン（フルコース/盛り合わせ選択時のみ・注記の上） */}
         {showDrinkPlan && (
           <div style={{ paddingLeft: 20, paddingRight: 20, paddingTop: 40 }}>
             <DrinkPlanPanelSP />
+          </div>
+        )}
+
+        {/* ポッキリ宴会オプション（ポッキリ宴会選択時のみ・注記の上） */}
+        {showPokkiriOption && (
+          <div style={{ paddingLeft: 20, paddingRight: 20, paddingTop: 40 }}>
+            <PokkiriOptionPanelSP />
           </div>
         )}
 

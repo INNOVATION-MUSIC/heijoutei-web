@@ -2,9 +2,27 @@
 
 import { useEffect, useRef } from "react";
 import { MenuHeading, StoreTabs, BackToMenuButton, mincho, sans, PANEL, GOLD, type StoreTab } from "./MenuShared";
-import { COURSE_NOTES, DRINK_PLAN_TITLE, DRINK_PLANS, type CourseItem } from "@/app/lib/menuData";
+import { COURSE_NOTES, DRINK_PLAN_TITLE, DRINK_PLANS, POKKIRI_OPTION, type CourseItem } from "@/app/lib/menuData";
 
 const DRINK_BAR = "#9e4b3d"; // 飲み放題プラン見出しバーのテラコッタ
+
+/* ─────────── ポッキリ宴会オプション（ポッキリ宴会カテゴリ選択時のみ・注意書きの上） ─────────── */
+function PokkiriOptionPanel() {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", background: PANEL }}>
+      <div style={{ background: GOLD, padding: "16px 0", textAlign: "center" }}>
+        <span style={{ fontFamily: mincho, fontSize: 24, fontWeight: 600, letterSpacing: "0.1em", color: "#1a1410" }}>{POKKIRI_OPTION.title}</span>
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10, padding: "34px 40px" }}>
+        <p style={{ margin: 0, display: "flex", alignItems: "baseline", gap: 4 }}>
+          <span style={{ fontFamily: mincho, fontSize: 42, fontWeight: 700, letterSpacing: "0.02em", color: GOLD }}>{POKKIRI_OPTION.price}</span>
+          <span style={{ fontFamily: mincho, fontSize: 20, color: "#ebe5db" }}>{POKKIRI_OPTION.priceSuffix}</span>
+        </p>
+        <p style={{ margin: 0, fontFamily: mincho, fontSize: 22, fontWeight: 600, letterSpacing: "0.06em", color: "#ebe5db" }}>{POKKIRI_OPTION.desc}</p>
+      </div>
+    </div>
+  );
+}
 
 /* ─────────── 2時間飲み放題プラン（指定カテゴリ選択時のみ・注意書きの上） ─────────── */
 function DrinkPlanPanel() {
@@ -99,6 +117,7 @@ export default function MenuCourseSection({
   activeCategory = 0,
   onSelectCategory,
   showDrinkPlan = false,
+  showPokkiriOption = false,
   onOpenModal,
   height,
   onMeasured,
@@ -111,6 +130,7 @@ export default function MenuCourseSection({
   activeCategory?: number;
   onSelectCategory?: (i: number) => void;
   showDrinkPlan?: boolean;
+  showPokkiriOption?: boolean;
   onOpenModal: () => void;
   height: number;
   onMeasured?: (h: number) => void;
@@ -149,10 +169,17 @@ export default function MenuCourseSection({
           ))}
         </div>
 
-        {/* 2時間飲み放題プラン（指定カテゴリ選択時のみ・注記の上） */}
+        {/* 2時間飲み放題プラン（フルコース/盛り合わせ選択時のみ・注記の上） */}
         {showDrinkPlan && (
           <div style={{ paddingLeft: 146, paddingRight: 134, paddingTop: 55 }}>
             <DrinkPlanPanel />
+          </div>
+        )}
+
+        {/* ポッキリ宴会オプション（ポッキリ宴会選択時のみ・注記の上） */}
+        {showPokkiriOption && (
+          <div style={{ paddingLeft: 146, paddingRight: 134, paddingTop: 55 }}>
+            <PokkiriOptionPanel />
           </div>
         )}
 

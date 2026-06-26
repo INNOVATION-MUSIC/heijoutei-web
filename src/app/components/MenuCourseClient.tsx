@@ -8,7 +8,7 @@ import StickyButton from "./StickyButton";
 import Footer from "./Footer";
 import MenuCourseSection from "./MenuCourseSection";
 import { useStoreParam, type StoreTab } from "./MenuShared";
-import { getCourses, DRINK_PLAN_CATEGORY_SLUGS, type CourseItem } from "@/app/lib/menuData";
+import { getCourses, DRINK_PLAN_CATEGORY_SLUGS, POKKIRI_OPTION_CATEGORY_SLUGS, type CourseItem } from "@/app/lib/menuData";
 import { type CourseGroup } from "@/app/lib/courseDb";
 
 // SP
@@ -86,8 +86,10 @@ export default function MenuCourseClient({
   const courses = groups[activeIdx]?.courses ?? [];
   // タブは2グループ以上のときのみ表示（単一/未分類はフラット表示）
   const categoryTabs = groups.length >= 2 ? groups.map((g) => g.name ?? "その他") : undefined;
-  // 飲み放題プランは指定カテゴリ（フルコース/盛り合わせ）選択時のみ注意書きの上に表示
-  const showDrinkPlan = DRINK_PLAN_CATEGORY_SLUGS.includes(groups[activeIdx]?.slug ?? "");
+  // カテゴリ別の販促パネルを注意書きの上に表示
+  const activeSlug = groups[activeIdx]?.slug ?? "";
+  const showDrinkPlan = DRINK_PLAN_CATEGORY_SLUGS.includes(activeSlug); // フルコース/盛り合わせ
+  const showPokkiriOption = POKKIRI_OPTION_CATEGORY_SLUGS.includes(activeSlug); // ポッキリ宴会
 
   if (isMobile === null) {
     return <div style={{ minHeight: "100vh", background: "#0a0a0a" }} />;
@@ -107,6 +109,7 @@ export default function MenuCourseClient({
             activeCategory={activeIdx}
             onSelectCategory={selectCategory}
             showDrinkPlan={showDrinkPlan}
+            showPokkiriOption={showPokkiriOption}
             height={height}
             onMeasured={(h) => setMeasuredSp((p) => (p === h ? p : h))}
           />
@@ -135,6 +138,7 @@ export default function MenuCourseClient({
           activeCategory={activeIdx}
           onSelectCategory={selectCategory}
           showDrinkPlan={showDrinkPlan}
+          showPokkiriOption={showPokkiriOption}
           onOpenModal={openModal}
           height={pcHeight}
           onMeasured={(h) => setMeasuredPc((p) => (p === h ? p : h))}

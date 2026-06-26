@@ -286,6 +286,16 @@ export const DRINK_PLANS: DrinkPlan[] = [
 // 飲み放題プランを表示するコースカテゴリの slug（カテゴリ管理で slug を変える場合はここも更新）。
 export const DRINK_PLAN_CATEGORY_SLUGS = ["full", "moriawase"];
 
+/* ══════════ ポッキリ宴会オプション（/menu/course・ポッキリ宴会カテゴリ選択時のみ注意書きの上に表示） ══════════ */
+export const POKKIRI_OPTION = {
+  title: "ポッキリ宴会オプション",
+  price: "＋550円",
+  priceSuffix: "で",
+  desc: "生ビール付飲み放題に変更 OK!!",
+};
+// ポッキリ宴会オプションを表示するコースカテゴリの slug。
+export const POKKIRI_OPTION_CATEGORY_SLUGS = ["enkai"];
+
 /* ══════════ テイクアウトメニュー（/menu/takeout・Figma 2020:488） ══════════ */
 export type TakeoutMenuTab = { slug: string; name: string; items: MenuItem[] };
 
