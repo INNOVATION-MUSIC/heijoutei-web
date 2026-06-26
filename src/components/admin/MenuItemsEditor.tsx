@@ -46,7 +46,6 @@ export default function MenuItemsEditor({
             <div className="space-y-3">
               <input className={inputClass} value={it.name} onChange={(e) => update(idx, { name: e.target.value })} placeholder="品名 *" />
               <input className={inputClass} value={it.price_label ?? ''} onChange={(e) => update(idx, { price_label: e.target.value })} placeholder="価格表示（例: 1,200円 / 時価）" />
-              <textarea className={`${inputClass} min-h-16`} value={it.description ?? ''} onChange={(e) => update(idx, { description: e.target.value })} placeholder="説明" />
             </div>
             <ImageUploader label="品目画像" value={it.image_url ?? ''} onChange={(url) => update(idx, { image_url: url })} />
           </div>

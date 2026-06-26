@@ -101,17 +101,14 @@ export function BackToMenuButton() {
 }
 
 /* ─────────── メニュー項目カード（420×200・写真 + 名称/説明/価格） ─────────── */
-export function ItemCard({ item, priceAlign = "right" }: { item: MenuItem; priceAlign?: "left" | "right" }) {
+export function ItemCard({ item, priceAlign = "right", imageWidth = 200 }: { item: MenuItem; priceAlign?: "left" | "right"; imageWidth?: number }) {
   return (
     <div style={{ display: "flex", width: 420, height: 200, background: PANEL }}>
-      <div style={{ position: "relative", width: 200, height: 200, overflow: "hidden", background: "#22140c", flexShrink: 0 }}>
-        <Image src={item.photo} alt={item.name} fill className="object-cover" sizes="200px" />
+      <div style={{ position: "relative", width: imageWidth, height: 200, overflow: "hidden", background: "#22140c", flexShrink: 0 }}>
+        <Image src={item.photo} alt={item.name} fill className="object-cover" sizes={`${imageWidth}px`} />
       </div>
       <div style={{ flex: 1, display: "flex", flexDirection: "column", paddingLeft: 28, paddingRight: 30, paddingTop: 22, paddingBottom: 24 }}>
         <span style={{ fontFamily: mincho, fontSize: 24, fontWeight: 600, letterSpacing: "2px", color: "#fff", lineHeight: 1.3 }}>{item.name}</span>
-        {item.desc && (
-          <p style={{ fontFamily: mincho, fontSize: 12, letterSpacing: "2px", color: "#ebe5db", lineHeight: "20px", marginTop: 9 }}>{item.desc}</p>
-        )}
         <div style={{ flex: 1 }} />
         <div style={{ display: "flex", alignItems: "baseline", justifyContent: priceAlign === "right" ? "flex-end" : "flex-start", gap: 6 }}>
           <span style={{ fontFamily: mincho, fontSize: 20, fontWeight: 600, letterSpacing: "2px", color: "#ebe5db" }}>{item.price.toLocaleString()}</span>
