@@ -2,6 +2,7 @@
 
 import ImageUploader from '@/components/admin/ImageUploader'
 import type { MenuItemInput } from '@/lib/actions/menus'
+import type { CategoryRef } from '@/lib/actions/refs'
 
 const inputClass =
   'w-full rounded-lg border border-[#2f2f3c] bg-[#0a0a0f] px-3 py-2 text-sm text-[#ebe5db] focus:border-[#d9b86b] focus:outline-none'
@@ -9,9 +10,12 @@ const inputClass =
 export default function MenuItemsEditor({
   items,
   onChange,
+  lunchCategories,
 }: {
   items: MenuItemInput[]
   onChange: (items: MenuItemInput[]) => void
+  // 指定時、各品目に「ランチカテゴリ」選択を表示する（/menu/lunch のサブタブ用）
+  lunchCategories?: CategoryRef[]
 }) {
   function update(idx: number, patch: Partial<MenuItemInput>) {
     onChange(items.map((it, i) => (i === idx ? { ...it, ...patch } : it)))
@@ -46,6 +50,18 @@ export default function MenuItemsEditor({
             <div className="space-y-3">
               <input className={inputClass} value={it.name} onChange={(e) => update(idx, { name: e.target.value })} placeholder="品名 *" />
               <input className={inputClass} value={it.price_label ?? ''} onChange={(e) => update(idx, { price_label: e.target.value })} placeholder="価格表示（例: 1,200円 / 時価）" />
+              {lunchCategories && (
+                <select
+                  className={inputClass}
+                  value={it.lunch_category_id ?? ''}
+                  onChange={(e) => update(idx, { lunch_category_id: e.target.value || null })}
+                >
+                  <option value="">カテゴリ：未分類（タブなし）</option>
+                  {lunchCategories.map((c) => (
+                    <option key={c.id} value={c.id}>カテゴリ：{c.name}</option>
+                  ))}
+                </select>
+              )}
             </div>
             <ImageUploader label="品目画像" value={it.image_url ?? ''} onChange={(url) => update(idx, { image_url: url })} />
           </div>

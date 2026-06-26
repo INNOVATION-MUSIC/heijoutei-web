@@ -21,6 +21,7 @@ export default function MenuForm({
   defaultCategoryId,
   lunchMode = false,
   forcedCategoryId,
+  lunchCategories,
   menuIndex,
 }: {
   stores: StoreRef[]
@@ -33,6 +34,8 @@ export default function MenuForm({
   // ランチ専用画面から呼ぶときはカテゴリを lunch 固定にして遷移先を /admin/lunch にする
   lunchMode?: boolean
   forcedCategoryId?: string | null
+  // ランチ専用画面のみ。品目ごとに割り当てる lunch_categories（/menu/lunch のサブタブ）
+  lunchCategories?: CategoryRef[]
   // 編集画面で店舗×カテゴリを切り替えたとき、該当メニューへ遷移するための索引
   menuIndex?: { id: string; store_id: string; category_id: string | null }[]
 }) {
@@ -133,7 +136,7 @@ export default function MenuForm({
         {/* メニュー項目 */}
         <div className="space-y-4 rounded-xl border border-[#23232e] bg-[#14141a] p-5">
           <h2 className="text-sm font-semibold text-[#ebe5db]">メニュー項目</h2>
-          <MenuItemsEditor items={items} onChange={(v) => { setItems(v); setDirty(true) }} />
+          <MenuItemsEditor items={items} onChange={(v) => { setItems(v); setDirty(true) }} lunchCategories={lunchMode ? lunchCategories : undefined} />
         </div>
       </div>
 

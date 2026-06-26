@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { adminSupabase } from '@/lib/supabase/admin'
-import { getStoreRefs, getLunchCategory } from '@/lib/actions/refs'
+import { getStoreRefs, getLunchCategory, getLunchCategoryRefs } from '@/lib/actions/refs'
 import { getMenuItems } from '@/lib/actions/menus'
 import MenuForm from '@/components/admin/MenuForm'
 
@@ -9,10 +9,11 @@ export const dynamic = 'force-dynamic'
 
 export default async function EditLunchPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const [{ data: menu }, stores, lunchCat, items] = await Promise.all([
+  const [{ data: menu }, stores, lunchCat, lunchCategories, items] = await Promise.all([
     adminSupabase.from('store_menus').select('*').eq('id', id).single(),
     getStoreRefs(),
     getLunchCategory(),
+    getLunchCategoryRefs(),
     getMenuItems(id),
   ])
   if (!menu || !lunchCat) notFound()
@@ -22,6 +23,7 @@ export default async function EditLunchPage({ params }: { params: Promise<{ id: 
     description: it.description,
     price_label: it.price_label,
     image_url: it.image_url,
+    lunch_category_id: it.lunch_category_id,
   }))
 
   return (
@@ -37,6 +39,7 @@ export default async function EditLunchPage({ params }: { params: Promise<{ id: 
         initialItems={initialItems}
         lunchMode
         forcedCategoryId={lunchCat.id}
+        lunchCategories={lunchCategories}
       />
     </div>
   )

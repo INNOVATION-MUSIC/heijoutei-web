@@ -6,7 +6,7 @@ import ImageUploader from '@/components/admin/ImageUploader'
 import SaveSuccessBanner from '@/components/admin/SaveSuccessBanner'
 import { createCourse, updateCourse, type CoursePayload } from '@/lib/actions/courses'
 import type { Tables } from '@/types/supabase'
-import type { StoreRef } from '@/lib/actions/refs'
+import type { StoreRef, CategoryRef } from '@/lib/actions/refs'
 
 const inputClass =
   'w-full rounded-lg border border-[#2f2f3c] bg-[#0a0a0f] px-3 py-2 text-sm text-[#ebe5db] focus:border-[#d9b86b] focus:outline-none focus:ring-1 focus:ring-[#d9b86b]/30'
@@ -14,10 +14,12 @@ const labelClass = 'mb-1.5 block text-xs font-medium text-[#9a9aa8]'
 
 export default function CourseForm({
   stores,
+  categories = [],
   initial,
   defaultStoreId,
 }: {
   stores: StoreRef[]
+  categories?: CategoryRef[]
   initial?: Tables<'courses'>
   defaultStoreId?: string
 }) {
@@ -31,6 +33,7 @@ export default function CourseForm({
     description: initial?.description ?? '',
     notes: initial?.notes ?? '',
     image_url: initial?.image_url ?? '',
+    course_category_id: initial?.course_category_id ?? '',
     is_active: initial?.is_active ?? true,
     sort_order: initial?.sort_order ?? 0,
   })
@@ -84,6 +87,18 @@ export default function CourseForm({
                 <option key={s.id} value={s.id}>{s.name}</option>
               ))}
             </select>
+          </div>
+          <div>
+            <label className={labelClass}>コースカテゴリ</label>
+            <select className={inputClass} value={form.course_category_id ?? ''} onChange={(e) => set('course_category_id', e.target.value || null)}>
+              <option value="">未分類（タブなし）</option>
+              {categories.map((c) => (
+                <option key={c.id} value={c.id}>{c.name}</option>
+              ))}
+            </select>
+            {categories.length === 0 && (
+              <p className="mt-1 text-xs text-[#6f6f80]">カテゴリは「カテゴリ管理 ＞ コース」タブで追加できます。</p>
+            )}
           </div>
           <div>
             <label className={labelClass}>コース名 *</label>

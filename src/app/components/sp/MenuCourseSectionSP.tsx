@@ -24,21 +24,64 @@ function CourseCardSP({ course }: { course: CourseItem }) {
   );
 }
 
+/* ─────────── コースカテゴリのサブタブ（SP・横スクロール・金下線） ─────────── */
+function CourseCategoryTabsSP({ tabs, active, onSelect }: { tabs: string[]; active: number; onSelect: (i: number) => void }) {
+  return (
+    <div style={{ display: "flex", gap: 18, paddingLeft: 20, paddingRight: 20, paddingTop: 24, overflowX: "auto" }}>
+      {tabs.map((t, i) => (
+        <button
+          key={t}
+          type="button"
+          onClick={() => onSelect(i)}
+          style={{
+            padding: "6px 4px 10px",
+            background: "transparent",
+            border: "none",
+            borderBottom: `2px solid ${i === active ? GOLD : "rgba(234,229,219,0.15)"}`,
+            cursor: "pointer",
+            fontFamily: mincho,
+            fontSize: 15,
+            letterSpacing: "0.06em",
+            color: i === active ? "#ebe5db" : "#99948c",
+            whiteSpace: "nowrap",
+            flexShrink: 0,
+          }}
+        >
+          {t}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 type Props = {
   courses: CourseItem[];
   storeId: string;
   stores?: StoreTab[];
   onSelectStore: (id: string) => void;
+  categoryTabs?: string[];
+  activeCategory?: number;
+  onSelectCategory?: (i: number) => void;
   height: number;
   onMeasured?: (h: number) => void;
 };
 
 /**
  * /menu/course コースメニュー SP 版。Figma node 2147:1648（設計幅 390）。
- * 縦並び: ヒーロー → Menu 見出し → 店舗タブ → 見出しボックス「コースメニュー」→ 3コースカード → 注記パネル。
- * 説明の折返しで高さ可変のため、コンテンツ全体を ResizeObserver で実測する。
+ * 縦並び: ヒーロー → Menu 見出し → 店舗タブ → 見出しボックス →（コースカテゴリのサブタブ）→ コースカード → 注記パネル。
+ * カテゴリ数・説明の折返しで高さ可変のため、コンテンツ全体を ResizeObserver で実測する。
  */
-export default function MenuCourseSectionSP({ courses, storeId, stores, onSelectStore, height, onMeasured }: Props) {
+export default function MenuCourseSectionSP({
+  courses,
+  storeId,
+  stores,
+  onSelectStore,
+  categoryTabs,
+  activeCategory = 0,
+  onSelectCategory,
+  height,
+  onMeasured,
+}: Props) {
   const contentRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = contentRef.current;
@@ -48,7 +91,7 @@ export default function MenuCourseSectionSP({ courses, storeId, stores, onSelect
     const ro = new ResizeObserver(report);
     ro.observe(el);
     return () => ro.disconnect();
-  }, [onMeasured, courses, storeId]);
+  }, [onMeasured, courses, storeId, activeCategory]);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", width: 390, height, background: "#0a0a0a", overflow: "hidden" }}>
@@ -59,6 +102,11 @@ export default function MenuCourseSectionSP({ courses, storeId, stores, onSelect
         <StoreTabsSP stores={stores} activeId={storeId} onSelect={onSelectStore} />
 
         <MenuSelectBoxSP title="コースメニュー" />
+
+        {/* コースカテゴリのサブタブ（2カテゴリ以上のとき） */}
+        {categoryTabs && onSelectCategory && (
+          <CourseCategoryTabsSP tabs={categoryTabs} active={activeCategory} onSelect={onSelectCategory} />
+        )}
 
         {/* コースカード（1列・gap40） */}
         <div style={{ display: "flex", flexDirection: "column", gap: 40, paddingLeft: 20, paddingRight: 20, paddingTop: 30 }}>

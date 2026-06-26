@@ -43,3 +43,22 @@ export async function getTakeoutCategoryRefs(): Promise<CategoryRef[]> {
     .order('sort_order', { ascending: true })
   return data ?? []
 }
+
+// コース編集フォームのカテゴリ選択用（/menu/course のサブタブ）。
+export async function getCourseCategoryRefs(): Promise<CategoryRef[]> {
+  const { data } = await adminSupabase
+    .from('course_categories')
+    .select('id, name, slug')
+    .order('sort_order', { ascending: true })
+  return data ?? []
+}
+
+// ランチ品目編集の品目別カテゴリ選択用（/menu/lunch のサブタブ）。
+// ※ getLunchCategory()（menu_categories slug='lunch' の固定コンテナ）とは別物。
+export async function getLunchCategoryRefs(): Promise<CategoryRef[]> {
+  const { data } = await adminSupabase
+    .from('lunch_categories')
+    .select('id, name, slug')
+    .order('sort_order', { ascending: true })
+  return data ?? []
+}

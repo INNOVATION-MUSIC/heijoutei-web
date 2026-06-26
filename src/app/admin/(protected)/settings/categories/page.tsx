@@ -10,12 +10,15 @@ export default async function CategoriesSettingsPage({
   searchParams: Promise<{ tab?: string }>
 }) {
   const { tab } = await searchParams
-  const kind: CategoryKind = tab === 'takeout' ? 'takeout' : 'menu'
+  const kind: CategoryKind =
+    tab === 'takeout' ? 'takeout' : tab === 'course' ? 'course' : tab === 'lunch' ? 'lunch' : 'menu'
   const categories = await getCategories(kind)
 
   const tabs: { key: CategoryKind; label: string }[] = [
     { key: 'menu', label: '通常メニュー' },
     { key: 'takeout', label: 'テイクアウト' },
+    { key: 'course', label: 'コース' },
+    { key: 'lunch', label: 'ランチ' },
   ]
 
   return (

@@ -114,3 +114,57 @@ export async function fetchLunchByStore(): Promise<Record<string, MenuItem[]>> {
     return fallback;
   }
 }
+
+// /menu/lunch のサブタブ1つ分。slug=null は未分類（タブにしない／単独ならフラット表示）。
+export type LunchGroup = { slug: string | null; name: string | null; items: MenuItem[] };
+
+type LunchItemRow = MenuItemRow & {
+  lunch_categories?: { slug: string; name: string; sort_order: number | null } | null;
+};
+type LunchStoreMenuRow = {
+  is_active: boolean | null;
+  stores: { slug: string } | null;
+  menu_items: LunchItemRow[];
+};
+
+/**
+ * ランチ品目を店舗 slug ごとに、カテゴリ別グループ（サブタブ）にまとめて返す。
+ * lunch_categories.sort_order 順、未分類は末尾の slug=null グループに集約する。
+ * DB 空／失敗時は undefined を返し、フロントは静的データのフラット表示にフォールバックする。
+ */
+export async function fetchLunchGroupsByStore(): Promise<Record<string, LunchGroup[]> | undefined> {
+  try {
+    const supabase = createStaticClient();
+    const { data, error } = await supabase
+      .from("menu_categories")
+      .select(
+        "store_menus(is_active, stores(slug), menu_items(name, description, image_url, price_label, sort_order, lunch_categories(slug, name, sort_order)))"
+      )
+      .eq("slug", "lunch")
+      .maybeSingle();
+    if (error || !data) return undefined;
+
+    const result: Record<string, LunchGroup[]> = {};
+    for (const sm of ((data as unknown as { store_menus: LunchStoreMenuRow[] }).store_menus ?? [])) {
+      if (sm.is_active === false) continue; // 店舗ごとに非公開なランチは除外
+      const storeSlug = sm.stores?.slug;
+      if (!storeSlug) continue;
+      const sorted = (sm.menu_items ?? []).slice().sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
+      const groups = new Map<string, LunchGroup & { _order: number }>();
+      for (const it of sorted) {
+        const cat = it.lunch_categories ?? null;
+        const key = cat?.slug ?? "__none__";
+        let g = groups.get(key);
+        if (!g) {
+          g = { slug: cat?.slug ?? null, name: cat?.name ?? null, items: [], _order: cat ? cat.sort_order ?? 0 : Number.MAX_SAFE_INTEGER };
+          groups.set(key, g);
+        }
+        g.items.push(toItem(it));
+      }
+      result[storeSlug] = [...groups.values()].sort((a, b) => a._order - b._order).map(({ slug, name, items }) => ({ slug, name, items }));
+    }
+    return Object.keys(result).length > 0 ? result : undefined;
+  } catch {
+    return undefined;
+  }
+}

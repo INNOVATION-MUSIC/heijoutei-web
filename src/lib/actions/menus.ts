@@ -10,6 +10,8 @@ export type MenuItemInput = {
   description?: string | null
   price_label?: string | null
   image_url?: string | null
+  // ランチ品目のみ使用。/menu/lunch のサブタブ（lunch_categories）への割当。通常メニューは null。
+  lunch_category_id?: string | null
 }
 
 export type StoreMenuPayload = {
@@ -47,6 +49,7 @@ async function replaceItems(storeMenuId: string, items: MenuItemInput[]): Promis
       description: it.description?.trim() || null,
       price_label: it.price_label?.trim() || null,
       image_url: it.image_url?.trim() || null,
+      lunch_category_id: it.lunch_category_id || null,
       sort_order: idx,
     }))
   if (rows.length) {

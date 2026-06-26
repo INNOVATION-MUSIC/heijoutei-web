@@ -91,8 +91,33 @@ export type Database = {
         }
         Relationships: []
       }
+      course_categories: {
+        Row: {
+          id: string
+          is_active: boolean | null
+          name: string
+          slug: string
+          sort_order: number | null
+        }
+        Insert: {
+          id?: string
+          is_active?: boolean | null
+          name: string
+          slug: string
+          sort_order?: number | null
+        }
+        Update: {
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          slug?: string
+          sort_order?: number | null
+        }
+        Relationships: []
+      }
       courses: {
         Row: {
+          course_category_id: string | null
           created_at: string | null
           description: string | null
           id: string
@@ -107,6 +132,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          course_category_id?: string | null
           created_at?: string | null
           description?: string | null
           id?: string
@@ -121,6 +147,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          course_category_id?: string | null
           created_at?: string | null
           description?: string | null
           id?: string
@@ -140,6 +167,13 @@ export type Database = {
             columns: ["store_id"]
             isOneToOne: false
             referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "courses_course_category_id_fkey"
+            columns: ["course_category_id"]
+            isOneToOne: false
+            referencedRelation: "course_categories"
             referencedColumns: ["id"]
           },
         ]
@@ -198,11 +232,36 @@ export type Database = {
         }
         Relationships: []
       }
+      lunch_categories: {
+        Row: {
+          id: string
+          is_active: boolean | null
+          name: string
+          slug: string
+          sort_order: number | null
+        }
+        Insert: {
+          id?: string
+          is_active?: boolean | null
+          name: string
+          slug: string
+          sort_order?: number | null
+        }
+        Update: {
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          slug?: string
+          sort_order?: number | null
+        }
+        Relationships: []
+      }
       menu_items: {
         Row: {
           description: string | null
           id: string
           image_url: string | null
+          lunch_category_id: string | null
           name: string
           price_label: string | null
           sort_order: number | null
@@ -212,6 +271,7 @@ export type Database = {
           description?: string | null
           id?: string
           image_url?: string | null
+          lunch_category_id?: string | null
           name: string
           price_label?: string | null
           sort_order?: number | null
@@ -221,6 +281,7 @@ export type Database = {
           description?: string | null
           id?: string
           image_url?: string | null
+          lunch_category_id?: string | null
           name?: string
           price_label?: string | null
           sort_order?: number | null
@@ -232,6 +293,13 @@ export type Database = {
             columns: ["store_menu_id"]
             isOneToOne: false
             referencedRelation: "store_menus"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "menu_items_lunch_category_id_fkey"
+            columns: ["lunch_category_id"]
+            isOneToOne: false
+            referencedRelation: "lunch_categories"
             referencedColumns: ["id"]
           },
         ]

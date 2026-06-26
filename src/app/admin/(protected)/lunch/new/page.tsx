@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { getStoreRefs, getLunchCategory } from '@/lib/actions/refs'
+import { getStoreRefs, getLunchCategory, getLunchCategoryRefs } from '@/lib/actions/refs'
 import MenuForm from '@/components/admin/MenuForm'
 
 export const dynamic = 'force-dynamic'
@@ -11,7 +11,11 @@ export default async function NewLunchPage({
   searchParams: Promise<{ store?: string }>
 }) {
   const { store } = await searchParams
-  const [stores, lunchCat] = await Promise.all([getStoreRefs(), getLunchCategory()])
+  const [stores, lunchCat, lunchCategories] = await Promise.all([
+    getStoreRefs(),
+    getLunchCategory(),
+    getLunchCategoryRefs(),
+  ])
   if (!lunchCat) notFound()
 
   return (
@@ -26,6 +30,7 @@ export default async function NewLunchPage({
         defaultStoreId={store}
         lunchMode
         forcedCategoryId={lunchCat.id}
+        lunchCategories={lunchCategories}
       />
     </div>
   )

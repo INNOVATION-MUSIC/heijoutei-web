@@ -4,23 +4,26 @@ import { adminSupabase } from '@/lib/supabase/admin'
 import { isAuthed } from '@/lib/auth-guard'
 import { revalidatePath } from 'next/cache'
 
-export type CategoryKind = 'menu' | 'takeout'
+export type CategoryKind = 'menu' | 'takeout' | 'course' | 'lunch'
 export type Category = {
   id: string
   name: string
   slug: string
   is_active: boolean | null
   sort_order: number | null
-  // メニューカテゴリのみ。フロント /menu のカテゴリカード画像。takeout_categories には列なし。
+  // メニューカテゴリのみ。フロント /menu のカテゴリカード画像。他カテゴリには列なし。
   card_image_url?: string | null
 }
 
 function tableFor(kind: CategoryKind) {
-  return kind === 'menu' ? ('menu_categories' as const) : ('takeout_categories' as const)
+  if (kind === 'menu') return 'menu_categories' as const
+  if (kind === 'course') return 'course_categories' as const
+  if (kind === 'lunch') return 'lunch_categories' as const
+  return 'takeout_categories' as const
 }
 
-// 紐づきメニューを数える対象テーブル
-function linkedTableFor(kind: CategoryKind) {
+// 紐づき件数を数える対象テーブル（course は courses.course_category_id を別途参照するため対象外）
+function linkedTableFor(kind: Exclude<CategoryKind, 'course'>) {
   return kind === 'menu' ? ('store_menus' as const) : ('store_takeout_menus' as const)
 }
 
@@ -28,6 +31,12 @@ function revalidateFor(kind: CategoryKind) {
   if (kind === 'menu') {
     revalidatePath('/menu')
     revalidatePath('/menu/[category]', 'page')
+  } else if (kind === 'course') {
+    revalidatePath('/menu')
+    revalidatePath('/menu/course')
+  } else if (kind === 'lunch') {
+    revalidatePath('/menu')
+    revalidatePath('/menu/lunch')
   } else {
     revalidatePath('/takeout')
     revalidatePath('/menu/takeout')
@@ -102,13 +111,23 @@ export async function updateCategory(
 
 export async function deleteCategory(kind: CategoryKind, id: string) {
   if (!(await isAuthed())) return { error: '認証が必要です' }
-  // 紐づくメニューが存在する場合は削除を拒否（警告）
-  const { count } = await adminSupabase
-    .from(linkedTableFor(kind))
-    .select('id', { count: 'exact', head: true })
-    .eq('category_id', id)
+  // 紐づくメニュー／コース／ランチ品目が存在する場合は削除を拒否（警告）
+  // ※ course は courses.course_category_id、lunch は menu_items.lunch_category_id、
+  //   menu/takeout は <linked>.category_id を参照（列名が異なるため分岐）
+  let count: number | null
+  if (kind === 'course') {
+    const r = await adminSupabase.from('courses').select('id', { count: 'exact', head: true }).eq('course_category_id', id)
+    count = r.count
+  } else if (kind === 'lunch') {
+    const r = await adminSupabase.from('menu_items').select('id', { count: 'exact', head: true }).eq('lunch_category_id', id)
+    count = r.count
+  } else {
+    const r = await adminSupabase.from(linkedTableFor(kind)).select('id', { count: 'exact', head: true }).eq('category_id', id)
+    count = r.count
+  }
   if ((count ?? 0) > 0) {
-    return { error: `このカテゴリには ${count} 件のメニューが紐づいています。先にメニューを別カテゴリへ移すか削除してください。` }
+    const unit = kind === 'course' ? 'コース' : kind === 'lunch' ? 'ランチ品目' : 'メニュー'
+    return { error: `このカテゴリには ${count} 件の${unit}が紐づいています。先に別カテゴリへ移すか削除してください。` }
   }
   const { error } = await adminSupabase.from(tableFor(kind)).delete().eq('id', id)
   if (error) return { error: error.message }
