@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { MENU_CATEGORIES, MENU_STORES, type MenuCategory, type MenuPromo } from "@/app/lib/menuData";
 import { SECTION_LINKS } from "@/app/lib/navLinks";
@@ -102,33 +102,58 @@ function PromoBanner({ promo }: { promo: MenuPromo }) {
 }
 
 /**
- * /menu カテゴリページのメインコンテンツ（PC のみ・全高 3346px・フッターは別 ScaledSection）。
+ * /menu カテゴリページのメインコンテンツ（PC のみ・フッターは別 ScaledSection）。
+ * カテゴリ数でグリッド行数が変わるため、コンテンツを ResizeObserver で実測して全高を確定する。
  * 共有コンポーネント（PageHeader/Footer/OutlineButton）は変更せず再利用。
  */
-export default function MenuCategorySection({ onOpenModal, categories, stores }: { onOpenModal: () => void; categories?: MenuCategory[]; stores?: StoreTab[] }) {
+export default function MenuCategorySection({
+  onOpenModal,
+  categories,
+  stores,
+  height,
+  onMeasured,
+}: {
+  onOpenModal: () => void;
+  categories?: MenuCategory[];
+  stores?: StoreTab[];
+  height: number;
+  onMeasured?: (h: number) => void;
+}) {
   const cats = categories ?? MENU_CATEGORIES;
   const [storeId, setStore] = useStoreParam(stores);
   const defaultStore = (stores && stores.length > 0 ? stores[0].id : MENU_STORES[0].id);
+
+  const contentRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = contentRef.current;
+    if (!el || !onMeasured) return;
+    const report = () => onMeasured(el.offsetHeight);
+    report();
+    const ro = new ResizeObserver(report);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [onMeasured, cats.length]);
+
   return (
-    <section style={{ display: "flex", flexDirection: "column", width: 1440, height: 3346, background: "#0a0a0a" }}>
-      <MenuHeading onOpenModal={onOpenModal} />
-      <StoreTabs stores={stores} activeId={storeId} onSelect={setStore} />
+    <section style={{ display: "flex", flexDirection: "column", width: 1440, minHeight: height, background: "#0a0a0a" }}>
+      <div ref={contentRef} style={{ display: "flex", flexDirection: "column" }}>
+        <MenuHeading onOpenModal={onOpenModal} />
+        <StoreTabs stores={stores} activeId={storeId} onSelect={setStore} />
 
-      {/* カテゴリカードグリッド（3列×4行・gap40） */}
-      <div style={{ display: "flex", flexWrap: "wrap", columnGap: 40, rowGap: 40, paddingLeft: 50, paddingRight: 50, paddingTop: 62 }}>
-        {cats.map((c) => (
-          <CategoryCard key={c.slug} category={c} storeId={storeId} defaultStore={defaultStore} />
-        ))}
+        {/* カテゴリカードグリッド（3列・gap40・カテゴリ数で行数可変） */}
+        <div style={{ display: "flex", flexWrap: "wrap", columnGap: 40, rowGap: 40, paddingLeft: 50, paddingRight: 50, paddingTop: 62 }}>
+          {cats.map((c) => (
+            <CategoryCard key={c.slug} category={c} storeId={storeId} defaultStore={defaultStore} />
+          ))}
+        </div>
+
+        {/* プロモバナー（ランチ/テイクアウト/コース） */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 68, paddingLeft: 50, paddingRight: 50, paddingTop: 76, paddingBottom: 100 }}>
+          {PROMOS.map((p) => (
+            <PromoBanner key={p.en} promo={p} />
+          ))}
+        </div>
       </div>
-
-      {/* プロモバナー（ランチ/テイクアウト/コース） */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 68, paddingLeft: 50, paddingRight: 50, paddingTop: 76 }}>
-        {PROMOS.map((p) => (
-          <PromoBanner key={p.en} promo={p} />
-        ))}
-      </div>
-
-      <div style={{ flex: 1 }} />
     </section>
   );
 }

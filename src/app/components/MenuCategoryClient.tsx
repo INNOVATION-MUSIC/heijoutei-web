@@ -44,6 +44,7 @@ export default function MenuCategoryClient({ categories, stores }: { categories?
   const [modalOpen, setModalOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [measured, setMeasured] = useState<number | null>(null);
+  const [measuredPc, setMeasuredPc] = useState<number | null>(null);
   const [storeId, setStore] = useStoreParam(stores);
 
   const openModal = () => setModalOpen(true);
@@ -78,10 +79,19 @@ export default function MenuCategoryClient({ categories, stores }: { categories?
     );
   }
 
+  // PC: カテゴリ数で行数が変わるため実測。実測前は概算（カードグリッド + バナー）で初期描画。
+  const pcEstimate = 880 + Math.ceil(cats.length / 3) * 240 + 3 * 388 + 100;
+  const pcHeight = measuredPc ?? pcEstimate;
   return (
     <>
-      <ScaledSection designWidth={DESIGN_PC} height={3346}>
-        <MenuCategorySection onOpenModal={openModal} categories={categories} stores={stores} />
+      <ScaledSection designWidth={DESIGN_PC} height={pcHeight}>
+        <MenuCategorySection
+          onOpenModal={openModal}
+          categories={categories}
+          stores={stores}
+          height={pcHeight}
+          onMeasured={(h) => setMeasuredPc((p) => (p === h ? p : h))}
+        />
       </ScaledSection>
       <ScaledSection designWidth={DESIGN_PC} height={600}>
         <Footer onOpenModal={openModal} />
