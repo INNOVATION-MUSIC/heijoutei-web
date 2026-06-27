@@ -49,7 +49,7 @@ export default function UserEditForm({ user }: { user: AdminUserRow }) {
 
   return (
     <form onSubmit={handleSubmit} className="max-w-lg space-y-4 rounded-xl border border-[#23232e] bg-[#14141a] p-5">
-      <SaveSuccessBanner show={saved} />
+      <SaveSuccessBanner show={saved} backHref="/admin/users" />
       {error && <div className="rounded-lg border border-red-800/50 bg-red-900/20 px-4 py-2.5 text-sm text-red-400">{error}</div>}
       <div>
         <label className={labelClass}>アイコン</label>

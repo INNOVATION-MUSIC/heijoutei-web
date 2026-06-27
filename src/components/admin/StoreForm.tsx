@@ -109,7 +109,7 @@ export default function StoreForm({ initial }: { initial?: Tables<'stores'> }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <SaveSuccessBanner show={saved} />
+      <SaveSuccessBanner show={saved} backHref="/admin/stores" />
       {error && (
         <div className="flex items-start gap-3 rounded-lg border border-red-800/50 bg-red-900/20 px-4 py-3">
           <span className="mt-0.5 text-red-400">⚠️</span>

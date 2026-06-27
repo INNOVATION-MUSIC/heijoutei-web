@@ -70,7 +70,7 @@ export default function CourseForm({
 
   return (
     <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-      <SaveSuccessBanner show={saved} className="lg:col-span-3" />
+      <SaveSuccessBanner show={saved} className="lg:col-span-3" backHref="/admin/courses" />
       {error && (
         <div className="rounded-lg border border-red-800/50 bg-red-900/20 px-4 py-3 text-sm text-red-400 lg:col-span-3">
           {error}
