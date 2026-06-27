@@ -146,10 +146,8 @@ export default function MenuForm({
             <input type="checkbox" checked={form.is_active ?? true} onChange={(e) => set('is_active', e.target.checked)} className="accent-[#d9b86b]" />
             公開する
           </label>
-          <div>
-            <label className={labelClass}>表示順</label>
-            <input type="number" className={inputClass} value={form.sort_order ?? 0} onChange={(e) => set('sort_order', Number(e.target.value))} />
-          </div>
+          {/* 表示順はフロント表示に影響しないため非表示。保存時は既存値を保持（form.sort_order を維持）。
+              フロントの並びはカテゴリ管理（カテゴリ順）と品目エディタの▲▼（品目順）で決まる。 */}
         </div>
         <div className="flex flex-col gap-2">
           <button type="submit" disabled={saving} className="rounded-lg bg-[#d9b86b] py-2.5 text-sm font-medium text-[#1a1410] hover:opacity-90 disabled:opacity-50">
