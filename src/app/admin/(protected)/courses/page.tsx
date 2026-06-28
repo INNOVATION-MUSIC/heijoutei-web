@@ -8,7 +8,7 @@ export default async function AdminCoursesPage() {
   const { data: stores } = await adminSupabase.from('stores').select('id, name').eq('is_active', true).order('sort_order')
   const { data: courses } = await adminSupabase
     .from('courses')
-    .select('id, store_id, name, type_label, price_label, is_active, sort_order')
+    .select('id, store_id, name, type_label, price_label, is_active, sort_order, course_categories(name)')
     .order('store_id')
     .order('sort_order')
 
@@ -31,6 +31,7 @@ export default async function AdminCoursesPage() {
           <thead>
             <tr className="border-b border-[#23232e] bg-[#1a1a22] text-left text-xs text-[#6f6f80]">
               <th className="px-4 py-3 font-medium">店舗</th>
+              <th className="px-4 py-3 font-medium">カテゴリ</th>
               <th className="px-4 py-3 font-medium">コース名</th>
               <th className="px-4 py-3 font-medium">種別</th>
               <th className="px-4 py-3 font-medium">価格</th>
@@ -42,6 +43,9 @@ export default async function AdminCoursesPage() {
             {(courses ?? []).map((c) => (
               <tr key={c.id} className="border-b border-[#1d1d26] last:border-0 hover:bg-white/[0.02]">
                 <td className="px-4 py-3 text-[#9a9aa8]">{storeName.get(c.store_id) ?? '—'}</td>
+                <td className="px-4 py-3 text-[#9a9aa8]">
+                  {(c.course_categories as { name: string } | null)?.name ?? <span className="text-[#5a5a6a]">未分類</span>}
+                </td>
                 <td className="px-4 py-3 font-medium text-[#ebe5db]">{c.name}</td>
                 <td className="px-4 py-3 text-[#9a9aa8]">{c.type_label ?? '—'}</td>
                 <td className="px-4 py-3 text-[#9a9aa8]">{c.price_label ?? '—'}</td>
@@ -61,7 +65,7 @@ export default async function AdminCoursesPage() {
               </tr>
             ))}
             {(!courses || courses.length === 0) && (
-              <tr><td colSpan={6} className="px-4 py-10 text-center text-sm text-[#6f6f80]">コースがありません。</td></tr>
+              <tr><td colSpan={7} className="px-4 py-10 text-center text-sm text-[#6f6f80]">コースがありません。</td></tr>
             )}
           </tbody>
         </table>
