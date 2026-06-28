@@ -65,3 +65,13 @@ export async function deleteCourse(id: string) {
   revalidateCourses()
   return { success: true }
 }
+
+// 一覧のドラッグ並べ替え。渡された順に sort_order=1..n を振り直す（店舗ごとに呼ぶ）。
+export async function reorderCourses(orderedIds: string[]) {
+  if (!(await isAuthed())) return { error: '認証が必要です' }
+  await Promise.all(
+    orderedIds.map((id, idx) => adminSupabase.from('courses').update({ sort_order: idx + 1 }).eq('id', id)),
+  )
+  revalidateCourses()
+  return { success: true }
+}
