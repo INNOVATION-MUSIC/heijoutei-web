@@ -66,6 +66,38 @@ export async function deleteCourse(id: string) {
   return { success: true }
 }
 
+// コースを複製する。同店舗の末尾に配置し、誤公開を避けるため非公開で作成する。
+export async function duplicateCourse(id: string) {
+  if (!(await isAuthed())) return { error: '認証が必要です' }
+  const { data: src, error: e1 } = await adminSupabase.from('courses').select('*').eq('id', id).single()
+  if (e1 || !src) return { error: e1?.message ?? '複製元が見つかりません' }
+  // 同店舗の末尾に配置
+  const { data: last } = await adminSupabase
+    .from('courses')
+    .select('sort_order')
+    .eq('store_id', src.store_id)
+    .order('sort_order', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+  const nextOrder = (last?.sort_order ?? 0) + 1
+  const { error: e2 } = await adminSupabase.from('courses').insert({
+    store_id: src.store_id,
+    name: `${src.name}（複製）`,
+    type_label: src.type_label,
+    price_label: src.price_label,
+    description: src.description,
+    notes: src.notes,
+    image_url: src.image_url,
+    course_category_id: src.course_category_id,
+    with_rice: src.with_rice,
+    is_active: false, // 複製直後は非公開（編集して公開）
+    sort_order: nextOrder,
+  })
+  if (e2) return { error: e2.message }
+  revalidateCourses()
+  return { success: true }
+}
+
 // 一覧のドラッグ並べ替え。渡された順に sort_order=1..n を振り直す（店舗ごとに呼ぶ）。
 export async function reorderCourses(orderedIds: string[]) {
   if (!(await isAuthed())) return { error: '認証が必要です' }

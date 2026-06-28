@@ -18,6 +18,7 @@ import {
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import CourseDeleteButton from '@/components/admin/CourseDeleteButton'
+import CourseDuplicateButton from '@/components/admin/CourseDuplicateButton'
 import { reorderCourses } from '@/lib/actions/courses'
 
 export type CourseRow = {
@@ -60,6 +61,7 @@ function Row({ course, index }: { course: CourseRow; index: number }) {
       <td className="px-4 py-3 text-right">
         <div className="flex items-center justify-end gap-3">
           <Link href={`/admin/courses/${course.id}/edit`} className="text-xs text-[#d9b86b] hover:underline">編集</Link>
+          <CourseDuplicateButton id={course.id} name={course.name} />
           <CourseDeleteButton id={course.id} name={course.name} />
         </div>
       </td>
