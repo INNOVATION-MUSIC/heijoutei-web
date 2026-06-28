@@ -100,3 +100,14 @@ export async function deleteStoreMenu(id: string) {
   revalidateMenus()
   return { success: true }
 }
+
+// 一覧のドラッグ並べ替え。渡された順に sort_order=1..n を振り直す（店舗ごとに呼ぶ）。
+// ※ store_menus.sort_order はフロント表示順に影響せず、管理画面の一覧並びのみに作用する。
+export async function reorderStoreMenus(orderedIds: string[]) {
+  if (!(await isAuthed())) return { error: '認証が必要です' }
+  await Promise.all(
+    orderedIds.map((id, idx) => adminSupabase.from('store_menus').update({ sort_order: idx + 1 }).eq('id', id)),
+  )
+  revalidatePath('/admin/menus')
+  return { success: true }
+}

@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { adminSupabase } from '@/lib/supabase/admin'
-import MenuDeleteButton from '@/components/admin/MenuDeleteButton'
+import DraggableMenuTable, { type MenuRow } from '@/components/admin/DraggableMenuTable'
 
 export const dynamic = 'force-dynamic'
 
@@ -40,6 +40,22 @@ export default async function AdminMenusPage({
   const storeName = new Map((stores ?? []).map((s) => [s.id, s.name]))
   const catName = new Map((cats ?? []).map((c) => [c.id, c.name]))
 
+  // 店舗ごとにまとめる（並び順は店舗単位）
+  const byStore = new Map<string, MenuRow[]>()
+  for (const m of menus) {
+    const catLabel = m.category_id ? catName.get(m.category_id) ?? null : null
+    const row: MenuRow = {
+      id: m.id,
+      categoryName: catLabel,
+      itemCount: countByMenu.get(m.id) ?? 0,
+      is_active: m.is_active,
+      deleteLabel: `${storeName.get(m.store_id) ?? ''} / ${catLabel ?? ''}`,
+    }
+    const list = byStore.get(m.store_id) ?? []
+    list.push(row)
+    byStore.set(m.store_id, list)
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -74,44 +90,19 @@ export default async function AdminMenusPage({
         <button type="submit" className="rounded-lg border border-[#2f2f3c] px-4 py-2 text-sm text-[#9a9aa8] hover:text-[#ebe5db]">絞り込み</button>
       </form>
 
-      <div className="overflow-x-auto rounded-xl border border-[#23232e] bg-[#14141a]">
-        <table className="w-full min-w-[640px] text-sm">
-          <thead>
-            <tr className="border-b border-[#23232e] bg-[#1a1a22] text-left text-xs text-[#6f6f80]">
-              <th className="px-4 py-3 font-medium">店舗</th>
-              <th className="px-4 py-3 font-medium">カテゴリ</th>
-              <th className="px-4 py-3 font-medium">品目数</th>
-              <th className="px-4 py-3 font-medium">状態</th>
-              <th className="px-4 py-3 text-right font-medium">操作</th>
-            </tr>
-          </thead>
-          <tbody>
-            {(menus ?? []).map((m) => (
-              <tr key={m.id} className="border-b border-[#1d1d26] last:border-0 hover:bg-white/[0.02]">
-                <td className="px-4 py-3 text-[#9a9aa8]">{storeName.get(m.store_id) ?? '—'}</td>
-                <td className="px-4 py-3 text-[#ebe5db]">{m.category_id ? catName.get(m.category_id) : '—'}</td>
-                <td className="px-4 py-3 text-[#9a9aa8]">{countByMenu.get(m.id) ?? 0}</td>
-                <td className="px-4 py-3">
-                  {m.is_active ? (
-                    <span className="rounded-full bg-green-900/30 px-2 py-0.5 text-xs text-green-400">公開中</span>
-                  ) : (
-                    <span className="rounded-full bg-gray-900/40 px-2 py-0.5 text-xs text-gray-400">非公開</span>
-                  )}
-                </td>
-                <td className="px-4 py-3 text-right">
-                  <div className="flex items-center justify-end gap-3">
-                    <Link href={`/admin/menus/${m.id}/edit`} className="text-xs text-[#d9b86b] hover:underline">編集</Link>
-                    <MenuDeleteButton id={m.id} label={(storeName.get(m.store_id) ?? '') + ' / ' + (m.category_id ? catName.get(m.category_id) ?? '' : '')} />
-                  </div>
-                </td>
-              </tr>
-            ))}
-            {(!menus || menus.length === 0) && (
-              <tr><td colSpan={5} className="px-4 py-10 text-center text-sm text-[#6f6f80]">メニューがありません。</td></tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+      <p className="text-xs text-[#5a5a6a]">行をドラッグで並べ替えできます（この並びは管理画面の一覧用です。フロントのカテゴリ順はカテゴリ管理、品目順は各メニューの品目編集で決まります）。</p>
+
+      {(stores ?? []).map((s) => {
+        const list = byStore.get(s.id) ?? []
+        if (list.length === 0) return null
+        return <DraggableMenuTable key={s.id} storeName={storeName.get(s.id) ?? ''} initial={list} />
+      })}
+
+      {menus.length === 0 && (
+        <div className="rounded-xl border border-[#23232e] bg-[#14141a] px-4 py-10 text-center text-sm text-[#6f6f80]">
+          メニューがありません。
+        </div>
+      )}
     </div>
   )
 }
