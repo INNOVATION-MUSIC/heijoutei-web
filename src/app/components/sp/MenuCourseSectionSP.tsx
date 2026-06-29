@@ -185,8 +185,8 @@ export default function MenuCourseSectionSP({
 
         {/* コースカード（1列・gap40） */}
         <div style={{ display: "flex", flexDirection: "column", gap: 40, paddingLeft: 20, paddingRight: 20, paddingTop: 30 }}>
-          {courses.map((c) => (
-            <CourseCardSP key={c.title} course={c} />
+          {courses.map((c, i) => (
+            <CourseCardSP key={`${c.title}-${i}`} course={c} />
           ))}
         </div>
 

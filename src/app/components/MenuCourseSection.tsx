@@ -182,8 +182,8 @@ export default function MenuCourseSection({
 
         {/* コースカード（枚数可変・横並びで折返し） */}
         <div style={{ display: "flex", flexWrap: "wrap", gap: 40, rowGap: 40, paddingLeft: 50, paddingRight: 50, paddingTop: 54 }}>
-          {courses.map((c) => (
-            <CourseCard key={c.title} course={c} />
+          {courses.map((c, i) => (
+            <CourseCard key={`${c.title}-${i}`} course={c} />
           ))}
         </div>
 
