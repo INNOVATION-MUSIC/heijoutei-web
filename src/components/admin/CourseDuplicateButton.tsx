@@ -10,13 +10,19 @@ export default function CourseDuplicateButton({ id, name }: { id: string; name: 
   async function handleDuplicate() {
     if (!confirm(`「${name}」を複製しますか？（複製は非公開で作成されます）`)) return
     setLoading(true)
-    const result = await duplicateCourse(id)
-    if (result?.error) {
-      alert(result.error)
+    try {
+      const result = await duplicateCourse(id)
+      if (result?.error) {
+        alert(result.error)
+        return
+      }
+      router.refresh()
+    } catch (e) {
+      console.error(e)
+      alert('複製に失敗しました。ページを再読み込みして再度お試しください。')
+    } finally {
       setLoading(false)
-      return
     }
-    router.refresh()
   }
   return (
     <button
