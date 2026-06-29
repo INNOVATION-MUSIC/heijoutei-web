@@ -95,7 +95,14 @@ export default async function AdminMenusPage({
       {(stores ?? []).map((s) => {
         const list = byStore.get(s.id) ?? []
         if (list.length === 0) return null
-        return <DraggableMenuTable key={s.id} storeName={storeName.get(s.id) ?? ''} initial={list} />
+        // 行の集合（削除）が変わったら再マウントして最新を反映する
+        return (
+          <DraggableMenuTable
+            key={`${s.id}:${list.map((r) => r.id).join(',')}`}
+            storeName={storeName.get(s.id) ?? ''}
+            initial={list}
+          />
+        )
       })}
 
       {menus.length === 0 && (

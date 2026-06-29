@@ -43,7 +43,14 @@ export default async function AdminCoursesPage() {
       {(stores ?? []).map((s) => {
         const list = byStore.get(s.id) ?? []
         if (list.length === 0) return null
-        return <DraggableCourseTable key={s.id} storeName={s.name} initial={list} />
+        // 行の集合（複製/削除）が変わったら再マウントして最新を反映する
+        return (
+          <DraggableCourseTable
+            key={`${s.id}:${list.map((r) => r.id).join(',')}`}
+            storeName={s.name}
+            initial={list}
+          />
+        )
       })}
 
       {(!courses || courses.length === 0) && (
