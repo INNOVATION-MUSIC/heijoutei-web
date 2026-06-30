@@ -32,7 +32,6 @@ export default function TakeoutMenuForm({
     image_url: initial?.image_url ?? '',
     price: initial?.price ?? 0,
     is_active: initial?.is_active ?? true,
-    sort_order: initial?.sort_order ?? 0,
     store_ids: initialStoreIds,
   })
   const [saving, setSaving] = useState(false)
@@ -143,10 +142,7 @@ export default function TakeoutMenuForm({
             <input type="checkbox" checked={form.is_active ?? true} onChange={(e) => set('is_active', e.target.checked)} className="accent-[#d9b86b]" />
             公開する
           </label>
-          <div>
-            <label className={labelClass}>表示順</label>
-            <input type="number" className={inputClass} value={form.sort_order ?? 0} onChange={(e) => set('sort_order', Number(e.target.value))} />
-          </div>
+          <p className="text-xs text-[#5a5a6a]">表示順はメニュー一覧のドラッグで変更できます。</p>
         </div>
         <div className="flex flex-col gap-2">
           <button type="submit" disabled={saving} className="rounded-lg bg-[#d9b86b] py-2.5 text-sm font-medium text-[#1a1410] hover:opacity-90 disabled:opacity-50">

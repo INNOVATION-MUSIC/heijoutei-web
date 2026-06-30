@@ -11,7 +11,6 @@ export type TakeoutMenuPayload = {
   image_url?: string | null
   price: number
   is_active?: boolean
-  sort_order?: number
   store_ids: string[]
 }
 
@@ -20,6 +19,8 @@ function revalidateTakeout() {
   revalidatePath('/menu/takeout')
 }
 
+// sort_order は一覧のドラッグ並べ替え（reorderTakeoutMenus）で管理するため、
+// フォーム保存では触らない。新規作成のみ末尾に自動配置する。
 function normalize(p: TakeoutMenuPayload) {
   return {
     category_id: p.category_id || null,
@@ -28,8 +29,17 @@ function normalize(p: TakeoutMenuPayload) {
     image_url: p.image_url?.trim() || null,
     price: Math.max(0, Math.round(p.price || 0)),
     is_active: p.is_active ?? true,
-    sort_order: p.sort_order ?? 0,
   }
+}
+
+async function nextSortOrder(): Promise<number> {
+  const { data: last } = await adminSupabase
+    .from('store_takeout_menus')
+    .select('sort_order')
+    .order('sort_order', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+  return (last?.sort_order ?? 0) + 1
 }
 
 async function syncStores(menuId: string, storeIds: string[]) {
@@ -55,7 +65,7 @@ export async function createTakeoutMenu(p: TakeoutMenuPayload) {
   if (!p.name?.trim()) return { error: 'メニュー名は必須です' }
   const { data, error } = await adminSupabase
     .from('store_takeout_menus')
-    .insert(normalize(p))
+    .insert({ ...normalize(p), sort_order: await nextSortOrder() })
     .select('id')
     .single()
   if (error || !data) return { error: error?.message ?? '作成に失敗しました' }
@@ -92,13 +102,6 @@ export async function duplicateTakeoutMenu(id: string) {
       .eq('id', id)
       .single()
     if (e1 || !src) return { error: e1?.message ?? '複製元が見つかりません' }
-    const { data: last } = await adminSupabase
-      .from('store_takeout_menus')
-      .select('sort_order')
-      .order('sort_order', { ascending: false })
-      .limit(1)
-      .maybeSingle()
-    const nextOrder = (last?.sort_order ?? 0) + 1
     const { data: created, error: e2 } = await adminSupabase
       .from('store_takeout_menus')
       .insert({
@@ -108,7 +111,7 @@ export async function duplicateTakeoutMenu(id: string) {
         image_url: src.image_url,
         price: src.price,
         is_active: false, // 複製直後は非公開（編集して公開）
-        sort_order: nextOrder,
+        sort_order: await nextSortOrder(),
       })
       .select('id')
       .single()
