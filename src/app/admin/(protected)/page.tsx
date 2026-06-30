@@ -15,6 +15,18 @@ function jstTodayRange(): { todayStart: string; todayEnd: string } {
   }
 }
 
+// 「今月の売上」= JST(UTC+9) の当月 1日 0:00〜翌月 1日 0:00 に created_at が入る注文。
+// jstTodayRange と同様、JST の月初を UTC ISO に直して照合する。
+function jstThisMonthRange(): { monthStart: string; monthEnd: string } {
+  const jst = new Date(Date.now() + 9 * 3600_000)
+  const startUtcMs = Date.UTC(jst.getUTCFullYear(), jst.getUTCMonth(), 1) - 9 * 3600_000
+  const endUtcMs = Date.UTC(jst.getUTCFullYear(), jst.getUTCMonth() + 1, 1) - 9 * 3600_000
+  return {
+    monthStart: new Date(startUtcMs).toISOString(),
+    monthEnd: new Date(endUtcMs).toISOString(),
+  }
+}
+
 function StatCard({ label, value, href }: { label: string; value: number | string; href?: string }) {
   const inner = (
     <div className="rounded-xl border border-[#23232e] bg-[#14141a] p-5 transition-colors hover:border-[#d9b86b]/30">
@@ -27,6 +39,7 @@ function StatCard({ label, value, href }: { label: string; value: number | strin
 
 export default async function AdminDashboard() {
   const { todayStart, todayEnd } = jstTodayRange()
+  const { monthStart, monthEnd } = jstThisMonthRange()
 
   const [
     { count: publishedNews },
@@ -34,6 +47,7 @@ export default async function AdminDashboard() {
     { count: unreadOrders },
     { count: unreadContacts },
     { data: todayOrderRows },
+    { data: monthOrderRows },
     { data: recentOrders },
     { data: recentContacts },
     { data: recentNews },
@@ -43,12 +57,15 @@ export default async function AdminDashboard() {
     adminSupabase.from('takeout_orders').select('id', { count: 'exact', head: true }).eq('is_read', false),
     adminSupabase.from('contact_messages').select('id', { count: 'exact', head: true }).eq('is_read', false),
     adminSupabase.from('takeout_orders').select('total_price').gte('created_at', todayStart).lt('created_at', todayEnd),
+    // 今月の売上はキャンセルを除外（売上として計上しない）
+    adminSupabase.from('takeout_orders').select('total_price').gte('created_at', monthStart).lt('created_at', monthEnd).neq('status', 'cancelled'),
     adminSupabase.from('takeout_orders').select('id, customer_name, total_price, pickup_date, is_read, created_at, stores(name)').order('created_at', { ascending: false }).limit(10),
     adminSupabase.from('contact_messages').select('id, name, subject, message, is_read, created_at').order('created_at', { ascending: false }).limit(10),
     adminSupabase.from('news').select('id, title, is_published, published_at, news_tags(label, color, sort_order)').order('created_at', { ascending: false }).limit(5),
   ])
 
   const todayTotal = (todayOrderRows ?? []).reduce((sum, o) => sum + o.total_price, 0)
+  const monthTotal = (monthOrderRows ?? []).reduce((sum, o) => sum + o.total_price, 0)
 
   return (
     <div className="space-y-8">
@@ -57,9 +74,10 @@ export default async function AdminDashboard() {
         <p className="mt-1 text-sm text-[#6f6f80]">平壌亭 CMS 管理画面</p>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-6">
         <StatCard label="未読の注文" value={unreadOrders ?? 0} href="/admin/takeout-orders" />
         <StatCard label={`本日の注文 / 合計`} value={`${(todayOrderRows ?? []).length}件 ${todayTotal.toLocaleString('ja-JP')}円`} href="/admin/takeout-orders" />
+        <StatCard label="今月の売上合計" value={`${monthTotal.toLocaleString('ja-JP')}円`} href="/admin/takeout-orders" />
         <StatCard label="未読の問い合わせ" value={unreadContacts ?? 0} href="/admin/contact" />
         <StatCard label="公開中のお知らせ" value={publishedNews ?? 0} href="/admin/news" />
         <StatCard label="公開中の店舗" value={storeCount ?? 0} href="/admin/stores" />
