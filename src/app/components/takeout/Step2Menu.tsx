@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import Image from "next/image";
 import { TakeoutHeader, TakeoutStepper, RedButton, OutlineButton, mincho, sans } from "./TakeoutShared";
 import { type TakeoutMenuItem } from "@/app/lib/takeoutData";
@@ -24,13 +25,26 @@ type Props = {
   cartCount: number;
   onBack: () => void;
   onNext: () => void;
+  onMeasured?: (h: number) => void;
 };
 
 export default function Step2Menu(p: Props) {
   const items = p.menuItems.filter((m) => m.category === p.activeCategory);
 
+  // 説明文の長さでカード高さが可変のため、コンテンツ全高を実測してセクション高さに反映する
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || !p.onMeasured) return;
+    const report = () => p.onMeasured!(el.offsetHeight);
+    report();
+    const ro = new ResizeObserver(report);
+    ro.observe(el);
+    return () => ro.disconnect();
+  });
+
   return (
-    <div style={{ display: "flex", flexDirection: "column", width: 1440, height: p.height, background: "#0a0a0a", overflow: "hidden" }}>
+    <div ref={ref} style={{ display: "flex", flexDirection: "column", width: 1440, background: "#0a0a0a", paddingBottom: 130 }}>
       <TakeoutHeader onOpenModal={p.onOpenModal} />
 
       {/* ステッパー */}
@@ -86,8 +100,6 @@ export default function Step2Menu(p: Props) {
           </div>
         </div>
       </div>
-
-      <div style={{ flex: 1 }} />
     </div>
   );
 }
@@ -95,8 +107,8 @@ export default function Step2Menu(p: Props) {
 /* ─────────── メニューカード ─────────── */
 function MenuCard({ item, qty, onSetQty }: { item: TakeoutMenuItem; qty: number; onSetQty: (id: string, qty: number) => void }) {
   return (
-    <div style={{ width: 420, height: 200, background: PANEL, display: "flex", overflow: "hidden" }}>
-      <div style={{ position: "relative", width: 200, height: 200, flexShrink: 0 }}>
+    <div style={{ width: 420, minHeight: 200, background: PANEL, display: "flex", overflow: "hidden" }}>
+      <div style={{ position: "relative", width: 200, alignSelf: "stretch", minHeight: 200, flexShrink: 0 }}>
         <Image src={item.img} alt={item.name} fill className="object-cover" sizes="200px" />
       </div>
       <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "22px 24px 18px 28px" }}>

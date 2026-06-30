@@ -167,8 +167,9 @@ export default function TakeoutClient({
     }
   };
 
-  // step2 の高さは「メニュー列」「カート列」の高い方に合わせて可変
-  const step2Height = useMemo(() => {
+  // step2 の高さは説明文の長さでカード高さが可変のため ResizeObserver で実測する。
+  // 実測前の初回描画用に、固定高想定の概算をフォールバックとして用意する。
+  const step2Est = useMemo(() => {
     const GRID_TOP = 1021;
     const menuRows = Math.max(1, Math.ceil(ITEMS.filter((m) => m.category === activeCategory).length / 2));
     const menuBottom = GRID_TOP + menuRows * 240 - 40;
@@ -177,10 +178,12 @@ export default function TakeoutClient({
     return Math.max(menuBottom, cartBottom) + 130;
   }, [activeCategory, cartLines.length, ITEMS]);
 
+  const [step2Measured, setStep2Measured] = useState<number | null>(null);
+
   // ステップ別の高さ
   const heights = [
     2300 + (weeks - 5) * 52, // step1（カレンダー週数で可変）
-    step2Height, // step2
+    step2Measured ?? step2Est, // step2（実測・未測定時は概算）
     2060, // step3
     2060, // step4
     2060, // step5
@@ -334,7 +337,11 @@ export default function TakeoutClient({
             menuItems={ITEMS}
             categories={CATS}
             activeCategory={activeCategory}
-            onSelectCategory={setActiveCategory}
+            onSelectCategory={(c) => {
+              // カテゴリ切替で品目（=高さ）が変わるため実測値を破棄して再計測させる
+              setActiveCategory(c);
+              setStep2Measured(null);
+            }}
             cart={cart}
             onSetQty={setQty}
             cartLines={cartLines}
@@ -342,6 +349,7 @@ export default function TakeoutClient({
             cartCount={cartCount}
             onBack={() => goStep(1)}
             onNext={() => goStep(3)}
+            onMeasured={(h) => setStep2Measured((prev) => (prev === h ? prev : h))}
           />
         )}
         {step === 3 && (
