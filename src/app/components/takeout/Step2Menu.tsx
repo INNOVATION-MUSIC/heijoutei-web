@@ -114,7 +114,8 @@ function MenuCard({ item, qty, onSetQty }: { item: TakeoutMenuItem; qty: number;
       <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "22px 24px 18px 28px" }}>
         <p style={{ margin: 0, fontFamily: mincho, fontSize: 24, letterSpacing: "0.04em", color: "#ebe5db", lineHeight: 1.1 }}>{item.name}</p>
         <p style={{ margin: 0, paddingTop: 10, fontFamily: sans, fontSize: 12, color: "rgba(235,229,219,0.55)", lineHeight: "19px", whiteSpace: "pre-line" }}>{item.desc}</p>
-        <div style={{ flex: 1 }} />
+        {/* 説明文が長いとスペーサーが 0 になり価格行と詰まるため最小余白を確保 */}
+        <div style={{ flex: 1, minHeight: 18 }} />
         <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between" }}>
           <div style={{ display: "flex", alignItems: "baseline", gap: 2 }}>
             <span style={{ fontFamily: mincho, fontSize: 24, color: "#ebe5db", lineHeight: 1 }}>{item.price.toLocaleString()}</span>
