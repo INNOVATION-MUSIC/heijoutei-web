@@ -81,3 +81,55 @@ export async function deleteTakeoutMenu(id: string) {
   revalidateTakeout()
   return { success: true }
 }
+
+// メニューを複製する。末尾に配置し、誤公開を避けるため非公開で作成する。取扱店舗も引き継ぐ。
+export async function duplicateTakeoutMenu(id: string) {
+  if (!(await isAuthed())) return { error: '認証が必要です' }
+  try {
+    const { data: src, error: e1 } = await adminSupabase
+      .from('store_takeout_menus')
+      .select('*')
+      .eq('id', id)
+      .single()
+    if (e1 || !src) return { error: e1?.message ?? '複製元が見つかりません' }
+    const { data: last } = await adminSupabase
+      .from('store_takeout_menus')
+      .select('sort_order')
+      .order('sort_order', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+    const nextOrder = (last?.sort_order ?? 0) + 1
+    const { data: created, error: e2 } = await adminSupabase
+      .from('store_takeout_menus')
+      .insert({
+        category_id: src.category_id,
+        name: `${src.name}（複製）`,
+        description: src.description,
+        image_url: src.image_url,
+        price: src.price,
+        is_active: false, // 複製直後は非公開（編集して公開）
+        sort_order: nextOrder,
+      })
+      .select('id')
+      .single()
+    if (e2 || !created) return { error: e2?.message ?? '複製に失敗しました' }
+    const storeIds = await getTakeoutMenuStoreIds(id)
+    await syncStores(created.id, storeIds)
+    revalidateTakeout()
+    return { success: true }
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : '複製に失敗しました' }
+  }
+}
+
+// 一覧のドラッグ並べ替え。渡された順に sort_order=1..n を振り直す。
+export async function reorderTakeoutMenus(orderedIds: string[]) {
+  if (!(await isAuthed())) return { error: '認証が必要です' }
+  await Promise.all(
+    orderedIds.map((id, idx) =>
+      adminSupabase.from('store_takeout_menus').update({ sort_order: idx + 1 }).eq('id', id),
+    ),
+  )
+  revalidateTakeout()
+  return { success: true }
+}

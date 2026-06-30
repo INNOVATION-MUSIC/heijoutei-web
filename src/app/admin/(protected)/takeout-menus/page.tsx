@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { adminSupabase } from '@/lib/supabase/admin'
-import TakeoutMenuDeleteButton from '@/components/admin/TakeoutMenuDeleteButton'
+import DraggableTakeoutMenuTable, { type TakeoutMenuRow } from '@/components/admin/DraggableTakeoutMenuTable'
 
 export const dynamic = 'force-dynamic'
 
@@ -24,58 +24,35 @@ export default async function AdminTakeoutMenusPage() {
     storesByMenu.set(j.takeout_menu_id, arr)
   }
 
+  const rows: TakeoutMenuRow[] = (menus ?? []).map((m) => ({
+    id: m.id,
+    name: m.name,
+    categoryName: m.category_id ? catName.get(m.category_id) ?? null : null,
+    price: m.price,
+    storeNames: storesByMenu.get(m.id) ?? [],
+    is_active: m.is_active,
+  }))
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-[#ebe5db]">テイクアウトメニュー管理</h1>
-          <p className="text-sm text-[#6f6f80]">全 {menus?.length ?? 0} 件</p>
+          <p className="text-sm text-[#6f6f80]">全 {rows.length} 件・行をドラッグで並べ替え（表示順に反映）</p>
         </div>
         <Link href="/admin/takeout-menus/new" className="inline-flex items-center gap-2 rounded-lg bg-[#d9b86b] px-4 py-2 text-sm font-medium text-[#1a1410] hover:opacity-90">
           ＋ 新規メニュー
         </Link>
       </div>
 
-      <div className="overflow-x-auto rounded-xl border border-[#23232e] bg-[#14141a]">
-        <table className="w-full min-w-[640px] text-sm">
-          <thead>
-            <tr className="border-b border-[#23232e] bg-[#1a1a22] text-left text-xs text-[#6f6f80]">
-              <th className="px-4 py-3 font-medium">メニュー名</th>
-              <th className="px-4 py-3 font-medium">カテゴリ</th>
-              <th className="px-4 py-3 font-medium">価格</th>
-              <th className="px-4 py-3 font-medium">取扱店舗</th>
-              <th className="px-4 py-3 font-medium">状態</th>
-              <th className="px-4 py-3 text-right font-medium">操作</th>
-            </tr>
-          </thead>
-          <tbody>
-            {(menus ?? []).map((m) => (
-              <tr key={m.id} className="border-b border-[#1d1d26] last:border-0 hover:bg-white/[0.02]">
-                <td className="px-4 py-3 font-medium text-[#ebe5db]">{m.name}</td>
-                <td className="px-4 py-3 text-[#9a9aa8]">{m.category_id ? catName.get(m.category_id) : '—'}</td>
-                <td className="px-4 py-3 text-[#9a9aa8]">{m.price.toLocaleString('ja-JP')}円</td>
-                <td className="px-4 py-3 text-xs text-[#9a9aa8]">{(storesByMenu.get(m.id) ?? []).join('・') || '—'}</td>
-                <td className="px-4 py-3">
-                  {m.is_active ? (
-                    <span className="rounded-full bg-green-900/30 px-2 py-0.5 text-xs text-green-400">公開中</span>
-                  ) : (
-                    <span className="rounded-full bg-gray-900/40 px-2 py-0.5 text-xs text-gray-400">非公開</span>
-                  )}
-                </td>
-                <td className="px-4 py-3 text-right">
-                  <div className="flex items-center justify-end gap-3">
-                    <Link href={`/admin/takeout-menus/${m.id}/edit`} className="text-xs text-[#d9b86b] hover:underline">編集</Link>
-                    <TakeoutMenuDeleteButton id={m.id} name={m.name} />
-                  </div>
-                </td>
-              </tr>
-            ))}
-            {(!menus || menus.length === 0) && (
-              <tr><td colSpan={6} className="px-4 py-10 text-center text-sm text-[#6f6f80]">メニューがありません。</td></tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+      {rows.length > 0 ? (
+        // 行の集合（複製/削除）が変わったら再マウントして最新を反映する
+        <DraggableTakeoutMenuTable key={rows.map((r) => r.id).join(',')} initial={rows} />
+      ) : (
+        <div className="rounded-xl border border-[#23232e] bg-[#14141a] px-4 py-10 text-center text-sm text-[#6f6f80]">
+          メニューがありません。
+        </div>
+      )}
     </div>
   )
 }
