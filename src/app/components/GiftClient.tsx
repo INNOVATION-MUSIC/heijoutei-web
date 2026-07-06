@@ -1,29 +1,66 @@
 "use client";
 
 import { useState } from "react";
+import { useIsMobile } from "@/app/lib/useIsMobile";
 import ScaledSection from "./ScaledSection";
 import ReserveModal from "./ReserveModal";
 import StickyButton from "./StickyButton";
 import Footer from "./Footer";
 
+// PC
 import GiftMainSection from "./gift/GiftMainSection";
 import GiftCtaSection from "./gift/GiftCtaSection";
 import GiftShippingSection from "./gift/GiftShippingSection";
 
+// SP
+import GiftSectionSP from "./sp/GiftSectionSP";
+import FooterSP from "./sp/FooterSP";
+import SpStickyHeader from "./sp/SpStickyHeader";
+import HamburgerMenuSP from "./sp/HamburgerMenuSP";
+
 const DESIGN_PC = 1440;
+const DESIGN_SP = 390;
+// SP 全高の初期推定（実測前の SSR/初回描画用。Figma 設計 5896 − フッター 973）
+const SP_ESTIMATE = 4923;
 
 /**
  * /gift ギフト（ご進物）ページのクライアントラッパー。
- * 構成: メイン（見出し + 商品カード） → CTA（電話注文） → 送料金表 → フッター。
- * データは lib/giftData.ts（PC/SP 共通の正本）を参照。
- *
- * 現状は PC のみ（ユーザー指定）。SP デザイン確定後に AboutClient と同様
- * useIsMobile 分岐で sp/ 版セクションを追加する（データ層は giftData のまま流用）。
+ * useIsMobile で PC（1440）/ SP（390）を切り替える。データは lib/giftData.ts（PC/SP 共通の正本）。
+ * SP は内容で高さが変わるため ResizeObserver で全高を実測してセクション高を確定する。
+ * 予約モーダル・ハンバーガーは ScaledSection 外で一元管理。
  */
 export default function GiftClient() {
+  const isMobile = useIsMobile();
   const [modalOpen, setModalOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [measured, setMeasured] = useState<number | null>(null);
+
   const openModal = () => setModalOpen(true);
   const closeModal = () => setModalOpen(false);
+  const openMenu = () => setMenuOpen(true);
+  const closeMenu = () => setMenuOpen(false);
+
+  if (isMobile === null) {
+    return <div style={{ minHeight: "100vh", background: "#0a0a0a" }} />;
+  }
+
+  if (isMobile) {
+    const height = measured ?? SP_ESTIMATE;
+    return (
+      <>
+        <ScaledSection designWidth={DESIGN_SP} height={height}>
+          <GiftSectionSP onMeasured={(h) => setMeasured((p) => (p === h ? p : h))} />
+        </ScaledSection>
+        <ScaledSection designWidth={DESIGN_SP} height={973}>
+          <FooterSP onOpenModal={openModal} />
+        </ScaledSection>
+
+        <SpStickyHeader onOpenMenu={openMenu} />
+        <HamburgerMenuSP open={menuOpen} onClose={closeMenu} onOpenModal={openModal} />
+        <ReserveModal open={modalOpen} onClose={closeModal} isMobile />
+      </>
+    );
+  }
 
   return (
     <>
