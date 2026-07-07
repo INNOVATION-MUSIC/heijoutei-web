@@ -134,7 +134,14 @@ function ShippingTableSP() {
  * → 商品カード4枚 → 電話CTA → 送料金表 を単一カラムで縦積みする。
  * 高さ可変のため ResizeObserver で全高を実測し、onMeasured で親へ通知する。
  */
-export default function GiftSectionSP({ onMeasured }: { onMeasured: (h: number) => void }) {
+export default function GiftSectionSP({
+  onMeasured,
+  products,
+}: {
+  onMeasured: (h: number) => void;
+  products?: GiftProduct[];
+}) {
+  const list = products ?? GIFT_PRODUCTS;
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -168,7 +175,7 @@ export default function GiftSectionSP({ onMeasured }: { onMeasured: (h: number) 
 
       {/* 商品カード */}
       <div style={{ display: "flex", flexDirection: "column", gap: 40, paddingLeft: 20, marginTop: 80 }}>
-        {GIFT_PRODUCTS.map((p) => (
+        {list.map((p) => (
           <GiftCardSP key={p.id} p={p} />
         ))}
       </div>

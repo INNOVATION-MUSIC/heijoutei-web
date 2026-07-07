@@ -1,5 +1,8 @@
 import GiftClient from "@/app/components/GiftClient";
+import { fetchGiftProducts } from "@/app/lib/giftDb";
 import type { Metadata } from "next";
+
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "ご進物・ギフト | 焼肉平壌亭",
@@ -8,6 +11,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/gift" },
 };
 
-export default function GiftPage() {
-  return <GiftClient />;
+export default async function GiftPage() {
+  const products = await fetchGiftProducts();
+  return <GiftClient products={products} />;
 }

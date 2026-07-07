@@ -181,6 +181,60 @@ export type Database = {
           },
         ]
       }
+      gift_products: {
+        Row: {
+          content: string | null
+          content_label: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean
+          is_short: boolean
+          price_amount: string | null
+          price_note: string | null
+          sort_order: number | null
+          specs: Json
+          subtitle: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          content?: string | null
+          content_label?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          is_short?: boolean
+          price_amount?: string | null
+          price_note?: string | null
+          sort_order?: number | null
+          specs?: Json
+          subtitle?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          content?: string | null
+          content_label?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          is_short?: boolean
+          price_amount?: string | null
+          price_note?: string | null
+          sort_order?: number | null
+          specs?: Json
+          subtitle?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       media: {
         Row: {
           created_at: string | null

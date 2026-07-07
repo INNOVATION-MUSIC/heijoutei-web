@@ -95,6 +95,14 @@ const ICON_PATHS: Record<string, React.ReactNode> = {
       <path d="m7.5 4.27 9 5.15" />
     </>
   ),
+  gift: (
+    <>
+      <rect x="3" y="8" width="18" height="4" rx="1" />
+      <path d="M12 8v13" />
+      <path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7" />
+      <path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5" />
+    </>
+  ),
   recruit: (
     <>
       <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
@@ -180,6 +188,7 @@ export default function AdminSidebar({
         { href: '/admin/menus', label: 'メニュー', icon: 'menu' },
         { href: '/admin/lunch', label: 'ランチ', icon: 'lunch' },
         { href: '/admin/courses', label: 'コース', icon: 'course' },
+        { href: '/admin/gifts', label: 'ギフト', icon: 'gift' },
         { href: '/admin/business-calendar', label: '営業カレンダー', icon: 'calendar' },
       ],
     },

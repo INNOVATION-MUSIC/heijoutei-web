@@ -4,6 +4,9 @@ import Image from "next/image";
 import PageHeader from "../PageHeader";
 import { GIFT_PRODUCTS, type GiftProduct } from "@/app/lib/giftData";
 
+// カード間 gap60・見出しまで 801 と揃えた既定全高（商品4件時）。
+const DEFAULT_HEIGHT = 2848;
+
 const mincho = "'Shippori Mincho', serif";
 const sans = "'Noto Sans JP', sans-serif";
 const display = "'Cormorant Garamond', serif";
@@ -110,10 +113,21 @@ function GiftCard({ p }: { p: GiftProduct }) {
  * /gift ギフト（ご進物）ページのメインコンテンツ（PageHeader 含む）。
  * Figma 設計幅 1440。見出しは /about・/news と同じ構成（ラベル + Gift + ヒーロー820×320）、
  * 本体は商品カード（写真左 + 情報右）を縦に並べる。
+ * products はサーバー（giftDb）由来。未指定時は静的 GIFT_PRODUCTS にフォールバック。
+ * height は商品数に応じた全高（GiftClient が算出）。
  */
-export default function GiftMainSection({ onOpenModal }: { onOpenModal: () => void }) {
+export default function GiftMainSection({
+  onOpenModal,
+  products,
+  height = DEFAULT_HEIGHT,
+}: {
+  onOpenModal: () => void;
+  products?: GiftProduct[];
+  height?: number;
+}) {
+  const list = products ?? GIFT_PRODUCTS;
   return (
-    <div style={{ display: "flex", flexDirection: "column", width: 1440, height: 2848, background: "#0a0a0a", overflow: "hidden" }}>
+    <div style={{ display: "flex", flexDirection: "column", width: 1440, height, background: "#0a0a0a", overflow: "hidden" }}>
       {/* 共通ヘッダー */}
       <PageHeader onOpenModal={onOpenModal} />
 
@@ -140,7 +154,7 @@ export default function GiftMainSection({ onOpenModal }: { onOpenModal: () => vo
 
       {/* 商品カード */}
       <div style={{ display: "flex", flexDirection: "column", gap: 60, paddingLeft: 49, paddingTop: 184 }}>
-        {GIFT_PRODUCTS.map((p) => (
+        {list.map((p) => (
           <GiftCard key={p.id} p={p} />
         ))}
       </div>
