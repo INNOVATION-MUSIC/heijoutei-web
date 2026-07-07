@@ -7,8 +7,10 @@ import ImageUploader from '@/components/admin/ImageUploader'
 import { createGift, updateGift, type GiftPayload, type GiftSpec } from '@/lib/actions/gifts'
 import type { Tables } from '@/types/supabase'
 
-const inputClass =
-  'w-full rounded-lg border border-[#2f2f3c] bg-[#0a0a0f] px-3 py-2 text-sm text-[#ebe5db] focus:border-[#d9b86b] focus:outline-none focus:ring-1 focus:ring-[#d9b86b]/30'
+// 幅指定を含まない共通の入力スタイル（幅は各所で付与する）
+const fieldBase =
+  'rounded-lg border border-[#2f2f3c] bg-[#0a0a0f] px-3 py-2 text-sm text-[#ebe5db] focus:border-[#d9b86b] focus:outline-none focus:ring-1 focus:ring-[#d9b86b]/30'
+const inputClass = `w-full ${fieldBase}`
 const labelClass = 'mb-1.5 block text-xs font-medium text-[#9a9aa8]'
 
 function initialSpecs(initial?: Tables<'gift_products'>): GiftSpec[] {
@@ -135,8 +137,8 @@ export default function GiftForm({ initial }: { initial?: Tables<'gift_products'
           <div className="space-y-2">
             {specs.map((s, i) => (
               <div key={i} className="flex items-center gap-2">
-                <input className={`${inputClass} w-32 flex-shrink-0`} value={s.label} onChange={(e) => setSpec(i, 'label', e.target.value)} placeholder="ラベル" />
-                <input className={inputClass} value={s.value} onChange={(e) => setSpec(i, 'value', e.target.value)} placeholder="値" />
+                <input className={`${fieldBase} w-32 flex-shrink-0`} value={s.label} onChange={(e) => setSpec(i, 'label', e.target.value)} placeholder="ラベル" />
+                <input className={`${fieldBase} min-w-0 flex-1`} value={s.value} onChange={(e) => setSpec(i, 'value', e.target.value)} placeholder="値" />
                 <button type="button" onClick={() => removeSpec(i)} className="flex-shrink-0 px-2 text-sm text-red-400/80 hover:text-red-400" aria-label="削除">✕</button>
               </div>
             ))}
