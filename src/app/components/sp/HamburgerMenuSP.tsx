@@ -14,6 +14,7 @@ const NAV_ITEMS = [
   // { label: "公式オンラインストア", href: NAV_LINKS.find(l => l.label === "公式オンラインストア")!.href }, // OnlineShop非公開中（公開後に解除）
   { label: "店舗情報",             href: SECTION_LINKS.store },
   { label: "メニュー",             href: NAV_LINKS.find(l => l.label === "メニュー")!.href },
+  { label: "ご進物",               href: SECTION_LINKS.gift },
   { label: "お知らせ",             href: NAV_LINKS.find(l => l.label === "お知らせ")!.href },
   { label: "平壌亭について",       href: NAV_LINKS.find(l => l.label === "平壌亭について")!.href },
 ];

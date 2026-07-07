@@ -3,6 +3,7 @@ export const NAV_LINKS = [
   { label: "お知らせ",           href: "/news" },
   { label: "平壌亭について",     href: "/about" },
   { label: "メニュー",           href: "/menu" },
+  { label: "ご進物",             href: "/gift" },
   { label: "店舗一覧",           href: "/store" },
   { label: "ご予約",             href: "/reserve" },
   // { label: "公式オンラインストア", href: "/online-shop" }, // OnlineShop非公開中（公開後に解除）
@@ -19,6 +20,7 @@ export const HEADER_NAV_LINKS = [
   // { label: "公式オンラインストア", href: "/online-shop" }, // OnlineShop非公開中（公開後に解除）
   { label: "店舗情報",           href: "/store" },
   { label: "メニュー",           href: "/menu" },
+  { label: "ご進物",             href: "/gift" },
   { label: "お知らせ",           href: "/news" },
   { label: "平壌亭について",     href: "/about" },
 ] as const;
@@ -30,6 +32,7 @@ export const SECTION_LINKS = {
   lunch:   "/menu/lunch",
   course:  "/menu/course",
   store:   "/store",
+  gift:    "/gift",
   online:  "/online-shop",
   takeout: "/takeout",
   reserve: "/reserve",
