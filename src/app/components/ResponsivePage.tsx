@@ -68,11 +68,6 @@ export default function ResponsivePage({ topNews, businessMonths, topCourses, li
         <ScaledSection designWidth={DESIGN_SP} height={955}>
           <HeroSectionSP onOpenModal={openModal} onOpenLineModal={openLineModal} />
         </ScaledSection>
-        {hasNews && (
-          <ScaledSection designWidth={DESIGN_SP} height={801}>
-            <NewsSectionSP items={topNews} />
-          </ScaledSection>
-        )}
         <ScaledSection designWidth={DESIGN_SP} height={1688}>
           <KodawariSectionSP />
         </ScaledSection>
@@ -85,6 +80,11 @@ export default function ResponsivePage({ topNews, businessMonths, topCourses, li
         <ScaledSection designWidth={DESIGN_SP} height={2411}>
           <CourseSectionSP courses={topCourses} />
         </ScaledSection>
+        {hasNews && (
+          <ScaledSection designWidth={DESIGN_SP} height={801}>
+            <NewsSectionSP items={topNews} />
+          </ScaledSection>
+        )}
         <ScaledSection designWidth={DESIGN_SP} height={1899}>
           <StoreSectionSP />
         </ScaledSection>
@@ -119,11 +119,6 @@ export default function ResponsivePage({ topNews, businessMonths, topCourses, li
       <ScaledSection designWidth={DESIGN_PC} height={1000}>
         <HeroSection onOpenModal={openModal} lineLinks={lineLinks} />
       </ScaledSection>
-      {hasNews && (
-        <ScaledSection designWidth={DESIGN_PC} height={1000}>
-          <NewsSection items={topNews} />
-        </ScaledSection>
-      )}
       <ScaledSection designWidth={DESIGN_PC} height={1840}>
         <KodawariSection />
       </ScaledSection>
@@ -136,6 +131,11 @@ export default function ResponsivePage({ topNews, businessMonths, topCourses, li
       <ScaledSection designWidth={DESIGN_PC} height={1020}>
         <CourseSection courses={topCourses} />
       </ScaledSection>
+      {hasNews && (
+        <ScaledSection designWidth={DESIGN_PC} height={1000}>
+          <NewsSection items={topNews} />
+        </ScaledSection>
+      )}
       <ScaledSection designWidth={DESIGN_PC} height={1620}>
         <StoreSection />
       </ScaledSection>
