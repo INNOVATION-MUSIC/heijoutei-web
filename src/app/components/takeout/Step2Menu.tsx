@@ -109,7 +109,7 @@ function MenuCard({ item, qty, onSetQty }: { item: TakeoutMenuItem; qty: number;
   return (
     <div style={{ width: 420, minHeight: 200, background: PANEL, display: "flex", overflow: "hidden" }}>
       <div style={{ position: "relative", width: 200, alignSelf: "stretch", minHeight: 200, flexShrink: 0 }}>
-        <Image src={item.img} alt={item.name} fill className="object-cover" sizes="200px" />
+        <Image src={item.img} alt={item.name} fill className="object-cover object-top" sizes="200px" />
       </div>
       <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "22px 24px 18px 28px" }}>
         <p style={{ margin: 0, fontFamily: mincho, fontSize: 24, letterSpacing: "0.04em", color: "#ebe5db", lineHeight: 1.1 }}>{item.name}</p>

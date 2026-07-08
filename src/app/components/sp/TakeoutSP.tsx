@@ -482,7 +482,7 @@ function MenuCardSP({ item, qty, onSetQty }: { item: TakeoutMenuItem; qty: numbe
   return (
     <div style={{ width: "100%", height: 150, background: PANEL, display: "flex", overflow: "hidden" }}>
       <div style={{ position: "relative", width: 130, height: 150, flexShrink: 0 }}>
-        <Image src={item.img} alt={item.name} fill className="object-cover" sizes="130px" />
+        <Image src={item.img} alt={item.name} fill className="object-cover object-top" sizes="130px" />
       </div>
       <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "14px 16px 14px 18px", minWidth: 0 }}>
         <p style={{ margin: 0, fontFamily: mincho, fontSize: 18, letterSpacing: "0.04em", color: "#ebe5db", lineHeight: 1.1 }}>{item.name}</p>
