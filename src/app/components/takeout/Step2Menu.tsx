@@ -83,7 +83,7 @@ export default function Step2Menu(p: Props) {
       {/* メニューグリッド + カート */}
       <div style={{ display: "flex", gap: 40, paddingLeft: 50, paddingRight: 50, paddingTop: 18 }}>
         {/* 左: メニューカード（2列） */}
-        <div style={{ width: 880, display: "flex", flexWrap: "wrap", gap: 40, alignContent: "flex-start" }}>
+        <div style={{ width: 880, display: "flex", flexWrap: "wrap", gap: 40, alignContent: "flex-start", alignItems: "flex-start" }}>
           {items.map((item) => (
             <MenuCard key={item.id} item={item} qty={p.cart[item.id] ?? 0} onSetQty={p.onSetQty} />
           ))}
@@ -106,24 +106,42 @@ export default function Step2Menu(p: Props) {
 
 /* ─────────── メニューカード ─────────── */
 function MenuCard({ item, qty, onSetQty }: { item: TakeoutMenuItem; qty: number; onSetQty: (id: string, qty: number) => void }) {
+  // 説明文がある商品（セット/BBQ 等）は画像を上に、その下に情報を縦積みにする
+  const vertical = !!item.desc?.trim();
+  const info = (
+    <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "22px 24px 18px 28px" }}>
+      <p style={{ margin: 0, fontFamily: mincho, fontSize: 24, letterSpacing: "0.04em", color: "#ebe5db", lineHeight: 1.1 }}>{item.name}</p>
+      {item.desc && (
+        <p style={{ margin: 0, paddingTop: 10, fontFamily: sans, fontSize: 12, color: "rgba(235,229,219,0.55)", lineHeight: "19px", whiteSpace: "pre-line" }}>{item.desc}</p>
+      )}
+      {/* 説明文が長いとスペーサーが 0 になり価格行と詰まるため最小余白を確保 */}
+      <div style={{ flex: 1, minHeight: 18 }} />
+      <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between" }}>
+        <div style={{ display: "flex", alignItems: "baseline", gap: 2 }}>
+          <span style={{ fontFamily: mincho, fontSize: 24, color: "#ebe5db", lineHeight: 1 }}>{item.price.toLocaleString()}</span>
+          <span style={{ fontFamily: mincho, fontSize: 14, color: "#ebe5db" }}>円</span>
+        </div>
+        <QtyStepper qty={qty} onChange={(q) => onSetQty(item.id, q)} />
+      </div>
+    </div>
+  );
+
+  if (vertical) {
+    return (
+      <div style={{ width: 420, background: PANEL, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+        <div style={{ position: "relative", width: "100%", height: 318 }}>
+          <Image src={item.img} alt={item.name} fill className="object-cover" sizes="420px" />
+        </div>
+        {info}
+      </div>
+    );
+  }
   return (
     <div style={{ width: 420, minHeight: 200, background: PANEL, display: "flex", overflow: "hidden" }}>
       <div style={{ position: "relative", width: 200, alignSelf: "stretch", minHeight: 200, flexShrink: 0 }}>
-        <Image src={item.img} alt={item.name} fill className="object-cover object-top" sizes="200px" />
+        <Image src={item.img} alt={item.name} fill className="object-cover" sizes="200px" />
       </div>
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "22px 24px 18px 28px" }}>
-        <p style={{ margin: 0, fontFamily: mincho, fontSize: 24, letterSpacing: "0.04em", color: "#ebe5db", lineHeight: 1.1 }}>{item.name}</p>
-        <p style={{ margin: 0, paddingTop: 10, fontFamily: sans, fontSize: 12, color: "rgba(235,229,219,0.55)", lineHeight: "19px", whiteSpace: "pre-line" }}>{item.desc}</p>
-        {/* 説明文が長いとスペーサーが 0 になり価格行と詰まるため最小余白を確保 */}
-        <div style={{ flex: 1, minHeight: 18 }} />
-        <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between" }}>
-          <div style={{ display: "flex", alignItems: "baseline", gap: 2 }}>
-            <span style={{ fontFamily: mincho, fontSize: 24, color: "#ebe5db", lineHeight: 1 }}>{item.price.toLocaleString()}</span>
-            <span style={{ fontFamily: mincho, fontSize: 14, color: "#ebe5db" }}>円</span>
-          </div>
-          <QtyStepper qty={qty} onChange={(q) => onSetQty(item.id, q)} />
-        </div>
-      </div>
+      {info}
     </div>
   );
 }

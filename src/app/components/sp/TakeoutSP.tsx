@@ -479,23 +479,41 @@ export function Step2MenuSP(p: {
 
 /* ─────────── メニューカード（SP・350×150） ─────────── */
 function MenuCardSP({ item, qty, onSetQty }: { item: TakeoutMenuItem; qty: number; onSetQty: (id: string, qty: number) => void }) {
+  // 説明文がある商品は画像を上に、その下に情報を縦積みにする
+  const vertical = !!item.desc?.trim();
+  const info = (
+    <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "14px 16px 14px 18px", minWidth: 0 }}>
+      <p style={{ margin: 0, fontFamily: mincho, fontSize: 18, letterSpacing: "0.04em", color: "#ebe5db", lineHeight: 1.1 }}>{item.name}</p>
+      {item.desc && (
+        <p style={{ margin: 0, paddingTop: 6, fontFamily: sans, fontSize: 11, color: "rgba(235,229,219,0.55)", lineHeight: "17px", whiteSpace: "pre-line" }}>{item.desc}</p>
+      )}
+      <div style={{ flex: 1, minHeight: 12 }} />
+      <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between" }}>
+        <div style={{ display: "flex", alignItems: "baseline", gap: 2 }}>
+          <span style={{ fontFamily: mincho, fontSize: 20, color: "#ebe5db", lineHeight: 1 }}>{item.price.toLocaleString()}</span>
+          <span style={{ fontFamily: mincho, fontSize: 12, color: "#ebe5db" }}>円</span>
+        </div>
+        <QtyStepperSP qty={qty} onChange={(q) => onSetQty(item.id, q)} />
+      </div>
+    </div>
+  );
+
+  if (vertical) {
+    return (
+      <div style={{ width: "100%", background: PANEL, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+        <div style={{ position: "relative", width: "100%", height: 260 }}>
+          <Image src={item.img} alt={item.name} fill className="object-cover" sizes="350px" />
+        </div>
+        {info}
+      </div>
+    );
+  }
   return (
     <div style={{ width: "100%", height: 150, background: PANEL, display: "flex", overflow: "hidden" }}>
       <div style={{ position: "relative", width: 130, height: 150, flexShrink: 0 }}>
-        <Image src={item.img} alt={item.name} fill className="object-cover object-top" sizes="130px" />
+        <Image src={item.img} alt={item.name} fill className="object-cover" sizes="130px" />
       </div>
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "14px 16px 14px 18px", minWidth: 0 }}>
-        <p style={{ margin: 0, fontFamily: mincho, fontSize: 18, letterSpacing: "0.04em", color: "#ebe5db", lineHeight: 1.1 }}>{item.name}</p>
-        <p style={{ margin: 0, paddingTop: 6, fontFamily: sans, fontSize: 11, color: "rgba(235,229,219,0.55)", lineHeight: "17px", whiteSpace: "pre-line" }}>{item.desc}</p>
-        <div style={{ flex: 1 }} />
-        <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between" }}>
-          <div style={{ display: "flex", alignItems: "baseline", gap: 2 }}>
-            <span style={{ fontFamily: mincho, fontSize: 20, color: "#ebe5db", lineHeight: 1 }}>{item.price.toLocaleString()}</span>
-            <span style={{ fontFamily: mincho, fontSize: 12, color: "#ebe5db" }}>円</span>
-          </div>
-          <QtyStepperSP qty={qty} onChange={(q) => onSetQty(item.id, q)} />
-        </div>
-      </div>
+      {info}
     </div>
   );
 }
