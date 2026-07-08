@@ -54,10 +54,16 @@ const CARD_STEP = CARD_WIDTH + GAP;
 
 const easeInOut = (t: number) => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
 
+const VIEWPORT_WIDTH = 1370; // カード表示枠の幅（下のコンテナ width と一致）
+
 export default function NewsSection({ items }: { items?: NewsItem[] }) {
   const NEWS = items && items.length > 0 ? items : NEWS_DATA;
   // ループ幅は件数から算出（DB 連携で件数が変わっても崩れないように）
   const CARD_SET_WIDTH = CARD_STEP * NEWS.length;
+  // カードが表示枠に収まる件数のときは無限ループ（2セット複製）しない。
+  // 複製すると同じカードが並んで「ダブって」見えるため。
+  const contentWidth = NEWS.length * CARD_WIDTH + Math.max(0, NEWS.length - 1) * GAP;
+  const loop = contentWidth > VIEWPORT_WIDTH;
   const trackRef = useRef<HTMLDivElement>(null);
   const posRef = useRef(0);
   const animating = useRef(false);
@@ -85,7 +91,7 @@ export default function NewsSection({ items }: { items?: NewsItem[] }) {
   };
 
   const handleArrow = (dir: "left" | "right") => {
-    if (animating.current) return;
+    if (!loop || animating.current) return;
     const currentCard = Math.floor(posRef.current / CARD_STEP);
     const targetCard = dir === "right" ? currentCard - 1 : currentCard + 1;
     const to = targetCard * CARD_STEP;
@@ -128,16 +134,18 @@ export default function NewsSection({ items }: { items?: NewsItem[] }) {
         <OutlineButton jp="お知らせ一覧" href={SECTION_LINKS.news} width={162} padL={32} />
       </div>
 
-      {/* 左矢印（店舗情報と共通の細身シェブロン） */}
-      <NewsArrow dir="left" onClick={() => handleArrow("left")} style={{ left: 76, top: 332 }} />
-
-      {/* 右矢印（店舗情報と共通の細身シェブロン） */}
-      <NewsArrow dir="right" onClick={() => handleArrow("right")} style={{ left: 1343, top: 332 }} />
+      {/* 左右矢印（件数が表示枠を超えてループする場合のみ表示） */}
+      {loop && (
+        <>
+          <NewsArrow dir="left" onClick={() => handleArrow("left")} style={{ left: 76, top: 332 }} />
+          <NewsArrow dir="right" onClick={() => handleArrow("right")} style={{ left: 1343, top: 332 }} />
+        </>
+      )}
 
       {/* ニュースカード */}
       <div className="absolute" style={{ top: 411, left: 70, width: 1370, overflow: "hidden" }}>
         <div ref={trackRef} style={{ display: "flex", gap: GAP, width: "max-content" }}>
-          {[...NEWS, ...NEWS].map((item, index) => (
+          {(loop ? [...NEWS, ...NEWS] : NEWS).map((item, index) => (
             <a key={index} href={item.id ? `/news/${item.id}` : SECTION_LINKS.news} style={{ width: CARD_WIDTH, flexShrink: 0, display: "flex", flexDirection: "column", gap: 21, textDecoration: "none" }}>
               <div style={{ position: "relative", width: CARD_WIDTH, height: 340, overflow: "hidden", background: "#4d2914" }}>
                 <Image src={item.img} alt={item.title} fill className="object-cover" sizes="340px" />

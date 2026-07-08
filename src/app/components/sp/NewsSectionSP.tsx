@@ -21,6 +21,10 @@ export default function NewsSectionSP({ items }: { items?: NewsItem[] }) {
   const NEWS = items && items.length > 0 ? items : NEWS_DATA;
   // ループ幅は件数から算出（DB 連携で件数が変わっても崩れないように）
   const CARD_SET_WIDTH = CARD_STEP * NEWS.length;
+  // カードが表示枠（390 - 左padding40 = 350）に収まる件数のときはループ複製しない。
+  // 複製すると同じカードが見切れて「ダブって」見えるため。
+  const contentWidth = NEWS.length * CARD_WIDTH + Math.max(0, NEWS.length - 1) * GAP;
+  const loop = contentWidth > 350;
   const trackRef = useRef<HTMLDivElement>(null);
   const posRef = useRef(0);
   const animating = useRef(false);
@@ -48,7 +52,7 @@ export default function NewsSectionSP({ items }: { items?: NewsItem[] }) {
   };
 
   const handleArrow = (dir: "left" | "right") => {
-    if (animating.current) return;
+    if (!loop || animating.current) return;
     const currentCard = Math.round(posRef.current / CARD_STEP);
     const targetCard = dir === "right" ? currentCard - 1 : currentCard + 1;
     const to = targetCard * CARD_STEP;
@@ -165,27 +169,32 @@ export default function NewsSectionSP({ items }: { items?: NewsItem[] }) {
           paddingLeft: 40,
           paddingRight: 40,
           flexShrink: 0,
+          height: 20, // 矢印非表示時もレイアウト高さを保つ
         }}
       >
-        {/* 店舗情報と共通の細身シェブロン矢印 */}
-        <button
-          aria-label="前へ"
-          onClick={() => handleArrow("left")}
-          style={{ background: "none", border: "none", padding: 0, cursor: "pointer", display: "block", lineHeight: 0 }}
-        >
-          <svg width="11" height="20" viewBox="0 0 11 20" fill="none" aria-hidden style={{ display: "block" }}>
-            <path d="M10 1 L1 10 L10 19" stroke="rgba(235,229,219,0.7)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </button>
-        <button
-          aria-label="次へ"
-          onClick={() => handleArrow("right")}
-          style={{ background: "none", border: "none", padding: 0, cursor: "pointer", display: "block", lineHeight: 0 }}
-        >
-          <svg width="11" height="20" viewBox="0 0 11 20" fill="none" aria-hidden style={{ display: "block" }}>
-            <path d="M1 1 L10 10 L1 19" stroke="rgba(235,229,219,0.7)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </button>
+        {/* 店舗情報と共通の細身シェブロン矢印（ループ時のみ表示） */}
+        {loop && (
+          <>
+            <button
+              aria-label="前へ"
+              onClick={() => handleArrow("left")}
+              style={{ background: "none", border: "none", padding: 0, cursor: "pointer", display: "block", lineHeight: 0 }}
+            >
+              <svg width="11" height="20" viewBox="0 0 11 20" fill="none" aria-hidden style={{ display: "block" }}>
+                <path d="M10 1 L1 10 L10 19" stroke="rgba(235,229,219,0.7)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+            <button
+              aria-label="次へ"
+              onClick={() => handleArrow("right")}
+              style={{ background: "none", border: "none", padding: 0, cursor: "pointer", display: "block", lineHeight: 0 }}
+            >
+              <svg width="11" height="20" viewBox="0 0 11 20" fill="none" aria-hidden style={{ display: "block" }}>
+                <path d="M1 1 L10 10 L1 19" stroke="rgba(235,229,219,0.7)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+          </>
+        )}
       </div>
 
       {/* 矢印底〜カード上 */}
@@ -202,7 +211,7 @@ export default function NewsSectionSP({ items }: { items?: NewsItem[] }) {
             width: "max-content",
           }}
         >
-          {[...NEWS, ...NEWS].map((item, i) => (
+          {(loop ? [...NEWS, ...NEWS] : NEWS).map((item, i) => (
             <a key={i} href={item.id ? `/news/${item.id}` : SECTION_LINKS.news} style={{ flexShrink: 0, width: CARD_WIDTH, display: "block", textDecoration: "none" }}>
               <div
                 style={{
