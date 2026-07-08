@@ -100,14 +100,20 @@ export default function NewsListSection({ onOpenModal, height, visibleCount, has
         </div>
       </div>
 
-      {/* 3列グリッド */}
-      <div style={{ display: "flex", flexWrap: "wrap", rowGap: 66, columnGap: 60, paddingLeft: 150, paddingRight: 150, paddingTop: 211 }}>
-        {list.slice(0, visibleCount).map((item, index) => (
-          // key に index を使うことで、追加表示分だけが新規マウントされ、その時だけアニメーションする。
-          // delay はそのバッチ内での出現順（index - animateFrom）に応じて 1 枚ずつずらす。
-          <NewsCard key={index} item={item} delay={Math.max(0, index - animateFrom) * 110} />
-        ))}
-      </div>
+      {/* 3列グリッド（お知らせが無いときはメッセージ表示） */}
+      {list.length === 0 ? (
+        <div style={{ display: "flex", justifyContent: "center", paddingTop: 211 }}>
+          <p style={{ fontFamily: mincho, fontSize: 18, letterSpacing: "0.1em", color: "#99948c", margin: 0 }}>現在お知らせはありません。</p>
+        </div>
+      ) : (
+        <div style={{ display: "flex", flexWrap: "wrap", rowGap: 66, columnGap: 60, paddingLeft: 150, paddingRight: 150, paddingTop: 211 }}>
+          {list.slice(0, visibleCount).map((item, index) => (
+            // key に index を使うことで、追加表示分だけが新規マウントされ、その時だけアニメーションする。
+            // delay はそのバッチ内での出現順（index - animateFrom）に応じて 1 枚ずつずらす。
+            <NewsCard key={index} item={item} delay={Math.max(0, index - animateFrom) * 110} />
+          ))}
+        </div>
+      )}
 
       {/* もっと見るボタン（未表示の項目が残っている場合のみ） */}
       {hasMore && (

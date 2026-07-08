@@ -71,6 +71,7 @@ export default function NewsListClient({ items }: { items?: NewsListItem[] }) {
 
   const total = list.length;
   const hasMore = visibleCount < total;
+  const shownCount = Math.min(visibleCount, total);
   const showMore = () =>
     setVisibleCount((v) => {
       setAnimateFrom(v); // 今回新たに表示する分だけアニメーション
@@ -82,7 +83,8 @@ export default function NewsListClient({ items }: { items?: NewsListItem[] }) {
   }
 
   if (isMobile) {
-    const height = spSectionHeight(visibleCount, hasMore);
+    // お知らせ 0 件のときは見出し＋メッセージだけの高さに抑える
+    const height = total === 0 ? SP_GRID_TOP + 220 : spSectionHeight(shownCount, hasMore);
     return (
       <>
         <ScaledSection designWidth={DESIGN_SP} height={height}>
@@ -106,7 +108,7 @@ export default function NewsListClient({ items }: { items?: NewsListItem[] }) {
     );
   }
 
-  const height = pcSectionHeight(visibleCount, hasMore);
+  const height = total === 0 ? GRID_TOP + 220 : pcSectionHeight(shownCount, hasMore);
   return (
     <>
       <ScaledSection designWidth={DESIGN_PC} height={height}>

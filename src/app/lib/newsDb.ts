@@ -56,7 +56,12 @@ function toItem(row: NewsRow): NewsListItem {
   };
 }
 
-/** 一覧（公開済み・新しい順）。DB が空/失敗時は静的データにフォールバックして安全に動作。 */
+/**
+ * 一覧（公開済み・新しい順）。
+ * 静的フォールバックは「DB 障害時（error/例外）」のみ。公開記事が 0 件という
+ * 正当な結果はそのまま空配列を返す（＝全記事を下書きにしたら一覧も空になる）。
+ * これをしないと下書き化した記事が静的データとして復活してしまう。
+ */
 export async function fetchNewsList(): Promise<NewsListItem[]> {
   try {
     const supabase = createStaticClient();
@@ -66,26 +71,30 @@ export async function fetchNewsList(): Promise<NewsListItem[]> {
       .eq("is_published", true)
       .lte("published_at", new Date().toISOString())
       .order("created_at", { ascending: false });
-    if (error || !data || data.length === 0) return NEWS_LIST_DATA;
-    return (data as NewsRow[]).map(toItem);
+    if (error) return NEWS_LIST_DATA; // DB 障害時のみフォールバック
+    return (data as NewsRow[] | null ?? []).map(toItem);
   } catch {
     return NEWS_LIST_DATA;
   }
 }
 
-/** 詳細（slug=従来id）。未存在は undefined。 */
+/**
+ * 詳細（slug=従来id）。未公開（下書き・予約公開の未到達）や未存在は undefined を返し、
+ * 呼び出し側で notFound() させる。静的フォールバックは DB 障害時（error/例外）のみ。
+ * 以前は「該当行なし」でも静的データを返していたため、下書き記事が直リンクで表示できていた。
+ */
 export async function fetchNewsArticle(id: string): Promise<NewsListItem | undefined> {
   try {
     const supabase = createStaticClient();
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("news")
       .select("slug, title, body, thumbnail_url, published_at, news_tags(label, color, sort_order)")
       .eq("slug", id)
       .eq("is_published", true)
       .lte("published_at", new Date().toISOString()) // 予約公開（未来日時）は直リンクでも非公開
       .maybeSingle();
-    if (!data) return NEWS_LIST_DATA.find((n) => n.id === id);
-    return toItem(data as NewsRow);
+    if (error) return NEWS_LIST_DATA.find((n) => n.id === id); // DB 障害時のみフォールバック
+    return data ? toItem(data as NewsRow) : undefined; // 未公開・未存在は notFound へ
   } catch {
     return NEWS_LIST_DATA.find((n) => n.id === id);
   }
@@ -94,8 +103,9 @@ export async function fetchNewsArticle(id: string): Promise<NewsListItem | undef
 /** トップページの News カルーセル用（最新数件・{img,date,title,tags} 形）。DB空時は静的にフォールバック。 */
 export async function fetchTopNews(limit = 5): Promise<NewsItem[]> {
   try {
+    // fetchNewsList は DB 障害時のみ静的にフォールバックし、公開 0 件なら空を返す。
+    // ここで空→静的復活はさせない（下書き記事をトップに出さないため）。
     const list = await fetchNewsList();
-    if (!list || list.length === 0) return NEWS_DATA;
     return list.slice(0, limit).map(({ id, img, date, title, tags }) => ({ id, img, date, title, tags }));
   } catch {
     return NEWS_DATA;
@@ -106,13 +116,14 @@ export async function fetchTopNews(limit = 5): Promise<NewsItem[]> {
 export async function fetchNewsParams(): Promise<{ id: string }[]> {
   try {
     const supabase = createStaticClient();
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("news")
       .select("slug")
       .eq("is_published", true)
       .lte("published_at", new Date().toISOString()); // 予約公開は到達後に ISR で静的化される
-    if (!data || data.length === 0) return NEWS_LIST_DATA.map((n) => ({ id: n.id }));
-    return data.map((r) => ({ id: r.slug }));
+    if (error) return NEWS_LIST_DATA.map((n) => ({ id: n.id })); // DB 障害時のみ
+    // 公開 0 件なら空。dynamicParams(既定 true)+revalidate で公開後に随時生成される。
+    return (data ?? []).map((r) => ({ id: r.slug }));
   } catch {
     return NEWS_LIST_DATA.map((n) => ({ id: n.id }));
   }

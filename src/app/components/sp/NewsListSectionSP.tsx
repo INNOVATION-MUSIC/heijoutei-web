@@ -93,13 +93,19 @@ export default function NewsListSectionSP({ height, visibleCount, hasMore, onSho
         <p style={{ paddingTop: 40, fontFamily: display, fontSize: 48, letterSpacing: "-1px", color: "#ebe5db", lineHeight: "normal", margin: 0 }}>News</p>
       </div>
 
-      {/* カード一覧（1列・gap32） */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 32, paddingLeft: 20, paddingRight: 20, paddingTop: 63 }}>
-        {items.slice(0, visibleCount).map((item, index) => (
-          // key に index を使うことで追加表示分だけ新規マウントされ、その時だけアニメーションする。
-          <NewsCardSP key={index} item={item} delay={Math.max(0, index - animateFrom) * 110} />
-        ))}
-      </div>
+      {/* カード一覧（1列・gap32・お知らせが無いときはメッセージ表示） */}
+      {items.length === 0 ? (
+        <div style={{ display: "flex", justifyContent: "center", paddingLeft: 20, paddingRight: 20, paddingTop: 63 }}>
+          <p style={{ fontFamily: mincho, fontSize: 15, letterSpacing: "0.08em", color: "#99948c", margin: 0 }}>現在お知らせはありません。</p>
+        </div>
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", gap: 32, paddingLeft: 20, paddingRight: 20, paddingTop: 63 }}>
+          {items.slice(0, visibleCount).map((item, index) => (
+            // key に index を使うことで追加表示分だけ新規マウントされ、その時だけアニメーションする。
+            <NewsCardSP key={index} item={item} delay={Math.max(0, index - animateFrom) * 110} />
+          ))}
+        </div>
+      )}
 
       {/* もっと見るボタン（未表示の項目が残っている場合のみ） */}
       {hasMore && (

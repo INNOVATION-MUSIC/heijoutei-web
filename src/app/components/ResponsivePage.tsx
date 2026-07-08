@@ -54,6 +54,10 @@ export default function ResponsivePage({ topNews, businessMonths, topCourses, li
   const openMenu = () => setMenuOpen(true);
   const closeMenu = () => setMenuOpen(false);
 
+  // 公開済みお知らせが 0 件のときはトップの News セクションを出さない
+  // （静的サンプルの復活防止＋空カルーセルのループ計算破綻を回避）。
+  const hasNews = !!topNews && topNews.length > 0;
+
   if (isMobile === null) {
     return <div style={{ minHeight: "100vh", background: "#0a0a0a" }} />;
   }
@@ -64,9 +68,11 @@ export default function ResponsivePage({ topNews, businessMonths, topCourses, li
         <ScaledSection designWidth={DESIGN_SP} height={955}>
           <HeroSectionSP onOpenModal={openModal} onOpenLineModal={openLineModal} />
         </ScaledSection>
-        <ScaledSection designWidth={DESIGN_SP} height={801}>
-          <NewsSectionSP items={topNews} />
-        </ScaledSection>
+        {hasNews && (
+          <ScaledSection designWidth={DESIGN_SP} height={801}>
+            <NewsSectionSP items={topNews} />
+          </ScaledSection>
+        )}
         <ScaledSection designWidth={DESIGN_SP} height={1688}>
           <KodawariSectionSP />
         </ScaledSection>
@@ -113,9 +119,11 @@ export default function ResponsivePage({ topNews, businessMonths, topCourses, li
       <ScaledSection designWidth={DESIGN_PC} height={1000}>
         <HeroSection onOpenModal={openModal} lineLinks={lineLinks} />
       </ScaledSection>
-      <ScaledSection designWidth={DESIGN_PC} height={1000}>
-        <NewsSection items={topNews} />
-      </ScaledSection>
+      {hasNews && (
+        <ScaledSection designWidth={DESIGN_PC} height={1000}>
+          <NewsSection items={topNews} />
+        </ScaledSection>
+      )}
       <ScaledSection designWidth={DESIGN_PC} height={1840}>
         <KodawariSection />
       </ScaledSection>
