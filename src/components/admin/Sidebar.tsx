@@ -189,6 +189,7 @@ export default function AdminSidebar({
         { href: '/admin/lunch', label: 'ランチ', icon: 'lunch' },
         { href: '/admin/courses', label: 'コース', icon: 'course' },
         { href: '/admin/gifts', label: 'ギフト', icon: 'gift' },
+        { href: '/admin/gift-shipping', label: '送料金表', icon: 'package' },
         { href: '/admin/business-calendar', label: '営業カレンダー', icon: 'calendar' },
       ],
     },

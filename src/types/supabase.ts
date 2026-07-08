@@ -235,6 +235,36 @@ export type Database = {
         }
         Relationships: []
       }
+      gift_shipping_areas: {
+        Row: {
+          created_at: string | null
+          fee: string | null
+          id: string
+          prefectures: string[]
+          region: string
+          sort_order: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          fee?: string | null
+          id?: string
+          prefectures?: string[]
+          region: string
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          fee?: string | null
+          id?: string
+          prefectures?: string[]
+          region?: string
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       media: {
         Row: {
           created_at: string | null

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useIsMobile } from "@/app/lib/useIsMobile";
-import { GIFT_PRODUCTS, type GiftProduct } from "@/app/lib/giftData";
+import { GIFT_PRODUCTS, GIFT_SHIPPING, type GiftProduct, type GiftShippingArea } from "@/app/lib/giftData";
 import ScaledSection from "./ScaledSection";
 import ReserveModal from "./ReserveModal";
 import StickyButton from "./StickyButton";
@@ -32,6 +32,13 @@ function pcMainHeight(products: GiftProduct[]): number {
   return 801 + cards + gaps + 133;
 }
 
+// PC 送料金表セクションの高さを地域数から算出する。
+// 上余白143＋タイトル99＋段数×バンド292＋下余白160。6件2段で 986（≒Figma 988）。
+function pcShippingHeight(areaCount: number): number {
+  const rows = Math.max(1, Math.ceil(areaCount / 6));
+  return 143 + 99 + rows * 292 + 160;
+}
+
 /**
  * /gift ギフト（ご進物）ページのクライアントラッパー。
  * useIsMobile で PC（1440）/ SP（390）を切り替える。データは lib/giftData.ts（PC/SP 共通の正本）。
@@ -39,7 +46,7 @@ function pcMainHeight(products: GiftProduct[]): number {
  * 予約モーダル・ハンバーガーは ScaledSection 外で一元管理。
  * products はサーバー（giftDb）から取得したギフト商品。未指定時は各セクションが静的データにフォールバック。
  */
-export default function GiftClient({ products }: { products?: GiftProduct[] }) {
+export default function GiftClient({ products, shipping }: { products?: GiftProduct[]; shipping?: GiftShippingArea[] }) {
   const isMobile = useIsMobile();
   const [modalOpen, setModalOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -59,7 +66,7 @@ export default function GiftClient({ products }: { products?: GiftProduct[] }) {
     return (
       <>
         <ScaledSection designWidth={DESIGN_SP} height={height}>
-          <GiftSectionSP products={products} onMeasured={(h) => setMeasured((p) => (p === h ? p : h))} />
+          <GiftSectionSP products={products} shipping={shipping} onMeasured={(h) => setMeasured((p) => (p === h ? p : h))} />
         </ScaledSection>
         <ScaledSection designWidth={DESIGN_SP} height={973}>
           <FooterSP onOpenModal={openModal} />
@@ -73,6 +80,7 @@ export default function GiftClient({ products }: { products?: GiftProduct[] }) {
   }
 
   const mainHeight = pcMainHeight(products ?? GIFT_PRODUCTS);
+  const shippingHeight = pcShippingHeight((shipping ?? GIFT_SHIPPING).length);
   return (
     <>
       <ScaledSection designWidth={DESIGN_PC} height={mainHeight}>
@@ -81,8 +89,8 @@ export default function GiftClient({ products }: { products?: GiftProduct[] }) {
       <ScaledSection designWidth={DESIGN_PC} height={332}>
         <GiftCtaSection />
       </ScaledSection>
-      <ScaledSection designWidth={DESIGN_PC} height={988}>
-        <GiftShippingSection />
+      <ScaledSection designWidth={DESIGN_PC} height={shippingHeight}>
+        <GiftShippingSection areas={shipping} height={shippingHeight} />
       </ScaledSection>
       <ScaledSection designWidth={DESIGN_PC} height={600}>
         <Footer onOpenModal={openModal} />

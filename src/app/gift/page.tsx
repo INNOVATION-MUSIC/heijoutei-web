@@ -1,5 +1,6 @@
 import GiftClient from "@/app/components/GiftClient";
 import { fetchGiftProducts } from "@/app/lib/giftDb";
+import { fetchGiftShipping } from "@/app/lib/giftShippingDb";
 import type { Metadata } from "next";
 
 export const revalidate = 60;
@@ -12,6 +13,6 @@ export const metadata: Metadata = {
 };
 
 export default async function GiftPage() {
-  const products = await fetchGiftProducts();
-  return <GiftClient products={products} />;
+  const [products, shipping] = await Promise.all([fetchGiftProducts(), fetchGiftShipping()]);
+  return <GiftClient products={products} shipping={shipping} />;
 }

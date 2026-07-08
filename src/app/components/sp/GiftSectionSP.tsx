@@ -83,10 +83,10 @@ function GiftCardSP({ p }: { p: GiftProduct }) {
   );
 }
 
-/** SP 送料金表の 1 地域カラム。都道府県エリアは flex:1 で段内の最大列に高さを揃える。 */
+/** SP 送料金表の 1 地域カラム。列幅は 6 分割固定・都道府県エリアは flex:1 で段内の最大列に高さを揃える。 */
 function ShippingColumnSP({ area, last }: { area: GiftShippingArea; last: boolean }) {
   return (
-    <div style={{ flex: 1, display: "flex", flexDirection: "column", borderRight: last ? "none" : "1px solid #0a0a0a" }}>
+    <div style={{ flexBasis: `${100 / 6}%`, flexGrow: 0, flexShrink: 0, display: "flex", flexDirection: "column", borderRight: last ? "none" : "1px solid #0a0a0a" }}>
       <div style={{ height: 34, background: "rgba(217,184,107,0.6)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: mincho, fontWeight: 600, fontSize: 13, color: "#1a1205" }}>
         {area.region}
       </div>
@@ -103,10 +103,15 @@ function ShippingColumnSP({ area, last }: { area: GiftShippingArea; last: boolea
   );
 }
 
-/** SP 送料金表（390幅・6列×2段）。 */
-function ShippingTableSP() {
-  const row1 = GIFT_SHIPPING.slice(0, 6);
-  const row2 = GIFT_SHIPPING.slice(6, 12);
+function chunk<T>(arr: T[], size: number): T[][] {
+  const out: T[][] = [];
+  for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size));
+  return out;
+}
+
+/** SP 送料金表（390幅・6列×N段）。 */
+function ShippingTableSP({ areas }: { areas: GiftShippingArea[] }) {
+  const rows = chunk(areas, 6);
   return (
     <div style={{ width: 390 }}>
       {/* タイトル */}
@@ -114,16 +119,13 @@ function ShippingTableSP() {
         <span style={{ fontFamily: mincho, fontWeight: 600, fontSize: 18, letterSpacing: "3px", color: "#ebe5db" }}>【送料金表】</span>
         <span style={{ position: "absolute", right: 8, bottom: 6, fontFamily: mincho, fontSize: 9, letterSpacing: "0.5px", color: "#ebe5db" }}>※表示の金額は税込価格です</span>
       </div>
-      <div style={{ display: "flex", alignItems: "stretch" }}>
-        {row1.map((a, i) => (
-          <ShippingColumnSP key={a.region} area={a} last={i === row1.length - 1} />
-        ))}
-      </div>
-      <div style={{ display: "flex", alignItems: "stretch" }}>
-        {row2.map((a, i) => (
-          <ShippingColumnSP key={a.region} area={a} last={i === row2.length - 1} />
-        ))}
-      </div>
+      {rows.map((row, ri) => (
+        <div key={ri} style={{ display: "flex", alignItems: "stretch" }}>
+          {row.map((a, i) => (
+            <ShippingColumnSP key={`${a.region}-${i}`} area={a} last={i === row.length - 1} />
+          ))}
+        </div>
+      ))}
     </div>
   );
 }
@@ -137,11 +139,14 @@ function ShippingTableSP() {
 export default function GiftSectionSP({
   onMeasured,
   products,
+  shipping,
 }: {
   onMeasured: (h: number) => void;
   products?: GiftProduct[];
+  shipping?: GiftShippingArea[];
 }) {
   const list = products ?? GIFT_PRODUCTS;
+  const shippingList = shipping ?? GIFT_SHIPPING;
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -195,7 +200,7 @@ export default function GiftSectionSP({
 
       {/* 送料金表 */}
       <div style={{ marginTop: 46, marginBottom: 145, flexShrink: 0 }}>
-        <ShippingTableSP />
+        <ShippingTableSP areas={shippingList} />
       </div>
     </div>
   );
