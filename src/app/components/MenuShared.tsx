@@ -114,7 +114,12 @@ export function ItemCard({ item, priceAlign = "right", imageWidth = 200, height 
         </div>
       )}
       <div style={{ flex: 1, display: "flex", flexDirection: "column", paddingLeft: 28, paddingRight: 30, paddingTop: 22, paddingBottom: 24 }}>
-        <span style={{ fontFamily: mincho, fontSize: nameSize, fontWeight: 600, letterSpacing: "2px", color: "#fff", lineHeight: 1.3, ...clampStyle }}>{item.name}</span>
+        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+          <span style={{ fontFamily: mincho, fontSize: nameSize, fontWeight: 600, letterSpacing: "2px", color: "#fff", lineHeight: 1.3, ...clampStyle }}>{item.name}</span>
+          {item.desc && (
+            <span style={{ fontFamily: sans, fontSize: 12, letterSpacing: "0.02em", color: "#99948c", lineHeight: 1.6, display: "-webkit-box", WebkitBoxOrient: "vertical", WebkitLineClamp: 3, overflow: "hidden" }}>{item.desc}</span>
+          )}
+        </div>
         <div style={{ flex: 1 }} />
         <div style={{ display: "flex", alignItems: "baseline", justifyContent: priceAlign === "right" ? "flex-end" : "flex-start", gap: 6 }}>
           <span style={{ fontFamily: mincho, fontSize: 20, fontWeight: 600, letterSpacing: "2px", color: "#ebe5db" }}>{item.price.toLocaleString()}</span>

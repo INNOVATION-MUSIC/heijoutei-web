@@ -50,6 +50,7 @@ export default function MenuItemsEditor({
             <div className="space-y-3">
               <input className={inputClass} value={it.name} onChange={(e) => update(idx, { name: e.target.value })} placeholder="品名 *" />
               <input className={inputClass} value={it.price_label ?? ''} onChange={(e) => update(idx, { price_label: e.target.value })} placeholder="価格表示（例: 1,200円 / 時価）" />
+              <input className={inputClass} value={it.description ?? ''} onChange={(e) => update(idx, { description: e.target.value })} placeholder="注意書き（任意・例: 内容は日によって変わります）" />
               {lunchCategories && (
                 <select
                   className={inputClass}

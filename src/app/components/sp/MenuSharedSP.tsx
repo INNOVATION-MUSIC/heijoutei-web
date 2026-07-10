@@ -144,7 +144,12 @@ export function ItemCardSP({ item, imageWidth = 150, imageHeight = 150, nameClam
         </div>
       )}
       <div style={{ flex: 1, display: "flex", flexDirection: "column", paddingLeft: 19, paddingRight: 12, paddingTop: 14, paddingBottom: 14 }}>
-        <span style={{ fontFamily: mincho, fontSize: 18, fontWeight: 600, letterSpacing: "1px", color: "#fff", lineHeight: 1.3, ...clampStyle }}>{item.name}</span>
+        <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+          <span style={{ fontFamily: mincho, fontSize: 18, fontWeight: 600, letterSpacing: "1px", color: "#fff", lineHeight: 1.3, ...clampStyle }}>{item.name}</span>
+          {item.desc && (
+            <span style={{ fontFamily: sans, fontSize: 11, letterSpacing: "0.02em", color: "#99948c", lineHeight: 1.6, display: "-webkit-box", WebkitBoxOrient: "vertical", WebkitLineClamp: 3, overflow: "hidden" }}>{item.desc}</span>
+          )}
+        </div>
         <div style={{ flex: 1 }} />
         <div style={{ display: "flex", alignItems: "baseline", justifyContent: "flex-end", gap: 4 }}>
           <span style={{ fontFamily: mincho, fontSize: 20, fontWeight: 600, letterSpacing: "1px", color: "#ebe5db" }}>{item.price.toLocaleString()}</span>
