@@ -122,6 +122,8 @@ export default function MenuCategorySection({
   const cats = categories ?? MENU_CATEGORIES;
   const [storeId, setStore] = useStoreParam(stores);
   const defaultStore = (stores && stores.length > 0 ? stores[0].id : MENU_STORES[0].id);
+  // 対象店舗が指定されたカテゴリは、その店舗タブでのみ表示（未指定=全店）
+  const visibleCats = cats.filter((c) => !c.storeSlugs || c.storeSlugs.includes(storeId));
 
   const contentRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -142,7 +144,7 @@ export default function MenuCategorySection({
 
         {/* カテゴリカードグリッド（3列・gap40・カテゴリ数で行数可変） */}
         <div style={{ display: "flex", flexWrap: "wrap", columnGap: 40, rowGap: 40, paddingLeft: 50, paddingRight: 50, paddingTop: 62 }}>
-          {cats.map((c) => (
+          {visibleCats.map((c) => (
             <CategoryCard key={c.slug} category={c} storeId={storeId} defaultStore={defaultStore} />
           ))}
         </div>

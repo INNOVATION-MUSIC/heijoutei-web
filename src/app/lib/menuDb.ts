@@ -18,6 +18,7 @@ type CategoryRow = {
   name: string;
   card_image_url: string | null;
   sort_order: number | null;
+  store_ids: string[] | null;
   store_menus: StoreMenuRow[];
 };
 
@@ -34,9 +35,9 @@ function sortItems(items: MenuItemRow[]): MenuItem[] {
 }
 
 const CAT_SELECT =
-  "slug, name, card_image_url, sort_order, store_menus(is_active, stores(slug), menu_items(name, description, image_url, price_label, sort_order))";
+  "slug, name, card_image_url, sort_order, store_ids, store_menus(is_active, stores(slug), menu_items(name, description, image_url, price_label, sort_order))";
 
-function toCategory(r: CategoryRow): MenuCategory {
+function toCategory(r: CategoryRow, storeSlugById: Record<string, string>): MenuCategory {
   const itemsByStore: Record<string, MenuItem[]> = {};
   for (const sm of r.store_menus ?? []) {
     if (sm.is_active === false) continue; // 店舗ごとに非公開なメニューは除外
@@ -46,6 +47,10 @@ function toCategory(r: CategoryRow): MenuCategory {
   }
   // items（既定フォールバック）は亀岡店、無ければ最初の店舗
   const items = itemsByStore["kameoka"] ?? Object.values(itemsByStore)[0] ?? [];
+  // 対象店舗（store_ids: stores.id[）を slug に解決。空/未指定は全店表示（undefined のまま）。
+  const storeSlugs = (r.store_ids ?? [])
+    .map((id) => storeSlugById[id])
+    .filter((s): s is string => !!s);
   return {
     slug: r.slug,
     name: r.name,
@@ -53,21 +58,33 @@ function toCategory(r: CategoryRow): MenuCategory {
     cardPhoto: r.card_image_url ?? "",
     items,
     itemsByStore,
+    storeSlugs: storeSlugs.length > 0 ? storeSlugs : undefined,
   };
+}
+
+/** stores.id → slug の対応表（対象店舗の解決用）。失敗時は空。 */
+async function fetchStoreSlugById(supabase: ReturnType<typeof createStaticClient>): Promise<Record<string, string>> {
+  const map: Record<string, string> = {};
+  const { data } = await supabase.from("stores").select("id, slug");
+  for (const s of (data as { id: string; slug: string }[] | null) ?? []) map[s.id] = s.slug;
+  return map;
 }
 
 /** カテゴリ一覧グリッド + 詳細用に、12カテゴリを itemsByStore 込みで返す（DB空時は静的）。 */
 export async function fetchMenuCategoriesFull(): Promise<MenuCategory[]> {
   try {
     const supabase = createStaticClient();
-    const { data, error } = await supabase
-      .from("menu_categories")
-      .select(CAT_SELECT)
-      .neq("slug", "lunch")
-      .eq("is_active", true)
-      .order("sort_order", { ascending: true });
+    const [{ data, error }, storeSlugById] = await Promise.all([
+      supabase
+        .from("menu_categories")
+        .select(CAT_SELECT)
+        .neq("slug", "lunch")
+        .eq("is_active", true)
+        .order("sort_order", { ascending: true }),
+      fetchStoreSlugById(supabase),
+    ]);
     if (error || !data || data.length === 0) return MENU_CATEGORIES;
-    return (data as unknown as CategoryRow[]).map(toCategory);
+    return (data as unknown as CategoryRow[]).map((r) => toCategory(r, storeSlugById));
   } catch {
     return MENU_CATEGORIES;
   }

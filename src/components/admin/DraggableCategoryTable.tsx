@@ -17,6 +17,7 @@ import {
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import CategoryImageCell from '@/components/admin/CategoryImageCell'
+import CategoryStoreCell from '@/components/admin/CategoryStoreCell'
 import {
   createCategory,
   updateCategory,
@@ -25,6 +26,7 @@ import {
   type Category,
   type CategoryKind,
 } from '@/lib/actions/categories'
+import type { StoreRef } from '@/lib/actions/refs'
 
 const inputClass =
   'rounded-md border border-[#2f2f3c] bg-[#0a0a0f] px-2.5 py-1.5 text-sm text-[#ebe5db] focus:border-[#d9b86b] focus:outline-none'
@@ -32,11 +34,13 @@ const inputClass =
 function Row({
   cat,
   kind,
+  stores,
   onChange,
   onDelete,
 }: {
   cat: Category
   kind: CategoryKind
+  stores: StoreRef[]
   onChange: (patch: Partial<Category>) => void
   onDelete: () => void
 }) {
@@ -87,6 +91,18 @@ function Row({
           onBlur={(e) => updateCategory(kind, cat.id, { slug: e.target.value })}
         />
       </td>
+      {kind === 'menu' && (
+        <td className="px-2 py-2">
+          <CategoryStoreCell
+            stores={stores}
+            value={cat.store_ids}
+            onChange={(ids) => {
+              onChange({ store_ids: ids })
+              updateCategory(kind, cat.id, { store_ids: ids })
+            }}
+          />
+        </td>
+      )}
       <td className="px-2 py-2 text-center">
         <input
           type="checkbox"
@@ -110,9 +126,11 @@ function Row({
 export default function DraggableCategoryTable({
   kind,
   initial,
+  stores = [],
 }: {
   kind: CategoryKind
   initial: Category[]
+  stores?: StoreRef[]
 }) {
   const [cats, setCats] = useState<Category[]>(initial)
   const [newName, setNewName] = useState('')
@@ -184,6 +202,7 @@ export default function DraggableCategoryTable({
               {kind === 'menu' && <th className="w-24 px-2 py-3 font-medium">カード画像</th>}
               <th className="px-2 py-3 font-medium">カテゴリ名</th>
               <th className="px-2 py-3 font-medium">スラッグ</th>
+              {kind === 'menu' && <th className="w-44 px-2 py-3 font-medium">対象店舗</th>}
               <th className="w-16 px-2 py-3 text-center font-medium">表示</th>
               <th className="w-16 px-2 py-3 text-right font-medium">操作</th>
             </tr>
@@ -196,6 +215,7 @@ export default function DraggableCategoryTable({
                     key={cat.id}
                     cat={cat}
                     kind={kind}
+                    stores={stores}
                     onChange={(patch) => patchRow(cat.id, patch)}
                     onDelete={() => handleDelete(cat.id)}
                   />

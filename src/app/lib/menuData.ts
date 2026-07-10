@@ -18,6 +18,8 @@ export type MenuCategory = {
   // 店舗別メニュー（店舗id → 品目）。未指定の店舗は items にフォールバックする。
   // ※メニューは店舗ごとに変わる想定。実データが入ったらここに店舗idで品目を追加するだけで切替が効く。
   itemsByStore?: Partial<Record<string, MenuItem[]>>;
+  // 対象店舗（store slug の配列）。未指定/空=全店表示。指定時はその店舗の /menu 一覧にのみ表示。
+  storeSlugs?: string[];
 };
 
 // 受取店舗タブ（Figma Group 1）。メニュー内容は全店共通の想定（仮）。

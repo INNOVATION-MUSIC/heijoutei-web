@@ -58,6 +58,8 @@ type Props = {
 export default function MenuCategorySectionSP({ categories, stores, storeId, onSelectStore, height, onMeasured }: Props) {
   const cats = categories ?? MENU_CATEGORIES;
   const defaultStore = stores && stores.length > 0 ? stores[0].id : MENU_STORES[0].id;
+  // 対象店舗が指定されたカテゴリは、その店舗タブでのみ表示（未指定=全店）
+  const visibleCats = cats.filter((c) => !c.storeSlugs || c.storeSlugs.includes(storeId));
 
   const contentRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -80,7 +82,7 @@ export default function MenuCategorySectionSP({ categories, stores, storeId, onS
 
         {/* カテゴリカードグリッド（2列・gap20） */}
         <div style={{ display: "flex", flexWrap: "wrap", columnGap: 20, rowGap: 20, paddingLeft: 20, paddingRight: 20, paddingTop: 47 }}>
-          {cats.map((c) => (
+          {visibleCats.map((c) => (
             <CategoryCardSP key={c.slug} category={c} storeId={storeId} defaultStore={defaultStore} />
           ))}
         </div>

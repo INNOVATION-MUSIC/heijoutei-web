@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { getCategories, type CategoryKind } from '@/lib/actions/categories'
+import { getStoreRefs } from '@/lib/actions/refs'
 import DraggableCategoryTable from '@/components/admin/DraggableCategoryTable'
 
 export const dynamic = 'force-dynamic'
@@ -12,7 +13,11 @@ export default async function CategoriesSettingsPage({
   const { tab } = await searchParams
   const kind: CategoryKind =
     tab === 'takeout' ? 'takeout' : tab === 'course' ? 'course' : tab === 'lunch' ? 'lunch' : 'menu'
-  const categories = await getCategories(kind)
+  // 対象店舗の選択肢はメニューカテゴリでのみ使用
+  const [categories, stores] = await Promise.all([
+    getCategories(kind),
+    kind === 'menu' ? getStoreRefs() : Promise.resolve([]),
+  ])
 
   const tabs: { key: CategoryKind; label: string }[] = [
     { key: 'menu', label: '通常メニュー' },
@@ -44,7 +49,7 @@ export default async function CategoriesSettingsPage({
         ))}
       </div>
 
-      <DraggableCategoryTable key={kind} kind={kind} initial={categories} />
+      <DraggableCategoryTable key={kind} kind={kind} initial={categories} stores={stores} />
     </div>
   )
 }
