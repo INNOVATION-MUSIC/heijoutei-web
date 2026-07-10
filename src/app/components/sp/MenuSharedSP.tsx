@@ -136,10 +136,19 @@ export function ItemCardSP({ item, imageWidth = 150, imageHeight = 150, nameClam
   const clampStyle = nameClamp ? ({ display: "-webkit-box", WebkitBoxOrient: "vertical" as const, WebkitLineClamp: nameClamp, overflow: "hidden" } as const) : {};
   // 写真が無い品目（例: 追加メニュー）は画像枠を出さず、品名＋価格のみのスリム表示にする。
   const hasPhoto = !!item.photo;
+  // 追加メニューがある品目はカードを縦に伸ばし、価格の下に「追加メニュー」一覧を入れ子表示する。
+  const addons = item.addons ?? [];
+  const hasAddons = addons.length > 0;
+  const priceRow = (
+    <div style={{ display: "flex", alignItems: "baseline", justifyContent: "flex-end", gap: 4 }}>
+      <span style={{ fontFamily: mincho, fontSize: 20, fontWeight: 600, letterSpacing: "1px", color: "#ebe5db" }}>{item.price.toLocaleString()}</span>
+      <span style={{ fontFamily: mincho, fontSize: 12, fontWeight: 600, letterSpacing: "1px", color: "#ebe5db" }}>円</span>
+    </div>
+  );
   return (
     <div style={{ display: "flex", width: 350, minHeight: hasPhoto ? imageHeight : 64, background: PANEL }}>
       {hasPhoto && (
-        <div style={{ position: "relative", width: imageWidth, height: imageHeight, overflow: "hidden", background: "#22140c", flexShrink: 0 }}>
+        <div style={{ position: "relative", width: imageWidth, ...(hasAddons ? { alignSelf: "stretch", minHeight: imageHeight } : { height: imageHeight }), overflow: "hidden", background: "#22140c", flexShrink: 0 }}>
           <Image src={item.photo} alt={item.name} fill className="object-cover" sizes={`${imageWidth}px`} />
         </div>
       )}
@@ -150,11 +159,28 @@ export function ItemCardSP({ item, imageWidth = 150, imageHeight = 150, nameClam
             <span style={{ fontFamily: sans, fontSize: 11, letterSpacing: "0.02em", color: "#99948c", lineHeight: 1.6, display: "-webkit-box", WebkitBoxOrient: "vertical", WebkitLineClamp: 3, overflow: "hidden" }}>{item.desc}</span>
           )}
         </div>
-        <div style={{ flex: 1 }} />
-        <div style={{ display: "flex", alignItems: "baseline", justifyContent: "flex-end", gap: 4 }}>
-          <span style={{ fontFamily: mincho, fontSize: 20, fontWeight: 600, letterSpacing: "1px", color: "#ebe5db" }}>{item.price.toLocaleString()}</span>
-          <span style={{ fontFamily: mincho, fontSize: 12, fontWeight: 600, letterSpacing: "1px", color: "#ebe5db" }}>円</span>
-        </div>
+        {hasAddons ? (
+          <div style={{ display: "flex", flexDirection: "column", gap: 10, paddingTop: 12 }}>
+            {priceRow}
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{ fontFamily: sans, fontSize: 11, letterSpacing: "0.12em", color: GOLD, whiteSpace: "nowrap" }}>追加メニュー</span>
+              <div style={{ flex: 1, height: 1, background: "rgba(234,229,219,0.15)" }} />
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
+              {addons.map((a, i) => (
+                <div key={i} style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 10 }}>
+                  <span style={{ fontFamily: mincho, fontSize: 14, letterSpacing: "0.5px", color: "#ebe5db" }}>{a.name}</span>
+                  <span style={{ fontFamily: mincho, fontSize: 14, letterSpacing: "0.5px", color: "#ebe5db", whiteSpace: "nowrap" }}>{a.price.toLocaleString()}円</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <>
+            <div style={{ flex: 1 }} />
+            {priceRow}
+          </>
+        )}
       </div>
     </div>
   );

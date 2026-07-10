@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { adminSupabase } from '@/lib/supabase/admin'
 import { getStoreRefs, getMenuCategoryRefs } from '@/lib/actions/refs'
-import { getMenuItems } from '@/lib/actions/menus'
+import { getMenuItems, type MenuAddon } from '@/lib/actions/menus'
 import MenuForm from '@/components/admin/MenuForm'
 
 export const dynamic = 'force-dynamic'
@@ -25,6 +25,8 @@ export default async function EditMenuPage({ params }: { params: Promise<{ id: s
     description: it.description,
     price_label: it.price_label,
     image_url: it.image_url,
+    // jsonb → 追加メニュー配列（不正値は無視）
+    addons: Array.isArray(it.addons) ? (it.addons as unknown as MenuAddon[]) : null,
   }))
 
   return (

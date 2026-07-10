@@ -1,12 +1,14 @@
 import { createStaticClient } from "@/lib/supabase/static";
 import { MENU_CATEGORIES, getMenuCategory, getLunchItems, LUNCH_ITEMS, type MenuCategory, type MenuItem } from "./menuData";
 
+type AddonRow = { name?: string | null; price?: string | number | null };
 type MenuItemRow = {
   name: string;
   description: string | null;
   image_url: string | null;
   price_label: string | null;
   sort_order: number | null;
+  addons: AddonRow[] | null;
 };
 type StoreMenuRow = {
   is_active: boolean | null;
@@ -23,11 +25,16 @@ type CategoryRow = {
 };
 
 function toItem(r: MenuItemRow): MenuItem {
+  // 追加メニュー: 品名がある行のみ。価格は数値化（空/不正は 0）。
+  const addons = (r.addons ?? [])
+    .filter((a) => a && typeof a.name === "string" && a.name.trim())
+    .map((a) => ({ name: (a.name as string).trim(), price: Number(a.price ?? 0) || 0 }));
   return {
     name: r.name,
     desc: r.description ?? undefined,
     price: Number(r.price_label ?? 0),
     photo: r.image_url ?? "",
+    addons: addons.length ? addons : undefined,
   };
 }
 function sortItems(items: MenuItemRow[]): MenuItem[] {
@@ -35,7 +42,7 @@ function sortItems(items: MenuItemRow[]): MenuItem[] {
 }
 
 const CAT_SELECT =
-  "slug, name, card_image_url, sort_order, store_ids, store_menus(is_active, stores(slug), menu_items(name, description, image_url, price_label, sort_order))";
+  "slug, name, card_image_url, sort_order, store_ids, store_menus(is_active, stores(slug), menu_items(name, description, image_url, price_label, sort_order, addons))";
 
 function toCategory(r: CategoryRow, storeSlugById: Record<string, string>): MenuCategory {
   const itemsByStore: Record<string, MenuItem[]> = {};

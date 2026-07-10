@@ -106,10 +106,19 @@ export function ItemCard({ item, priceAlign = "right", imageWidth = 200, height 
   const clampStyle = nameClamp ? ({ display: "-webkit-box", WebkitBoxOrient: "vertical" as const, WebkitLineClamp: nameClamp, overflow: "hidden" } as const) : {};
   // 写真が無い品目（例: 追加メニュー）は画像枠を出さず、品名＋価格のみのスリム表示にする。
   const hasPhoto = !!item.photo;
+  // 追加メニューがある品目はカードを縦に伸ばし、価格の下に「追加メニュー」一覧を入れ子表示する。
+  const addons = item.addons ?? [];
+  const hasAddons = addons.length > 0;
+  const priceRow = (
+    <div style={{ display: "flex", alignItems: "baseline", justifyContent: priceAlign === "right" ? "flex-end" : "flex-start", gap: 6 }}>
+      <span style={{ fontFamily: mincho, fontSize: 20, fontWeight: 600, letterSpacing: "2px", color: "#ebe5db" }}>{item.price.toLocaleString()}</span>
+      <span style={{ fontFamily: mincho, fontSize: 12, fontWeight: 600, letterSpacing: "2px", color: "#ebe5db" }}>円</span>
+    </div>
+  );
   return (
-    <div style={{ display: "flex", width: 420, height, background: PANEL }}>
+    <div style={{ display: "flex", width: 420, ...(hasAddons ? { minHeight: height } : { height }), background: PANEL }}>
       {hasPhoto && (
-        <div style={{ position: "relative", width: imageWidth, height, overflow: "hidden", background: "#22140c", flexShrink: 0 }}>
+        <div style={{ position: "relative", width: imageWidth, ...(hasAddons ? { alignSelf: "stretch", minHeight: height } : { height }), overflow: "hidden", background: "#22140c", flexShrink: 0 }}>
           <Image src={item.photo} alt={item.name} fill className="object-cover" sizes={`${imageWidth}px`} />
         </div>
       )}
@@ -120,11 +129,28 @@ export function ItemCard({ item, priceAlign = "right", imageWidth = 200, height 
             <span style={{ fontFamily: sans, fontSize: 12, letterSpacing: "0.02em", color: "#99948c", lineHeight: 1.6, display: "-webkit-box", WebkitBoxOrient: "vertical", WebkitLineClamp: 3, overflow: "hidden" }}>{item.desc}</span>
           )}
         </div>
-        <div style={{ flex: 1 }} />
-        <div style={{ display: "flex", alignItems: "baseline", justifyContent: priceAlign === "right" ? "flex-end" : "flex-start", gap: 6 }}>
-          <span style={{ fontFamily: mincho, fontSize: 20, fontWeight: 600, letterSpacing: "2px", color: "#ebe5db" }}>{item.price.toLocaleString()}</span>
-          <span style={{ fontFamily: mincho, fontSize: 12, fontWeight: 600, letterSpacing: "2px", color: "#ebe5db" }}>円</span>
-        </div>
+        {hasAddons ? (
+          <div style={{ display: "flex", flexDirection: "column", gap: 14, paddingTop: 14 }}>
+            {priceRow}
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <span style={{ fontFamily: sans, fontSize: 12, letterSpacing: "0.12em", color: GOLD, whiteSpace: "nowrap" }}>追加メニュー</span>
+              <div style={{ flex: 1, height: 1, background: "rgba(234,229,219,0.15)" }} />
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
+              {addons.map((a, i) => (
+                <div key={i} style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12 }}>
+                  <span style={{ fontFamily: mincho, fontSize: 15, letterSpacing: "1px", color: "#ebe5db" }}>{a.name}</span>
+                  <span style={{ fontFamily: mincho, fontSize: 15, letterSpacing: "1px", color: "#ebe5db", whiteSpace: "nowrap" }}>{a.price.toLocaleString()}円</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <>
+            <div style={{ flex: 1 }} />
+            {priceRow}
+          </>
+        )}
       </div>
     </div>
   );

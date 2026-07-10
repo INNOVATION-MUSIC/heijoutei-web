@@ -5,6 +5,9 @@ import { isAuthed } from '@/lib/auth-guard'
 import { revalidatePath } from 'next/cache'
 import type { Tables } from '@/types/supabase'
 
+// 品目の追加メニュー1件（例: サムギョプサルの「豚バラ」）。価格は文字列（数字のみ想定）。
+export type MenuAddon = { name: string; price: string }
+
 export type MenuItemInput = {
   name: string
   description?: string | null
@@ -12,6 +15,8 @@ export type MenuItemInput = {
   image_url?: string | null
   // ランチ品目のみ使用。/menu/lunch のサブタブ（lunch_categories）への割当。通常メニューは null。
   lunch_category_id?: string | null
+  // 追加メニュー（品目カード内に入れ子表示）。空/未指定=なし。
+  addons?: MenuAddon[] | null
 }
 
 export type StoreMenuPayload = {
@@ -43,15 +48,22 @@ async function replaceItems(storeMenuId: string, items: MenuItemInput[]): Promis
   if (delErr) return { error: delErr.message }
   const rows = items
     .filter((it) => it.name.trim())
-    .map((it, idx) => ({
-      store_menu_id: storeMenuId,
-      name: it.name.trim(),
-      description: it.description?.trim() || null,
-      price_label: it.price_label?.trim() || null,
-      image_url: it.image_url?.trim() || null,
-      lunch_category_id: it.lunch_category_id || null,
-      sort_order: idx,
-    }))
+    .map((it, idx) => {
+      // 追加メニューは品名が入っている行のみ保存。空なら null。
+      const addons = (it.addons ?? [])
+        .map((a) => ({ name: a.name.trim(), price: (a.price ?? '').trim() }))
+        .filter((a) => a.name)
+      return {
+        store_menu_id: storeMenuId,
+        name: it.name.trim(),
+        description: it.description?.trim() || null,
+        price_label: it.price_label?.trim() || null,
+        image_url: it.image_url?.trim() || null,
+        lunch_category_id: it.lunch_category_id || null,
+        addons: addons.length ? addons : null,
+        sort_order: idx,
+      }
+    })
   if (rows.length) {
     const { error: insErr } = await adminSupabase.from('menu_items').insert(rows)
     if (insErr) return { error: insErr.message }

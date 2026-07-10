@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { MENU_CATEGORIES, type MenuCategory, type MenuItem } from "@/app/lib/menuData";
 import { MenuHeading, StoreTabs, ItemCard, BackToMenuButton, mincho, sans, GOLD, PANEL, type StoreTab } from "./MenuShared";
 
@@ -57,6 +58,7 @@ export default function MenuDetailSection({
   height,
   onSelectCategory,
   onSelectStore,
+  onMeasured,
 }: {
   category: MenuCategory;
   categories?: MenuCategory[];
@@ -67,11 +69,23 @@ export default function MenuDetailSection({
   height: number;
   onSelectCategory: (slug: string) => void;
   onSelectStore: (id: string) => void;
+  // 追加メニュー等で品目カードの高さが可変になるため、実測して全高を client に返す。
+  onMeasured?: (h: number) => void;
 }) {
   // カテゴリ切替タブ用の一覧（DB由来 → 無ければ静的）
   const navCategories = categories && categories.length > 0 ? categories : MENU_CATEGORIES;
+  const sectionRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el || !onMeasured) return;
+    const report = () => onMeasured(el.offsetHeight);
+    report();
+    const ro = new ResizeObserver(report);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [onMeasured, items]);
   return (
-    <section style={{ display: "flex", flexDirection: "column", width: 1440, height, background: "#0a0a0a" }}>
+    <section ref={sectionRef} style={{ display: "flex", flexDirection: "column", width: 1440, minHeight: height, background: "#0a0a0a" }}>
       <MenuHeading onOpenModal={onOpenModal} />
       <StoreTabs stores={stores} activeId={storeId} onSelect={onSelectStore} />
 

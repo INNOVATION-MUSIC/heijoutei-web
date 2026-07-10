@@ -106,7 +106,8 @@ export default function MenuDetailClient({ category, allCategories, stores }: { 
     );
   }
 
-  const height = detailHeight(items.length);
+  // PC も追加メニュー等でカード高さが可変になるため、初期は概算・以後は実測で全高を確定。
+  const height = measured ?? detailHeight(items.length);
   return (
     <>
       <ScaledSection designWidth={DESIGN_PC} height={height}>
@@ -120,6 +121,7 @@ export default function MenuDetailClient({ category, allCategories, stores }: { 
           onOpenModal={openModal}
           onSelectCategory={selectCategory}
           onSelectStore={selectStore}
+          onMeasured={(h) => setMeasured((p) => (p === h ? p : h))}
         />
       </ScaledSection>
       <ScaledSection designWidth={DESIGN_PC} height={600}>

@@ -2,11 +2,16 @@
 // Figma「メニューカテゴリ」162:1117 / 「メニュー詳細」164:1411 準拠。
 // ※肉カテゴリのみ Figma 実データ。他カテゴリは仮の品目（実メニュー確定後に差し替え）。
 
+// 品目の追加メニュー1件（例: サムギョプサルの「豚バラ」）。
+export type MenuAddon = { name: string; price: number };
+
 export type MenuItem = {
   name: string;
   desc?: string;
   price: number; // 税込価格（円）
   photo: string; // /images/xxx.webp
+  // 追加メニュー（品目カード内に入れ子表示）。未指定/空=なし。
+  addons?: MenuAddon[];
 };
 
 export type MenuCategory = {

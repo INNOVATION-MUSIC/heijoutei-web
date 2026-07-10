@@ -6,6 +6,9 @@ import type { CategoryRef } from '@/lib/actions/refs'
 
 const inputClass =
   'w-full rounded-lg border border-[#2f2f3c] bg-[#0a0a0f] px-3 py-2 text-sm text-[#ebe5db] focus:border-[#d9b86b] focus:outline-none'
+// 追加メニュー行用（幅は flex で制御するため w-full を付けない）
+const addonInputClass =
+  'rounded-lg border border-[#2f2f3c] bg-[#0a0a0f] px-3 py-2 text-sm text-[#ebe5db] focus:border-[#d9b86b] focus:outline-none'
 
 export default function MenuItemsEditor({
   items,
@@ -65,6 +68,43 @@ export default function MenuItemsEditor({
               )}
             </div>
             <ImageUploader label="品目画像" value={it.image_url ?? ''} onChange={(url) => update(idx, { image_url: url })} />
+          </div>
+
+          {/* 追加メニュー（任意）: この品目に付属する追加品。フロントでは品目カード内に入れ子表示される。 */}
+          <div className="mt-3 rounded-lg border border-[#23232e] bg-[#0a0a0f]/50 p-3">
+            <div className="mb-2 text-xs text-[#9a9aa8]">追加メニュー（任意・例: サムギョプサルの追加）</div>
+            <div className="space-y-2">
+              {(it.addons ?? []).map((a, ai) => (
+                <div key={ai} className="flex items-center gap-2">
+                  <input
+                    className={`${addonInputClass} flex-1`}
+                    value={a.name}
+                    onChange={(e) => update(idx, { addons: (it.addons ?? []).map((x, i) => (i === ai ? { ...x, name: e.target.value } : x)) })}
+                    placeholder="品名（例: 豚バラ）"
+                  />
+                  <input
+                    className={`${addonInputClass} w-28`}
+                    value={a.price}
+                    onChange={(e) => update(idx, { addons: (it.addons ?? []).map((x, i) => (i === ai ? { ...x, price: e.target.value } : x)) })}
+                    placeholder="価格（例: 740）"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => update(idx, { addons: (it.addons ?? []).filter((_, i) => i !== ai) })}
+                    className="shrink-0 px-1 text-xs text-red-400/80 hover:text-red-400"
+                  >
+                    削除
+                  </button>
+                </div>
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={() => update(idx, { addons: [...(it.addons ?? []), { name: '', price: '' }] })}
+              className="mt-2 rounded-lg border border-dashed border-[#2f2f3c] px-3 py-1.5 text-xs text-[#9a9aa8] hover:border-[#d9b86b]/40"
+            >
+              ＋ 追加メニューを追加
+            </button>
           </div>
         </div>
       ))}

@@ -348,6 +348,7 @@ export type Database = {
       }
       menu_items: {
         Row: {
+          addons: Json | null
           description: string | null
           id: string
           image_url: string | null
@@ -358,6 +359,7 @@ export type Database = {
           store_menu_id: string
         }
         Insert: {
+          addons?: Json | null
           description?: string | null
           id?: string
           image_url?: string | null
@@ -368,6 +370,7 @@ export type Database = {
           store_menu_id: string
         }
         Update: {
+          addons?: Json | null
           description?: string | null
           id?: string
           image_url?: string | null
