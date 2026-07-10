@@ -72,8 +72,10 @@ export default function MenuDetailSection({
   // 追加メニュー等で品目カードの高さが可変になるため、実測して全高を client に返す。
   onMeasured?: (h: number) => void;
 }) {
-  // カテゴリ切替タブ用の一覧（DB由来 → 無ければ静的）
-  const navCategories = categories && categories.length > 0 ? categories : MENU_CATEGORIES;
+  // カテゴリ切替タブ用の一覧（DB由来 → 無ければ静的）。
+  // 対象店舗が指定されたカテゴリは選択店舗のみ表示（未指定=全店）。現在表示中は常に残す。
+  const navCategories = (categories && categories.length > 0 ? categories : MENU_CATEGORIES)
+    .filter((c) => c.slug === category.slug || !c.storeSlugs || c.storeSlugs.includes(storeId));
   const sectionRef = useRef<HTMLElement>(null);
   useEffect(() => {
     const el = sectionRef.current;

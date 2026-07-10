@@ -24,7 +24,9 @@ type Props = {
  * 品目説明の折返しで高さ可変のため、コンテンツ全体を ResizeObserver で実測する。
  */
 export default function MenuDetailSectionSP({ category, categories, items, storeId, stores, onSelectCategory, onSelectStore, height, onMeasured }: Props) {
-  const navCategories = categories && categories.length > 0 ? categories : MENU_CATEGORIES;
+  // 対象店舗が指定されたカテゴリは選択店舗のみ表示（未指定=全店）。現在表示中は常に残す。
+  const navCategories = (categories && categories.length > 0 ? categories : MENU_CATEGORIES)
+    .filter((c) => c.slug === category.slug || !c.storeSlugs || c.storeSlugs.includes(storeId));
 
   const contentRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
