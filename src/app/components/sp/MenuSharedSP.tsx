@@ -134,11 +134,15 @@ export function MenuSelectBoxSP({
 export function ItemCardSP({ item, imageWidth = 150, imageHeight = 150, nameClamp = 0 }: { item: MenuItem; imageWidth?: number; imageHeight?: number; nameClamp?: number }) {
   // nameClamp 指定時は最大 n 行で折返し（超過は…）。長い商品名でも価格と重ならない。
   const clampStyle = nameClamp ? ({ display: "-webkit-box", WebkitBoxOrient: "vertical" as const, WebkitLineClamp: nameClamp, overflow: "hidden" } as const) : {};
+  // 写真が無い品目（例: 追加メニュー）は画像枠を出さず、品名＋価格のみのスリム表示にする。
+  const hasPhoto = !!item.photo;
   return (
-    <div style={{ display: "flex", width: 350, minHeight: imageHeight, background: PANEL }}>
-      <div style={{ position: "relative", width: imageWidth, height: imageHeight, overflow: "hidden", background: "#22140c", flexShrink: 0 }}>
-        <Image src={item.photo} alt={item.name} fill className="object-cover" sizes={`${imageWidth}px`} />
-      </div>
+    <div style={{ display: "flex", width: 350, minHeight: hasPhoto ? imageHeight : 64, background: PANEL }}>
+      {hasPhoto && (
+        <div style={{ position: "relative", width: imageWidth, height: imageHeight, overflow: "hidden", background: "#22140c", flexShrink: 0 }}>
+          <Image src={item.photo} alt={item.name} fill className="object-cover" sizes={`${imageWidth}px`} />
+        </div>
+      )}
       <div style={{ flex: 1, display: "flex", flexDirection: "column", paddingLeft: 19, paddingRight: 12, paddingTop: 14, paddingBottom: 14 }}>
         <span style={{ fontFamily: mincho, fontSize: 18, fontWeight: 600, letterSpacing: "1px", color: "#fff", lineHeight: 1.3, ...clampStyle }}>{item.name}</span>
         <div style={{ flex: 1 }} />

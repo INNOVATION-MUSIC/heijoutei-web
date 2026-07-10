@@ -104,11 +104,15 @@ export function BackToMenuButton() {
 export function ItemCard({ item, priceAlign = "right", imageWidth = 200, height = 200, nameSize = 24, nameClamp = 0 }: { item: MenuItem; priceAlign?: "left" | "right"; imageWidth?: number; height?: number; nameSize?: number; nameClamp?: number }) {
   // nameClamp 指定時は最大 n 行で折返し（超過は…）。長い商品名でも価格と重ならない。
   const clampStyle = nameClamp ? ({ display: "-webkit-box", WebkitBoxOrient: "vertical" as const, WebkitLineClamp: nameClamp, overflow: "hidden" } as const) : {};
+  // 写真が無い品目（例: 追加メニュー）は画像枠を出さず、品名＋価格のみのスリム表示にする。
+  const hasPhoto = !!item.photo;
   return (
     <div style={{ display: "flex", width: 420, height, background: PANEL }}>
-      <div style={{ position: "relative", width: imageWidth, height, overflow: "hidden", background: "#22140c", flexShrink: 0 }}>
-        <Image src={item.photo} alt={item.name} fill className="object-cover" sizes={`${imageWidth}px`} />
-      </div>
+      {hasPhoto && (
+        <div style={{ position: "relative", width: imageWidth, height, overflow: "hidden", background: "#22140c", flexShrink: 0 }}>
+          <Image src={item.photo} alt={item.name} fill className="object-cover" sizes={`${imageWidth}px`} />
+        </div>
+      )}
       <div style={{ flex: 1, display: "flex", flexDirection: "column", paddingLeft: 28, paddingRight: 30, paddingTop: 22, paddingBottom: 24 }}>
         <span style={{ fontFamily: mincho, fontSize: nameSize, fontWeight: 600, letterSpacing: "2px", color: "#fff", lineHeight: 1.3, ...clampStyle }}>{item.name}</span>
         <div style={{ flex: 1 }} />
