@@ -29,12 +29,20 @@ export default async function AdminMenusPage({
   const { data: rawMenus } = await query
   const menus = (rawMenus ?? []).filter((m) => m.category_id !== lunchId)
 
-  // 品目数
+  // 品目名（品目数はここから算出）。sort_order 順で品目名を集める。
   const ids = (menus ?? []).map((m) => m.id)
-  const countByMenu = new Map<string, number>()
+  const namesByMenu = new Map<string, string[]>()
   if (ids.length) {
-    const { data: items } = await adminSupabase.from('menu_items').select('store_menu_id').in('store_menu_id', ids)
-    for (const it of items ?? []) countByMenu.set(it.store_menu_id, (countByMenu.get(it.store_menu_id) ?? 0) + 1)
+    const { data: items } = await adminSupabase
+      .from('menu_items')
+      .select('store_menu_id, name, sort_order')
+      .in('store_menu_id', ids)
+      .order('sort_order')
+    for (const it of items ?? []) {
+      const list = namesByMenu.get(it.store_menu_id) ?? []
+      list.push(it.name)
+      namesByMenu.set(it.store_menu_id, list)
+    }
   }
 
   const storeName = new Map((stores ?? []).map((s) => [s.id, s.name]))
@@ -44,10 +52,12 @@ export default async function AdminMenusPage({
   const byStore = new Map<string, MenuRow[]>()
   for (const m of menus) {
     const catLabel = m.category_id ? catName.get(m.category_id) ?? null : null
+    const names = namesByMenu.get(m.id) ?? []
     const row: MenuRow = {
       id: m.id,
       categoryName: catLabel,
-      itemCount: countByMenu.get(m.id) ?? 0,
+      itemNames: names,
+      itemCount: names.length,
       is_active: m.is_active,
       deleteLabel: `${storeName.get(m.store_id) ?? ''} / ${catLabel ?? ''}`,
     }

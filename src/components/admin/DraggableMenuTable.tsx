@@ -23,6 +23,7 @@ import { reorderStoreMenus } from '@/lib/actions/menus'
 export type MenuRow = {
   id: string
   categoryName: string | null
+  itemNames: string[]
   itemCount: number
   is_active: boolean | null
   deleteLabel: string
@@ -45,7 +46,12 @@ function Row({ menu, index }: { menu: MenuRow; index: number }) {
         </button>
       </td>
       <td className="px-3 py-3 text-[#6f6f80]">{index + 1}</td>
-      <td className="px-4 py-3 text-[#ebe5db]">{menu.categoryName ?? '—'}</td>
+      <td className="px-4 py-3">
+        <div className="text-[#ebe5db]">{menu.categoryName ?? '—'}</div>
+        {menu.itemNames.length > 0 && (
+          <div className="mt-0.5 line-clamp-2 text-xs text-[#6f6f80]">{menu.itemNames.join('、')}</div>
+        )}
+      </td>
       <td className="px-4 py-3 text-[#9a9aa8]">{menu.itemCount}</td>
       <td className="px-4 py-3">
         {menu.is_active ? (
@@ -89,7 +95,7 @@ export default function DraggableMenuTable({ storeName, initial }: { storeName: 
             <tr className="border-b border-[#23232e] bg-[#1a1a22] text-left text-xs text-[#6f6f80]">
               <th className="w-10 px-2 py-3"></th>
               <th className="w-12 px-3 py-3 font-medium">順</th>
-              <th className="px-4 py-3 font-medium">カテゴリ</th>
+              <th className="px-4 py-3 font-medium">カテゴリ / メニュー名</th>
               <th className="px-4 py-3 font-medium">品目数</th>
               <th className="px-4 py-3 font-medium">状態</th>
               <th className="px-4 py-3 text-right font-medium">操作</th>
