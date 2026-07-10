@@ -3,7 +3,8 @@
 import { adminSupabase } from '@/lib/supabase/admin'
 
 export type StoreRef = { id: string; name: string; slug: string }
-export type CategoryRef = { id: string; name: string; slug: string }
+// store_ids はメニューカテゴリのみ設定される（対象店舗）。null/空=全店。
+export type CategoryRef = { id: string; name: string; slug: string; store_ids?: string[] | null }
 
 // 各管理フォームのプルダウン用。店舗マスタが単一マスタなので各所で再利用する。
 export async function getStoreRefs(): Promise<StoreRef[]> {
@@ -20,7 +21,7 @@ export async function getMenuCategoryRefs(): Promise<CategoryRef[]> {
   // ランチは専用画面（/admin/lunch）で管理するため通常メニューの選択肢から除外
   const { data } = await adminSupabase
     .from('menu_categories')
-    .select('id, name, slug')
+    .select('id, name, slug, store_ids')
     .neq('slug', 'lunch')
     .order('sort_order', { ascending: true })
   return data ?? []

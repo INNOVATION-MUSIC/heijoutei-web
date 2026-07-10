@@ -123,7 +123,14 @@ export default function MenuForm({
                   onChange={(e) => (isEdit && menuIndex ? switchTo(form.store_id, e.target.value || null) : set('category_id', e.target.value || null))}
                 >
                   <option value="">（未分類）</option>
-                  {categories.map((c) => (<option key={c.id} value={c.id}>{c.name}</option>))}
+                  {categories.map((c) => {
+                    // 対象店舗が指定されたカテゴリは「カテゴリ名（店舗名）」で判別しやすく表示（未指定=全店）
+                    const storeNames = (c.store_ids ?? [])
+                      .map((id) => stores.find((s) => s.id === id)?.name)
+                      .filter((n): n is string => !!n)
+                    const label = storeNames.length > 0 ? `${c.name}（${storeNames.join('・')}）` : c.name
+                    return (<option key={c.id} value={c.id}>{label}</option>)
+                  })}
                 </select>
               </div>
             )}
