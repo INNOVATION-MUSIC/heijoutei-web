@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useIsMobile } from "@/app/lib/useIsMobile";
 import ScaledSection from "./ScaledSection";
 import ReserveModal from "./ReserveModal";
@@ -48,6 +49,7 @@ function spEstimateContent(itemCount: number) {
  */
 export default function MenuDetailClient({ category, allCategories, stores }: { category: MenuCategory; allCategories?: MenuCategory[]; stores?: StoreTab[] }) {
   const isMobile = useIsMobile();
+  const router = useRouter();
   const [modalOpen, setModalOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [measured, setMeasured] = useState<number | null>(null);
@@ -74,6 +76,17 @@ export default function MenuDetailClient({ category, allCategories, stores }: { 
     window.history.replaceState({}, "", url);
   };
 
+  // 店舗切替：切替先にこのカテゴリが無ければ、その店舗の先頭カテゴリへ移す。
+  // （店舗にカテゴリが1つも無い場合〔例: ゆらの〕はメニュー一覧へ）
+  const handleSelectStore = (id: string) => {
+    selectStore(id);
+    const availForStore = (allCategories ?? []).filter((c) => !c.storeSlugs || c.storeSlugs.includes(id));
+    if (availForStore.some((c) => c.slug === activeSlug)) return; // 現在のカテゴリが有効なら維持
+    const first = availForStore[0];
+    if (first) selectCategory(first.slug);
+    else router.push(`/menu?store=${id}`);
+  };
+
   if (isMobile === null) {
     return <div style={{ minHeight: "100vh", background: "#0a0a0a" }} />;
   }
@@ -90,7 +103,7 @@ export default function MenuDetailClient({ category, allCategories, stores }: { 
             storeId={storeId}
             stores={stores}
             onSelectCategory={selectCategory}
-            onSelectStore={selectStore}
+            onSelectStore={handleSelectStore}
             height={height}
             onMeasured={(h) => setMeasured((p) => (p === h ? p : h))}
           />
@@ -120,7 +133,7 @@ export default function MenuDetailClient({ category, allCategories, stores }: { 
           height={height}
           onOpenModal={openModal}
           onSelectCategory={selectCategory}
-          onSelectStore={selectStore}
+          onSelectStore={handleSelectStore}
           onMeasured={(h) => setMeasured((p) => (p === h ? p : h))}
         />
       </ScaledSection>
