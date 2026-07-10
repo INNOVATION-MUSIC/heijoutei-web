@@ -13,7 +13,10 @@ interface Props {
 export default function ImageUploader({ value, onChange, label = '画像' }: Props) {
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [preview, setPreview] = useState<string | null>(value ?? null)
+  // アップロード中だけ使う一時プレビュー（objectURL）。確定画像は value を唯一の真実とする。
+  // ※ 内部stateに確定画像を保持すると、親で並べ替え（value入れ替え）しても画像が追従しない不具合になる。
+  const [tempPreview, setTempPreview] = useState<string | null>(null)
+  const shown = tempPreview ?? value ?? null
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -23,7 +26,7 @@ export default function ImageUploader({ value, onChange, label = '画像' }: Pro
     setUploading(true)
     setError(null)
     const objectUrl = URL.createObjectURL(file)
-    setPreview(objectUrl)
+    setTempPreview(objectUrl)
 
     try {
       const supabase = createClient()
@@ -35,26 +38,24 @@ export default function ImageUploader({ value, onChange, label = '画像' }: Pro
 
       if (error) {
         setError(`アップロード失敗: ${error.message}`)
-        setPreview(value ?? null)
       } else {
         const {
           data: { publicUrl },
         } = supabase.storage.from('media').getPublicUrl(data.path)
-        setPreview(publicUrl)
         onChange?.(publicUrl)
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err)
       setError(`アップロード失敗: ${msg}`)
-      setPreview(value ?? null)
     } finally {
       setUploading(false)
+      setTempPreview(null)
       URL.revokeObjectURL(objectUrl)
     }
   }
 
   function handleRemove() {
-    setPreview(null)
+    setTempPreview(null)
     onChange?.('')
     if (fileInputRef.current) fileInputRef.current.value = ''
   }
@@ -63,10 +64,10 @@ export default function ImageUploader({ value, onChange, label = '画像' }: Pro
     <div>
       <label className="mb-1.5 block text-xs font-medium text-[#9a9aa8]">{label}</label>
 
-      {preview ? (
+      {shown ? (
         <div className="relative overflow-hidden rounded-lg border border-[#2f2f3c]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={preview} alt="プレビュー" className="aspect-video w-full object-cover" />
+          <img src={shown} alt="プレビュー" className="aspect-video w-full object-cover" />
           <div className="absolute right-2 top-2 flex gap-2">
             <button
               type="button"
