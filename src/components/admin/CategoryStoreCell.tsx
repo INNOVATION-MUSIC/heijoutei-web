@@ -17,7 +17,9 @@ export default function CategoryStoreCell({
   onChange: (ids: string[]) => void
 }) {
   const [open, setOpen] = useState(false)
+  const [dropUp, setDropUp] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
+  const btnRef = useRef<HTMLButtonElement>(null)
   const selected = value ?? []
 
   useEffect(() => {
@@ -28,6 +30,17 @@ export default function CategoryStoreCell({
     document.addEventListener('mousedown', onDocClick)
     return () => document.removeEventListener('mousedown', onDocClick)
   }, [open])
+
+  function handleToggleOpen() {
+    if (!open && btnRef.current) {
+      // パネル概算高: 全店ボタン + 区切り + 店舗行。下に収まらず上に余裕があれば上向きに開く。
+      const panelH = 60 + stores.length * 34
+      const rect = btnRef.current.getBoundingClientRect()
+      const below = window.innerHeight - rect.bottom
+      setDropUp(below < panelH && rect.top > below)
+    }
+    setOpen((o) => !o)
+  }
 
   function toggle(id: string) {
     const next = selected.includes(id) ? selected.filter((x) => x !== id) : [...selected, id]
@@ -45,15 +58,20 @@ export default function CategoryStoreCell({
   return (
     <div ref={ref} className="relative">
       <button
+        ref={btnRef}
         type="button"
-        onClick={() => setOpen((o) => !o)}
+        onClick={handleToggleOpen}
         className="w-full truncate rounded-md border border-[#2f2f3c] bg-[#0a0a0f] px-2.5 py-1.5 text-left text-sm text-[#ebe5db] hover:border-[#d9b86b] focus:border-[#d9b86b] focus:outline-none"
         title={label}
       >
         <span className={selected.length === 0 ? 'text-[#9a9aa8]' : ''}>{label}</span>
       </button>
       {open && (
-        <div className="absolute left-0 top-full z-20 mt-1 min-w-[180px] rounded-lg border border-[#2f2f3c] bg-[#14141a] p-1.5 shadow-xl">
+        <div
+          className={`absolute left-0 z-20 min-w-[180px] rounded-lg border border-[#2f2f3c] bg-[#14141a] p-1.5 shadow-xl ${
+            dropUp ? 'bottom-full mb-1' : 'top-full mt-1'
+          }`}
+        >
           <button
             type="button"
             onClick={() => onChange([])}
