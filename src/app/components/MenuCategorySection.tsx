@@ -51,14 +51,17 @@ function CategoryCard({ category, storeId, defaultStore }: { category: MenuCateg
       }}
     >
       <div style={{ position: "relative", width: 200, height: 200, overflow: "hidden", background: "#22140c", flexShrink: 0 }}>
-        <Image
-          src={category.cardPhoto}
-          alt={category.name}
-          fill
-          className="object-cover"
-          sizes="200px"
-          style={{ transform: hover ? "scale(1.06)" : "scale(1)", transition: "transform 0.4s ease" }}
-        />
+        {/* 画像未設定（空文字/null）のときは Image を描画しない（空 src は本番でエラーになる） */}
+        {category.cardPhoto && (
+          <Image
+            src={category.cardPhoto}
+            alt={category.name}
+            fill
+            className="object-cover"
+            sizes="200px"
+            style={{ transform: hover ? "scale(1.06)" : "scale(1)", transition: "transform 0.4s ease" }}
+          />
+        )}
       </div>
       <div style={{ flex: 1, display: "flex", alignItems: "center", paddingLeft: 38, paddingRight: 16 }}>
         <span style={{ fontFamily: mincho, fontSize: 24, fontWeight: 600, letterSpacing: "2px", color: "#fff", lineHeight: 1.4 }}>

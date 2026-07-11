@@ -15,7 +15,10 @@ function CategoryCardSP({ category, storeId, defaultStore }: { category: MenuCat
       style={{ width: 165, display: "flex", flexDirection: "column", textDecoration: "none" }}
     >
       <div style={{ position: "relative", width: 165, height: 165, overflow: "hidden", background: "#22140c" }}>
-        <Image src={category.cardPhoto} alt={category.name} fill className="object-cover" sizes="165px" />
+        {/* 画像未設定（空文字/null）のときは Image を描画しない（空 src は本番でエラーになる） */}
+        {category.cardPhoto && (
+          <Image src={category.cardPhoto} alt={category.name} fill className="object-cover" sizes="165px" />
+        )}
       </div>
       <span style={{ fontFamily: mincho, fontSize: 16, fontWeight: 600, letterSpacing: "1px", color: "#fff", textAlign: "center", lineHeight: 1.4, paddingTop: 13 }}>
         {category.name}
