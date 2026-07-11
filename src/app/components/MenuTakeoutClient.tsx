@@ -56,11 +56,16 @@ export default function MenuTakeoutClient({ tabsByStore, stores }: { tabsByStore
   const openModal = () => setModalOpen(true);
   const closeModal = () => setModalOpen(false);
 
-  const [storeId, setStore] = useStoreParam(stores);
+  // テイクアウトの取扱いがある店舗（DBに品目がある店舗）だけを店舗タブに出す。
+  // useStoreParam に渡すと readStoreParam が未取扱い店舗の ?store= を既定（先頭の取扱い店舗）へ
+  // 丸めるため、直リンクでも未取扱い店舗の空画面／クラッシュにならない。
+  const takeoutStores = (stores ?? []).filter((s) => (tabsByStore?.[s.id]?.length ?? 0) > 0);
+  const storeTabs = takeoutStores.length > 0 ? takeoutStores : stores;
+
+  const [storeId, setStore] = useStoreParam(storeTabs);
   const [activeSlug, setActiveSlug] = useState(TAKEOUT_MENU_TABS[0].slug);
 
-  // 空配列（テイクアウト品目が無い店舗＝例: KOPU29）は ?? では弾けないため length で判定して静的フォールバック。
-  // これをしないと tab が undefined になり tab.items でクラッシュする。
+  // 上のフィルタで storeId は取扱い店舗に限定されるが、念のため空配列でも落ちないよう length で判定。
   const dbTabs = tabsByStore?.[storeId];
   const tabs = dbTabs && dbTabs.length > 0 ? dbTabs : getTakeoutTabs(storeId);
   const tab = tabs.find((t) => t.slug === activeSlug) ?? tabs[0];
@@ -84,7 +89,7 @@ export default function MenuTakeoutClient({ tabsByStore, stores }: { tabsByStore
             activeSlug={tab.slug}
             items={tab.items}
             storeId={storeId}
-            stores={stores}
+            stores={storeTabs}
             onSelectTab={selectTab}
             onSelectStore={setStore}
             height={height}
@@ -111,7 +116,7 @@ export default function MenuTakeoutClient({ tabsByStore, stores }: { tabsByStore
           activeSlug={tab.slug}
           items={tab.items}
           storeId={storeId}
-          stores={stores}
+          stores={storeTabs}
           onSelectTab={setActiveSlug}
           onSelectStore={setStore}
           onOpenModal={openModal}
