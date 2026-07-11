@@ -59,7 +59,10 @@ export default function MenuTakeoutClient({ tabsByStore, stores }: { tabsByStore
   const [storeId, setStore] = useStoreParam(stores);
   const [activeSlug, setActiveSlug] = useState(TAKEOUT_MENU_TABS[0].slug);
 
-  const tabs = tabsByStore?.[storeId] ?? getTakeoutTabs(storeId);
+  // 空配列（テイクアウト品目が無い店舗＝例: KOPU29）は ?? では弾けないため length で判定して静的フォールバック。
+  // これをしないと tab が undefined になり tab.items でクラッシュする。
+  const dbTabs = tabsByStore?.[storeId];
+  const tabs = dbTabs && dbTabs.length > 0 ? dbTabs : getTakeoutTabs(storeId);
   const tab = tabs.find((t) => t.slug === activeSlug) ?? tabs[0];
 
   const selectTab = (slug: string) => {

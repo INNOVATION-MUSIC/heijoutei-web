@@ -56,7 +56,11 @@ export async function fetchTakeoutTabsByStore(): Promise<Record<string, TakeoutM
     if (!anyHasTabs) return fallback;
     // MENU_STORES の id キーに合わせる（フロントの useStoreParam は MENU_STORES.id を使う＝slug と一致）
     const byMenuStore: Record<string, TakeoutMenuTab[]> = {};
-    for (const s of MENU_STORES) byMenuStore[s.id] = result[s.id] ?? getTakeoutTabs(s.id);
+    // 空配列（DBにテイクアウト品目が無い店舗）は静的フォールバックに置換（?? は空配列を弾かない）
+    for (const s of MENU_STORES) {
+      const t = result[s.id];
+      byMenuStore[s.id] = t && t.length > 0 ? t : getTakeoutTabs(s.id);
+    }
     return byMenuStore;
   } catch {
     return fallback;
