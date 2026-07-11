@@ -158,19 +158,16 @@ export default function DraggableCategoryTable({
     setBusy(true)
     setError(null)
     const result = await createCategory(kind, newName, newSlug || undefined)
-    if (result?.error) {
-      setError(result.error)
+    if (result?.error || !result?.category) {
+      setError(result?.error ?? 'カテゴリの作成に失敗しました')
       setBusy(false)
       return
     }
     setNewName('')
     setNewSlug('')
-    // 反映のため最新を取り直す代わりに簡易追加。次回ロードで sort_order 正規化される。
-    const tmpId = crypto.randomUUID()
-    setCats((cs) => [
-      ...cs,
-      { id: tmpId, name: newName.trim(), slug: newSlug.trim() || newName.trim(), is_active: true, sort_order: cs.length + 1 },
-    ])
+    // DB が採番した実 id の行を追加する。仮 id だと以後のインライン編集
+    //（対象店舗・画像・名前など）が .eq('id', 仮id) で 0 件更新になり保存されない。
+    setCats((cs) => [...cs, result.category as Category])
     setBusy(false)
   }
 

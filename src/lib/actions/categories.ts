@@ -83,12 +83,17 @@ export async function createCategory(kind: CategoryKind, name: string, slug?: st
     .maybeSingle()
   const nextOrder = (last?.sort_order ?? 0) + 1
 
-  const { error } = await adminSupabase
+  // 作成行（実 id / sort_order）を返す。クライアントはこの実 id で以後の
+  // 対象店舗・画像・名前などのインライン編集(updateCategory)を行うため、
+  // 仮 id を使うと .eq('id', 仮id) が 0 件更新になり保存されない。
+  const { data, error } = await adminSupabase
     .from(tableFor(kind))
     .insert({ name: name.trim(), slug: finalSlug, sort_order: nextOrder })
+    .select('id, name, slug, is_active, sort_order')
+    .single()
   if (error) return { error: error.message }
   revalidateFor(kind)
-  return { success: true }
+  return { success: true, category: data as unknown as Category }
 }
 
 export async function updateCategory(
