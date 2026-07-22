@@ -40,9 +40,9 @@ export async function getLunchCategory(): Promise<CategoryRef | null> {
 export async function getTakeoutCategoryRefs(): Promise<CategoryRef[]> {
   const { data } = await adminSupabase
     .from('takeout_categories')
-    .select('id, name, slug')
+    .select('id, name, slug, store_ids')
     .order('sort_order', { ascending: true })
-  return data ?? []
+  return (data ?? []) as unknown as CategoryRef[]
 }
 
 // コース編集フォームのカテゴリ選択用（/menu/course のサブタブ）。

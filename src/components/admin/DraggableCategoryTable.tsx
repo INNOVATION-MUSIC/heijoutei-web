@@ -91,7 +91,7 @@ function Row({
           onBlur={(e) => updateCategory(kind, cat.id, { slug: e.target.value })}
         />
       </td>
-      {kind === 'menu' && (
+      {(kind === 'menu' || kind === 'takeout') && (
         <td className="px-2 py-2">
           <CategoryStoreCell
             stores={stores}
@@ -199,7 +199,7 @@ export default function DraggableCategoryTable({
               {kind === 'menu' && <th className="w-24 px-2 py-3 font-medium">カード画像</th>}
               <th className="px-2 py-3 font-medium">カテゴリ名</th>
               <th className="px-2 py-3 font-medium">スラッグ</th>
-              {kind === 'menu' && <th className="w-44 px-2 py-3 font-medium">対象店舗</th>}
+              {(kind === 'menu' || kind === 'takeout') && <th className="w-44 px-2 py-3 font-medium">対象店舗</th>}
               <th className="w-16 px-2 py-3 text-center font-medium">表示</th>
               <th className="w-16 px-2 py-3 text-right font-medium">操作</th>
             </tr>

@@ -13,10 +13,10 @@ export default async function CategoriesSettingsPage({
   const { tab } = await searchParams
   const kind: CategoryKind =
     tab === 'takeout' ? 'takeout' : tab === 'course' ? 'course' : tab === 'lunch' ? 'lunch' : 'menu'
-  // 対象店舗の選択肢はメニューカテゴリでのみ使用
+  // 対象店舗の選択肢はメニュー／テイクアウトカテゴリで使用
   const [categories, stores] = await Promise.all([
     getCategories(kind),
-    kind === 'menu' ? getStoreRefs() : Promise.resolve([]),
+    kind === 'menu' || kind === 'takeout' ? getStoreRefs() : Promise.resolve([]),
   ])
 
   const tabs: { key: CategoryKind; label: string }[] = [

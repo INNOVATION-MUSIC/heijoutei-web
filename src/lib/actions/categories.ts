@@ -13,7 +13,7 @@ export type Category = {
   sort_order: number | null
   // メニューカテゴリのみ。フロント /menu のカテゴリカード画像。他カテゴリには列なし。
   card_image_url?: string | null
-  // メニューカテゴリのみ。対象店舗（stores.id の配列）。null/空=全店表示。
+  // メニュー／テイクアウトカテゴリ。対象店舗（stores.id の配列）。null/空=全店表示。
   store_ids?: string[] | null
 }
 
@@ -57,8 +57,13 @@ function autoSlug(name: string): string {
 }
 
 export async function getCategories(kind: CategoryKind): Promise<Category[]> {
-  // card_image_url / store_ids はメニューカテゴリのみ存在する列
-  const cols = kind === 'menu' ? 'id, name, slug, is_active, sort_order, card_image_url, store_ids' : 'id, name, slug, is_active, sort_order'
+  // card_image_url はメニューのみ。store_ids はメニュー／テイクアウトが持つ（対象店舗）
+  const cols =
+    kind === 'menu'
+      ? 'id, name, slug, is_active, sort_order, card_image_url, store_ids'
+      : kind === 'takeout'
+        ? 'id, name, slug, is_active, sort_order, store_ids'
+        : 'id, name, slug, is_active, sort_order'
   let query = adminSupabase
     .from(tableFor(kind))
     .select(cols)
@@ -106,10 +111,11 @@ export async function updateCategory(
   if (patch.name !== undefined) update.name = patch.name.trim()
   if (patch.slug !== undefined) update.slug = patch.slug.trim()
   if (patch.is_active !== undefined) update.is_active = patch.is_active
-  // card_image_url / store_ids はメニューカテゴリのみ（他カテゴリのテーブルには列が無いため除外）
+  // card_image_url はメニューのみ。store_ids はメニュー／テイクアウトが持つ（他カテゴリのテーブルには列が無いため除外）
   if (patch.card_image_url !== undefined && kind === 'menu') update.card_image_url = patch.card_image_url || null
   // store_ids: 空配列は「全店表示」に正規化して NULL 保存
-  if (patch.store_ids !== undefined && kind === 'menu') update.store_ids = patch.store_ids && patch.store_ids.length > 0 ? patch.store_ids : null
+  if (patch.store_ids !== undefined && (kind === 'menu' || kind === 'takeout'))
+    update.store_ids = patch.store_ids && patch.store_ids.length > 0 ? patch.store_ids : null
   // tableFor が union 型のため、共通列だけの型にキャストして update（card_image_url/store_ids は menu のみ実行時に含まれる）
   const baseUpdate = update as { name?: string; slug?: string; is_active?: boolean }
   const { error } = await adminSupabase.from(tableFor(kind)).update(baseUpdate).eq('id', id)

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import ImageUploader from '@/components/admin/ImageUploader'
 import SaveSuccessBanner from '@/components/admin/SaveSuccessBanner'
@@ -49,6 +49,18 @@ export default function TakeoutMenuForm({
     }))
   }
 
+  // 取り扱い店舗に合うカテゴリだけをプルダウンに出す（store_ids 未指定=全店）。
+  // 店舗未選択なら全カテゴリ。選択中カテゴリは対象外でも常に残す。
+  const visibleCategories = useMemo(() => {
+    const sel = form.store_ids
+    return categories.filter((c) => {
+      const ids = c.store_ids ?? []
+      const isGlobal = ids.length === 0
+      const intersects = sel.length === 0 || ids.some((id) => sel.includes(id))
+      return isGlobal || intersects || c.id === form.category_id
+    })
+  }, [categories, form.store_ids, form.category_id])
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setSaving(true)
@@ -87,9 +99,12 @@ export default function TakeoutMenuForm({
               <label className={labelClass}>カテゴリ</label>
               <select className={inputClass} value={form.category_id ?? ''} onChange={(e) => set('category_id', e.target.value || null)}>
                 <option value="">（未分類）</option>
-                {categories.map((c) => (
-                  <option key={c.id} value={c.id}>{c.name}</option>
-                ))}
+                {visibleCategories.map((c) => {
+                  const isGlobal = (c.store_ids ?? []).length === 0
+                  return (
+                    <option key={c.id} value={c.id}>{isGlobal ? `${c.name}（全店）` : c.name}</option>
+                  )
+                })}
               </select>
             </div>
             <div>

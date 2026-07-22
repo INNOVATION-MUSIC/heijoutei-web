@@ -84,11 +84,15 @@ export async function fetchTakeoutMenuByStore(): Promise<Record<string, TakeoutM
   try {
     const supabase = createStaticClient();
     const [{ data: cats }, { data: stores }] = await Promise.all([
-      supabase.from("takeout_categories").select("name, sort_order").eq("is_active", true).order("sort_order"),
+      supabase.from("takeout_categories").select("name, sort_order, store_ids").eq("is_active", true).order("sort_order"),
       supabase.from("stores").select("id, slug").eq("is_active", true),
     ]);
     if (!cats || cats.length === 0 || !stores || stores.length === 0) return {};
-    const categories = cats.map((c) => c.name);
+    // カテゴリは店舗別（store_ids 未指定=全店）。店舗ごとに対象カテゴリ名リストを作る。
+    const categoriesForStore = (storeId: string) =>
+      (cats as { name: string; store_ids: string[] | null }[])
+        .filter((c) => !c.store_ids || c.store_ids.length === 0 || c.store_ids.includes(storeId))
+        .map((c) => c.name);
 
     const { data: menus, error } = await supabase
       .from("store_takeout_menus")
@@ -107,7 +111,7 @@ export async function fetchTakeoutMenuByStore(): Promise<Record<string, TakeoutM
 
     const slugById = new Map(stores.map((s) => [s.id, s.slug]));
     const result: Record<string, TakeoutMenuData> = {};
-    for (const s of stores) result[s.slug] = { categories, items: [] };
+    for (const s of stores) result[s.slug] = { categories: categoriesForStore(s.id), items: [] };
 
     for (const r of rows) {
       const item: TakeoutMenuItem = {
