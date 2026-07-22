@@ -92,7 +92,7 @@ export default function HeroSection({ onOpenModal, lineLinks = [] }: { onOpenMod
                 {"YAKINIKU  HEIJOHTEI"}
               </p>
               <p style={{ fontFamily: mincho, fontSize: 22, fontWeight: 400, letterSpacing: "0.27em", lineHeight: "44px", color: "#ebe5db", textAlign: "center" }}>
-                創業50年。<br />受け継がれる伝統と、<br />変わらない美味しさ。
+                創業50年以上。<br />受け継がれる伝統と、<br />変わらない美味しさ。
               </p>
               <p style={{ fontFamily: sans, fontSize: 10, fontWeight: 300, letterSpacing: "0.15em", color: "#99948c", lineHeight: "22px", textAlign: "center" }}>
                 Celebrating 50 years.<br />A time-honored tradition, a timeless flavor.

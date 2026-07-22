@@ -113,7 +113,7 @@ export default function HeroSectionSP({ onOpenModal, onOpenLineModal }: Props) {
               paddingLeft: "6px", // letterSpacing末尾スペース補正でセンター合わせ
             }}
           >
-            創業50年。
+            創業50年以上。
             <br />
             受け継がれる伝統と、
             <br />
