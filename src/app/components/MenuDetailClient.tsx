@@ -57,10 +57,16 @@ export default function MenuDetailClient({ category, allCategories, stores }: { 
   const openModal = () => setModalOpen(true);
   const closeModal = () => setModalOpen(false);
 
+  // 実際に品目がある店舗のみタブ表示（未登録店舗は非表示）。1件も無ければ全店表示にフォールバック。
+  const menuStoreSet = new Set<string>();
+  for (const c of allCategories ?? [])
+    for (const [slug, its] of Object.entries(c.itemsByStore ?? {})) if (its && its.length > 0) menuStoreSet.add(slug);
+  const visibleStores = menuStoreSet.size > 0 ? (stores ?? []).filter((s) => menuStoreSet.has(s.id)) : stores;
+
   // カテゴリ切替はリロードせず state で行い、URL は history.replaceState で同期する。
   const [activeSlug, setActiveSlug] = useState(category.slug);
   // 店舗選択は ?store= を真実の値として URL 駆動で保持。
-  const [storeId, selectStore] = useStoreParam(stores);
+  const [storeId, selectStore] = useStoreParam(visibleStores);
 
   const cat = allCategories?.find((c) => c.slug === activeSlug) ?? getMenuCategory(activeSlug) ?? category;
   // 店舗別メニュー。登録のあるカテゴリは選択店舗に登録が無ければ空（フォールバックしない）。
@@ -101,7 +107,7 @@ export default function MenuDetailClient({ category, allCategories, stores }: { 
             categories={allCategories}
             items={items}
             storeId={storeId}
-            stores={stores}
+            stores={visibleStores}
             onSelectCategory={selectCategory}
             onSelectStore={handleSelectStore}
             height={height}
@@ -129,7 +135,7 @@ export default function MenuDetailClient({ category, allCategories, stores }: { 
           categories={allCategories}
           items={items}
           storeId={storeId}
-          stores={stores}
+          stores={visibleStores}
           height={height}
           onOpenModal={openModal}
           onSelectCategory={selectCategory}

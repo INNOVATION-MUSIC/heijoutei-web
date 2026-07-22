@@ -68,7 +68,13 @@ export default function MenuLunchClient({
   const openModal = () => setModalOpen(true);
   const closeModal = () => setModalOpen(false);
 
-  const [storeId, setStore] = useStoreParam(stores);
+  // ランチ品目がある店舗のみタブ表示（未登録店舗は非表示）。データが1件も無ければ全店表示にフォールバック。
+  const lunchStoreSet = new Set<string>();
+  for (const [slug, g] of Object.entries(lunchGroupsByStore ?? {})) if (g.length > 0) lunchStoreSet.add(slug);
+  for (const [slug, items] of Object.entries(lunchByStore ?? {})) if (items.length > 0) lunchStoreSet.add(slug);
+  const visibleStores = lunchStoreSet.size > 0 ? (stores ?? []).filter((s) => lunchStoreSet.has(s.id)) : stores;
+
+  const [storeId, setStore] = useStoreParam(visibleStores);
   const selectStore = (id: string) => {
     setStore(id);
     setCatIdx(0);
@@ -98,7 +104,7 @@ export default function MenuLunchClient({
           <MenuLunchSectionSP
             items={items}
             storeId={storeId}
-            stores={stores}
+            stores={visibleStores}
             onSelectStore={selectStore}
             categoryTabs={categoryTabs}
             activeCategory={activeIdx}
@@ -125,7 +131,7 @@ export default function MenuLunchClient({
         <MenuLunchSection
           items={items}
           storeId={storeId}
-          stores={stores}
+          stores={visibleStores}
           onSelectStore={selectStore}
           categoryTabs={categoryTabs}
           activeCategory={activeIdx}

@@ -45,7 +45,13 @@ export default function MenuCategoryClient({ categories, stores }: { categories?
   const [menuOpen, setMenuOpen] = useState(false);
   const [measured, setMeasured] = useState<number | null>(null);
   const [measuredPc, setMeasuredPc] = useState<number | null>(null);
-  const [storeId, setStore] = useStoreParam(stores);
+
+  // 実際に品目がある店舗のみタブ表示（未登録店舗は非表示）。1件も無ければ全店表示にフォールバック。
+  const menuStoreSet = new Set<string>();
+  for (const c of cats) for (const [slug, items] of Object.entries(c.itemsByStore ?? {})) if (items && items.length > 0) menuStoreSet.add(slug);
+  const visibleStores = menuStoreSet.size > 0 ? (stores ?? []).filter((s) => menuStoreSet.has(s.id)) : stores;
+
+  const [storeId, setStore] = useStoreParam(visibleStores);
 
   const openModal = () => setModalOpen(true);
   const closeModal = () => setModalOpen(false);
@@ -61,7 +67,7 @@ export default function MenuCategoryClient({ categories, stores }: { categories?
         <ScaledSection designWidth={DESIGN_SP} height={height}>
           <MenuCategorySectionSP
             categories={categories}
-            stores={stores}
+            stores={visibleStores}
             storeId={storeId}
             onSelectStore={setStore}
             height={height}
@@ -88,7 +94,7 @@ export default function MenuCategoryClient({ categories, stores }: { categories?
         <MenuCategorySection
           onOpenModal={openModal}
           categories={categories}
-          stores={stores}
+          stores={visibleStores}
           height={pcHeight}
           onMeasured={(h) => setMeasuredPc((p) => (p === h ? p : h))}
         />
