@@ -58,9 +58,13 @@ export default function TakeoutClient({
   slotsByStore?: Record<string, DaySlotMap>;
 } = {}) {
   // DB 連携データ（無ければ静的フォールバック）
-  const STORES = stores && stores.length > 0 ? stores : TAKEOUT_STORES;
+  const ALL_STORES = stores && stores.length > 0 ? stores : TAKEOUT_STORES;
   const MENU_BY_STORE = menuByStore ?? {};
   const SLOTS = slotsByStore ?? {};
+  // テイクアウトメニューが登録されている店舗のみ選択肢に出す（未登録店舗は非表示）。
+  // menuByStore が空（DB 取得失敗/未設定）のときは静的フォールバックのため全店表示に戻す。
+  const storesWithMenu = ALL_STORES.filter((s) => (MENU_BY_STORE[s.id]?.items?.length ?? 0) > 0);
+  const STORES = storesWithMenu.length > 0 ? storesWithMenu : ALL_STORES;
 
   const isMobile = useIsMobile();
 
