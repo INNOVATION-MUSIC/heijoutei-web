@@ -49,11 +49,23 @@ function TakeoutTabsSP({ tabs, activeSlug, onSelect }: { tabs: TakeoutMenuTab[];
 function TakeoutNoteSP() {
   return (
     <div style={{ paddingLeft: 20, paddingRight: 20, paddingTop: 50 }}>
-      <div style={{ background: PANEL, padding: "26px 24px", display: "flex", flexDirection: "column" }}>
-        <p style={{ fontFamily: mincho, fontSize: 17, letterSpacing: "0.04em", lineHeight: "28px", color: "#ebe5db", margin: 0 }}>{TAKEOUT_MENU_NOTE.title}</p>
-        <div style={{ display: "flex", flexDirection: "column", gap: 8, paddingTop: 18 }}>
+      <div style={{ background: PANEL, padding: "24px 22px", display: "flex", flexDirection: "column", gap: 16 }}>
+        <p style={{ fontFamily: mincho, fontSize: 15, letterSpacing: "0.04em", lineHeight: "22px", color: "#d9b86b", margin: 0 }}>{TAKEOUT_MENU_NOTE.title}</p>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           {TAKEOUT_MENU_NOTE.lines.map((l, i) => (
-            <p key={i} style={{ fontFamily: sans, fontSize: 12, letterSpacing: "0.02em", lineHeight: "18px", color: "#99948c", margin: 0 }}>・ {l}</p>
+            <p key={i} style={{ fontFamily: mincho, fontSize: 12, letterSpacing: "0.02em", lineHeight: "19px", color: "rgba(235,229,219,0.65)", margin: 0, display: "flex", gap: 6 }}>
+              <span style={{ flexShrink: 0, color: "rgba(217,184,107,0.7)" }}>・</span>
+              <span>{l}</span>
+            </p>
+          ))}
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8, borderTop: "1px solid rgba(234,229,219,0.15)", paddingTop: 16 }}>
+          <p style={{ fontFamily: mincho, fontSize: 13, letterSpacing: "0.06em", color: "#ebe5db", margin: 0 }}>{TAKEOUT_MENU_NOTE.reserveTitle}</p>
+          {TAKEOUT_MENU_NOTE.reserveNotes.map(([label, val], i) => (
+            <div key={i} style={{ display: "flex", alignItems: "baseline", gap: 12 }}>
+              <span style={{ width: 96, flexShrink: 0, fontFamily: mincho, fontSize: 12, letterSpacing: "0.04em", color: "rgba(235,229,219,0.55)" }}>{label}</span>
+              <span style={{ fontFamily: mincho, fontSize: 15, letterSpacing: "0.04em", color: "#d9b86b" }}>{val}</span>
+            </div>
           ))}
         </div>
       </div>

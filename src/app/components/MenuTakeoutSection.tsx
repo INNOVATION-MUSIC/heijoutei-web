@@ -50,12 +50,26 @@ function TakeoutTabs({ tabs, activeSlug, onSelect }: { tabs: TakeoutMenuTab[]; a
 function TakeoutNote() {
   return (
     <div style={{ paddingLeft: 140, paddingRight: 140, paddingTop: 50 }}>
-      <div style={{ background: PANEL, padding: "20px 48px 24px", display: "flex", flexDirection: "column" }}>
-        <p style={{ fontFamily: mincho, fontSize: 17, letterSpacing: "0.04em", color: "#ebe5db", margin: 0 }}>{TAKEOUT_MENU_NOTE.title}</p>
-        <div style={{ display: "flex", flexDirection: "column", gap: 6, paddingTop: 18 }}>
+      <div style={{ background: PANEL, padding: "28px 48px", display: "flex", flexDirection: "column", gap: 18 }}>
+        <p style={{ fontFamily: mincho, fontSize: 18, letterSpacing: "0.06em", color: "#d9b86b", margin: 0 }}>{TAKEOUT_MENU_NOTE.title}</p>
+        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
           {TAKEOUT_MENU_NOTE.lines.map((l, i) => (
-            <p key={i} style={{ fontFamily: sans, fontSize: 12, letterSpacing: "0.02em", lineHeight: "18px", color: "#99948c", margin: 0 }}>・ {l}</p>
+            <p key={i} style={{ fontFamily: mincho, fontSize: 13, letterSpacing: "0.04em", lineHeight: "22px", color: "rgba(235,229,219,0.65)", margin: 0, display: "flex", gap: 8 }}>
+              <span style={{ color: "rgba(217,184,107,0.7)" }}>・</span>
+              <span>{l}</span>
+            </p>
           ))}
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 10, borderTop: "1px solid rgba(234,229,219,0.15)", paddingTop: 18 }}>
+          <p style={{ fontFamily: mincho, fontSize: 14, letterSpacing: "0.08em", color: "#ebe5db", margin: 0 }}>{TAKEOUT_MENU_NOTE.reserveTitle}</p>
+          <div style={{ display: "flex", gap: 64 }}>
+            {TAKEOUT_MENU_NOTE.reserveNotes.map(([label, val], i) => (
+              <div key={i} style={{ display: "flex", alignItems: "baseline", gap: 16 }}>
+                <span style={{ fontFamily: mincho, fontSize: 12, letterSpacing: "0.06em", color: "rgba(235,229,219,0.55)" }}>{label}</span>
+                <span style={{ fontFamily: mincho, fontSize: 16, letterSpacing: "0.04em", color: "#d9b86b" }}>{val}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
