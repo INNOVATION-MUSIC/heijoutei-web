@@ -70,7 +70,7 @@ function Row({ menu, index }: { menu: TakeoutMenuRow; index: number }) {
 }
 
 // テイクアウトメニューをドラッグ並べ替えできる表。並べ替え時に sort_order を振り直す。
-export default function DraggableTakeoutMenuTable({ initial }: { initial: TakeoutMenuRow[] }) {
+export default function DraggableTakeoutMenuTable({ storeName, initial }: { storeName?: string; initial: TakeoutMenuRow[] }) {
   const [rows, setRows] = useState<TakeoutMenuRow[]>(initial)
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }))
 
@@ -85,7 +85,9 @@ export default function DraggableTakeoutMenuTable({ initial }: { initial: Takeou
   }
 
   return (
-    <div className="overflow-x-auto rounded-xl border border-[#23232e] bg-[#14141a]">
+    <div className="space-y-2">
+      {storeName && <h2 className="text-sm font-semibold text-[#ebe5db]">{storeName}</h2>}
+      <div className="overflow-x-auto rounded-xl border border-[#23232e] bg-[#14141a]">
       <table className="w-full min-w-[720px] text-sm">
         <thead>
           <tr className="border-b border-[#23232e] bg-[#1a1a22] text-left text-xs text-[#6f6f80]">
@@ -109,6 +111,7 @@ export default function DraggableTakeoutMenuTable({ initial }: { initial: Takeou
           </SortableContext>
         </DndContext>
       </table>
+      </div>
     </div>
   )
 }
