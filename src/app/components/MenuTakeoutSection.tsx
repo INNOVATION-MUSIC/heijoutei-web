@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import OutlineButton from "./OutlineButton";
 import { MenuHeading, StoreTabs, ItemCard, BackToMenuButton, mincho, sans, display, PANEL, GOLD, type StoreTab } from "./MenuShared";
@@ -11,10 +12,26 @@ const TAB_W = 191; // カテゴリタブ1つの幅（191×7≒1340）
 /* ─────────── カテゴリタブ（7種・1行・現在タブは金で点灯・リロードせず切替） ─────────── */
 function TakeoutTabs({ tabs, activeSlug, onSelect }: { tabs: TakeoutMenuTab[]; activeSlug: string; onSelect: (slug: string) => void }) {
   const activeIndex = Math.max(0, tabs.findIndex((t) => t.slug === activeSlug));
+  // タブ数が多いと flex でボタンが縮み固定幅計算とズレるため、アクティブタブの実位置を測って下線を合わせる
+  const rowRef = useRef<HTMLDivElement>(null);
+  const [bar, setBar] = useState<{ left: number; width: number } | null>(null);
+  useEffect(() => {
+    const row = rowRef.current;
+    if (!row) return;
+    const measure = () => {
+      const btn = row.children[activeIndex] as HTMLElement | undefined;
+      if (btn) setBar({ left: btn.offsetLeft, width: btn.offsetWidth });
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(row);
+    return () => ro.disconnect();
+  }, [activeIndex, tabs]);
+
   return (
     <div style={{ paddingLeft: 50, paddingRight: 50, paddingTop: 66 }}>
       <div style={{ width: 1337 }}>
-        <div style={{ display: "flex" }}>
+        <div ref={rowRef} style={{ display: "flex", position: "relative" }}>
           {tabs.map((t) => (
             <button
               key={t.slug}
@@ -39,7 +56,7 @@ function TakeoutTabs({ tabs, activeSlug, onSelect }: { tabs: TakeoutMenuTab[]; a
           ))}
         </div>
         <div style={{ position: "relative", width: 1337, height: 2, background: "rgba(234,229,219,0.15)" }}>
-          <div style={{ position: "absolute", top: 0, left: activeIndex * TAB_W, width: TAB_W, height: 2, background: GOLD, transition: "left 0.3s ease" }} />
+          {bar && <div style={{ position: "absolute", top: 0, left: bar.left, width: bar.width, height: 2, background: GOLD, transition: "left 0.3s ease, width 0.3s ease" }} />}
         </div>
       </div>
     </div>
