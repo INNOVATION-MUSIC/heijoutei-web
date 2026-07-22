@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { TakeoutHeader, TakeoutStepper, RedButton, OutlineButton, mincho, sans } from "./TakeoutShared";
 import { type TakeoutMenuItem } from "@/app/lib/takeoutData";
@@ -43,6 +43,23 @@ export default function Step2Menu(p: Props) {
     return () => ro.disconnect();
   });
 
+  // タブ幅は文字数で不揃いのため、アクティブタブの実位置を測ってゴールド下線を合わせる
+  const tabRowRef = useRef<HTMLDivElement>(null);
+  const [bar, setBar] = useState<{ left: number; width: number } | null>(null);
+  useEffect(() => {
+    const row = tabRowRef.current;
+    if (!row) return;
+    const measure = () => {
+      const idx = p.categories.indexOf(p.activeCategory);
+      const btn = row.children[idx] as HTMLElement | undefined;
+      if (btn) setBar({ left: btn.offsetLeft, width: btn.offsetWidth });
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(row);
+    return () => ro.disconnect();
+  }, [p.activeCategory, p.categories]);
+
   return (
     <div ref={ref} style={{ display: "flex", flexDirection: "column", width: 1440, background: "#0a0a0a", paddingBottom: 130 }}>
       <TakeoutHeader onOpenModal={p.onOpenModal} />
@@ -55,7 +72,7 @@ export default function Step2Menu(p: Props) {
       {/* カテゴリタブ */}
       <div style={{ paddingLeft: 50, paddingRight: 50, paddingTop: 64 }}>
         <div style={{ width: 1340 }}>
-          <div style={{ display: "flex" }}>
+          <div ref={tabRowRef} style={{ display: "flex", position: "relative" }}>
             {p.categories.map((c) => {
               const active = c === p.activeCategory;
               return (
@@ -70,7 +87,7 @@ export default function Step2Menu(p: Props) {
             })}
           </div>
           <div style={{ position: "relative", width: 1340, height: 2, background: "rgba(235,229,219,0.15)" }}>
-            <div style={{ position: "absolute", top: 0, left: `${(p.categories.indexOf(p.activeCategory) * 100) / p.categories.length}%`, width: `${100 / p.categories.length}%`, height: 2, background: GOLD_BAR, transition: "left 0.25s ease" }} />
+            {bar && <div style={{ position: "absolute", top: 0, left: bar.left, width: bar.width, height: 2, background: GOLD_BAR, transition: "left 0.25s ease, width 0.25s ease" }} />}
           </div>
         </div>
       </div>
