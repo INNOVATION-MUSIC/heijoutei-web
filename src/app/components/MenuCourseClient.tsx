@@ -31,14 +31,18 @@ function spEstimateContent(courseCount: number) {
   return SP_HEAD_BLOCK + 30 + courseCount * SP_COURSE_CARD + Math.max(0, courseCount - 1) * 40 + SP_NOTES;
 }
 
-// アクティブ店舗のカテゴリ別グループを得る。DB 連動が無ければ静的データの単一グループにフォールバック。
+// アクティブ店舗のカテゴリ別グループを得る。
+// DB にコースがある運用（hasDbCourses）では、未登録店舗に静的デモを出さず空表示にする。
+// DB が完全に空のときだけ静的データにフォールバックする。
 function groupsForStore(
   storeId: string,
   courseGroupsByStore?: Record<string, CourseGroup[]>,
   coursesByStore?: Record<string, CourseItem[]>,
+  hasDbCourses?: boolean,
 ): CourseGroup[] {
   const fromDb = courseGroupsByStore?.[storeId];
   if (fromDb && fromDb.length > 0) return fromDb;
+  if (hasDbCourses) return [{ slug: null, name: null, courses: [] }];
   return [{ slug: null, name: null, courses: coursesByStore?.[storeId] ?? getCourses(storeId) }];
 }
 
@@ -67,7 +71,14 @@ export default function MenuCourseClient({
   const openModal = () => setModalOpen(true);
   const closeModal = () => setModalOpen(false);
 
-  const [storeId, setStore] = useStoreParam(stores);
+  // DB にコースがある店舗のみタブ表示（静的デモは DB 完全空のときだけ）。
+  // 亀岡・ゆらのだけコース登録がある場合、園部/福知山/KOPU29 のタブは出さない。
+  const hasDbCourses = !!courseGroupsByStore && Object.keys(courseGroupsByStore).length > 0;
+  const visibleStores = hasDbCourses
+    ? (stores ?? []).filter((s) => (courseGroupsByStore?.[s.id]?.length ?? 0) > 0)
+    : stores;
+
+  const [storeId, setStore] = useStoreParam(visibleStores);
   // 店舗切替時はカテゴリ選択と実測をリセットする
   const selectStore = (id: string) => {
     setStore(id);
@@ -81,7 +92,7 @@ export default function MenuCourseClient({
     setMeasuredPc(null);
   };
 
-  const groups = groupsForStore(storeId, courseGroupsByStore, coursesByStore);
+  const groups = groupsForStore(storeId, courseGroupsByStore, coursesByStore, hasDbCourses);
   const activeIdx = Math.min(catIdx, groups.length - 1);
   const courses = groups[activeIdx]?.courses ?? [];
   // タブは2グループ以上のときのみ表示（単一/未分類はフラット表示）
@@ -103,7 +114,7 @@ export default function MenuCourseClient({
           <MenuCourseSectionSP
             courses={courses}
             storeId={storeId}
-            stores={stores}
+            stores={visibleStores}
             onSelectStore={selectStore}
             categoryTabs={categoryTabs}
             activeCategory={activeIdx}
@@ -132,7 +143,7 @@ export default function MenuCourseClient({
         <MenuCourseSection
           courses={courses}
           storeId={storeId}
-          stores={stores}
+          stores={visibleStores}
           onSelectStore={selectStore}
           categoryTabs={categoryTabs}
           activeCategory={activeIdx}
