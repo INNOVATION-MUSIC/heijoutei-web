@@ -17,11 +17,14 @@ const GREEN = "#6f9e6f";
 const AMBER = "#d3a24e";
 
 const NOTICE = [
-  "本日より31日目までのご予約を承ります（毎週水曜日は定休日のためお渡しができません）。1つの時間帯につき受取人数制限を設けております。",
-  "お持ち帰り商品の受け渡しはご注文より1時間ほどお時間を頂戴しております。",
-  "お持ち帰り商品のお電話での受付時間は10:00〜21:30です。",
-  "お持ち帰り商品は店舗休業日(通常は火曜日)を除く11:30〜22:00の間、店頭でのお渡しとなります。",
-  "お持ち帰り商品のご注文はお電話またはオンラインで受け付けております。",
+  "ご注文されてから商品のお渡しまでに、最短でも60分頂戴しております。",
+  "お急ぎの方は直接お電話でご注文ください。",
+];
+
+// 予約に関する注意事項（締切）
+const RESERVE_NOTES: [string, string][] = [
+  ["予約受付締切", "1時間前まで"],
+  ["キャンセル締切", "4時間前まで"],
 ];
 
 type Props = {
@@ -56,17 +59,31 @@ export default function Step1DateTime(p: Props) {
 
       {/* 注意書きパネル */}
       <div style={{ paddingLeft: 140, paddingRight: 140, paddingTop: 40 }}>
-        <div style={{ width: 1160, background: PANEL, padding: "24px 48px", display: "flex", flexDirection: "column", gap: 14 }}>
-          <p style={{ margin: 0, fontFamily: mincho, fontSize: 16, letterSpacing: "0.05em", color: "#ebe5db" }}>
-            1ヶ月先までのテイクアウトご予約ができます
+        <div style={{ width: 1160, background: PANEL, padding: "28px 48px", display: "flex", flexDirection: "column", gap: 18 }}>
+          {/* リード */}
+          <p style={{ margin: 0, fontFamily: mincho, fontSize: 18, letterSpacing: "0.06em", color: "#d9b86b" }}>
+            お店の味をご家庭でも楽しめます！
           </p>
+          {/* 注意事項 */}
           <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
             {NOTICE.map((n, i) => (
-              <p key={i} style={{ margin: 0, fontFamily: mincho, fontSize: 12, letterSpacing: "0.04em", color: "rgba(235,229,219,0.55)", lineHeight: "20px", display: "flex", gap: 6 }}>
-                <span>・</span>
+              <p key={i} style={{ margin: 0, fontFamily: mincho, fontSize: 13, letterSpacing: "0.04em", color: "rgba(235,229,219,0.65)", lineHeight: "22px", display: "flex", gap: 8 }}>
+                <span style={{ color: "rgba(217,184,107,0.7)" }}>・</span>
                 <span>{n}</span>
               </p>
             ))}
+          </div>
+          {/* 予約に関する注意事項 */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 10, borderTop: "1px solid rgba(234,229,219,0.15)", paddingTop: 18 }}>
+            <p style={{ margin: 0, fontFamily: mincho, fontSize: 14, letterSpacing: "0.08em", color: "#ebe5db" }}>予約に関する注意事項</p>
+            <div style={{ display: "flex", gap: 64 }}>
+              {RESERVE_NOTES.map(([label, val], i) => (
+                <div key={i} style={{ display: "flex", alignItems: "baseline", gap: 16 }}>
+                  <span style={{ fontFamily: mincho, fontSize: 12, letterSpacing: "0.06em", color: "rgba(235,229,219,0.55)" }}>{label}</span>
+                  <span style={{ fontFamily: mincho, fontSize: 16, letterSpacing: "0.04em", color: "#d9b86b" }}>{val}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
