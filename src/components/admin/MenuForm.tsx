@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import MenuItemsEditor from '@/components/admin/MenuItemsEditor'
 import SaveSuccessBanner from '@/components/admin/SaveSuccessBanner'
@@ -68,6 +68,34 @@ export default function MenuForm({
     setDirty(true)
   }
 
+  // カテゴリは選択中の店舗で絞り込む（store_ids 未指定=全店表示）。
+  // 選択中カテゴリは絞り込み対象外でも常に残す（値の消失・表示崩れ防止）。
+  const belongsToStore = (c: CategoryRef, storeId: string) => {
+    const ids = c.store_ids ?? []
+    return ids.length === 0 || ids.includes(storeId)
+  }
+  const visibleCategories = useMemo(
+    () => categories.filter((c) => belongsToStore(c, form.store_id) || c.id === form.category_id),
+    [categories, form.store_id, form.category_id],
+  )
+
+  // 新規作成で店舗を変えたら、対象外になったカテゴリを先頭の対象カテゴリへ切り替える。
+  function onStoreChange(nextStoreId: string) {
+    if (isEdit && menuIndex) {
+      switchTo(nextStoreId, form.category_id ?? null)
+      return
+    }
+    setForm((f) => {
+      const current = categories.find((c) => c.id === f.category_id)
+      const keep = current && belongsToStore(current, nextStoreId)
+      const category_id = keep
+        ? f.category_id
+        : categories.find((c) => belongsToStore(c, nextStoreId))?.id ?? null
+      return { ...f, store_id: nextStoreId, category_id }
+    })
+    setDirty(true)
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setSaving(true)
@@ -109,7 +137,7 @@ export default function MenuForm({
               <select
                 className={inputClass}
                 value={form.store_id}
-                onChange={(e) => (isEdit && menuIndex ? switchTo(e.target.value, form.category_id ?? null) : set('store_id', e.target.value))}
+                onChange={(e) => onStoreChange(e.target.value)}
               >
                 {stores.map((s) => (<option key={s.id} value={s.id}>{s.name}</option>))}
               </select>
@@ -123,12 +151,10 @@ export default function MenuForm({
                   onChange={(e) => (isEdit && menuIndex ? switchTo(form.store_id, e.target.value || null) : set('category_id', e.target.value || null))}
                 >
                   <option value="">（未分類）</option>
-                  {categories.map((c) => {
-                    // 対象店舗が指定されたカテゴリは「カテゴリ名（店舗名）」で判別しやすく表示（未指定=全店）
-                    const storeNames = (c.store_ids ?? [])
-                      .map((id) => stores.find((s) => s.id === id)?.name)
-                      .filter((n): n is string => !!n)
-                    const label = storeNames.length > 0 ? `${c.name}（${storeNames.join('・')}）` : c.name
+                  {/* 選択中の店舗で絞り込んだカテゴリのみ表示（全店カテゴリは常に表示） */}
+                  {visibleCategories.map((c) => {
+                    const isGlobal = (c.store_ids ?? []).length === 0
+                    const label = isGlobal ? `${c.name}（全店）` : c.name
                     return (<option key={c.id} value={c.id}>{label}</option>)
                   })}
                 </select>
