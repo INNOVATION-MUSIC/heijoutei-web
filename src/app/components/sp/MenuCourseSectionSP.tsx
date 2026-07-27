@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { COURSE_NOTES, DRINK_PLAN_TITLE, DRINK_PLANS, POKKIRI_OPTION, ENKAI_INFO, type CourseItem } from "@/app/lib/menuData";
+import { getCourseNotes, DRINK_PLAN_TITLE, DRINK_PLANS, POKKIRI_OPTION, ENKAI_INFO, type CourseItem } from "@/app/lib/menuData";
 import { type StoreTab } from "../MenuShared";
 import { MenuHeadingSP, StoreTabsSP, MenuSelectBoxSP, mincho, sans, PANEL, GOLD } from "./MenuSharedSP";
 
@@ -208,7 +208,7 @@ export default function MenuCourseSectionSP({
         {/* 注記パネル（・マーカー） */}
         <div style={{ paddingLeft: 20, paddingRight: 20, paddingTop: 40, paddingBottom: 80 }}>
           <div style={{ background: PANEL, padding: "28px 24px", display: "flex", flexDirection: "column", gap: 12 }}>
-            {COURSE_NOTES.map((n) => (
+            {getCourseNotes(storeId).map((n) => (
               <p key={n} style={{ fontFamily: mincho, fontSize: 13, letterSpacing: "0.04em", lineHeight: "22px", color: "#ebe5db", margin: 0 }}>・ {n}</p>
             ))}
           </div>

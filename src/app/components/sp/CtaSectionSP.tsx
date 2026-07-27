@@ -45,8 +45,8 @@ export default function CtaSectionSP() {
 
         <div style={{ height: 25, flexShrink: 0 }} />
 
-        <a href="tel:0771-00-0000" style={{ fontFamily: mincho, fontSize: 30, fontWeight: 800, letterSpacing: "1px", color: "#d9b86b", textDecoration: "none" }}>
-          0771-00-0000
+        <a href="tel:0771-23-8410" style={{ fontFamily: mincho, fontSize: 30, fontWeight: 800, letterSpacing: "1px", color: "#d9b86b", textDecoration: "none" }}>
+          0771-23-8410
         </a>
 
         <div style={{ height: 21, flexShrink: 0 }} />

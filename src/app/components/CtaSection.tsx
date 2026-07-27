@@ -20,8 +20,8 @@ export default function CtaSection() {
         <p style={{ fontFamily: sans, fontWeight: 300, fontSize: 9, letterSpacing: "2.5px", color: "rgba(217,184,107,0.5)", textTransform: "uppercase" as const }}>Reservation by phone</p>
         <p style={{ fontFamily: mincho, fontWeight: 800, fontSize: 22, letterSpacing: "2px", color: "#fff", paddingTop: 10 }}>お電話でのご予約</p>
         <div style={{ paddingTop: 33 }}>
-          <a href="tel:0771-00-0000" style={{ fontFamily: mincho, fontWeight: 800, fontSize: 28, letterSpacing: "1px", color: "#d9b86b", textDecoration: "none" }}>
-            0771-00-0000
+          <a href="tel:0771-23-8410" style={{ fontFamily: mincho, fontWeight: 800, fontSize: 28, letterSpacing: "1px", color: "#d9b86b", textDecoration: "none" }}>
+            0771-23-8410
           </a>
         </div>
         <p style={{ fontFamily: sans, fontWeight: 300, fontSize: 12, letterSpacing: "0.5px", color: "#fff", paddingTop: 21 }}>受付時間：11:00〜21:00　※火曜定休</p>

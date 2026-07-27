@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { MenuHeading, StoreTabs, BackToMenuButton, mincho, sans, PANEL, GOLD, type StoreTab } from "./MenuShared";
-import { COURSE_NOTES, DRINK_PLAN_TITLE, DRINK_PLANS, POKKIRI_OPTION, ENKAI_INFO, type CourseItem } from "@/app/lib/menuData";
+import { getCourseNotes, DRINK_PLAN_TITLE, DRINK_PLANS, POKKIRI_OPTION, ENKAI_INFO, type CourseItem } from "@/app/lib/menuData";
 
 const DRINK_BAR = "#9e4b3d"; // 飲み放題プラン見出しバーのテラコッタ
 const ENKAI_BAR = "#5e2a25"; // 宴会案内見出しバーのマルーン
@@ -205,7 +205,7 @@ export default function MenuCourseSection({
         {/* 注記パネル */}
         <div style={{ paddingLeft: 146, paddingRight: 134, paddingTop: 55 }}>
           <div style={{ background: PANEL, padding: "34px 48px", display: "flex", flexDirection: "column", gap: 12 }}>
-            {COURSE_NOTES.map((n) => (
+            {getCourseNotes(storeId).map((n) => (
               <p key={n} style={{ fontFamily: mincho, fontSize: 14, letterSpacing: "0.04em", lineHeight: "24px", color: "#ebe5db", margin: 0 }}>■ {n}</p>
             ))}
           </div>

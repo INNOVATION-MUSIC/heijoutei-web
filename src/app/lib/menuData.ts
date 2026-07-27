@@ -279,6 +279,21 @@ export const COURSE_NOTES: string[] = [
   "当日のキャンセルはご予約時のお料理代金100％を申し受けます。",
 ];
 
+// 店舗別の注記上書き（ゆらののみ内容が異なる。未設定の店舗は COURSE_NOTES を使用）
+const COURSE_NOTES_BY_STORE: Record<string, string[]> = {
+  yurano: [
+    "宴会料理は4名様より承ります。",
+    "前日までのご予約とさせていただきます。",
+    "キャンセル及び人数の変更は前日までにお願いいたします。",
+    "当日のキャンセルはキャンセル料を申し受けます。",
+    "飲み放題は4名様以上から承ります。",
+  ],
+};
+
+export function getCourseNotes(storeId: string): string[] {
+  return COURSE_NOTES_BY_STORE[storeId] ?? COURSE_NOTES;
+}
+
 /* ══════════ 2時間飲み放題プラン（/menu/course・指定カテゴリ選択時のみ注意書きの上に表示） ══════════ */
 export type DrinkPlan = { name: string; price: string; desc: string };
 export const DRINK_PLAN_TITLE = "2時間飲み放題プラン";
