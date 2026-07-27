@@ -148,7 +148,7 @@ export default function HeroSection({ onOpenModal, lineLinks = [] }: { onOpenMod
 
       {/* LINE バー */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: 1440, height: 79, background: "#273528", paddingLeft: 78, paddingRight: 38 }}>
-        <p style={{ fontFamily: sans, fontSize: 16, fontWeight: 500, letterSpacing: "0.25em", lineHeight: "44px", color: "#ebe5db" }}>
+        <p style={{ fontFamily: sans, fontSize: 16, fontWeight: 500, letterSpacing: "0.25em", lineHeight: "24px", color: "#ebe5db" }}>
           LINE登録でお得情報GET　ともだち募集中!!
         </p>
         {/* LINE URL が登録済みの店舗のみ表示（未登録は非表示） */}
