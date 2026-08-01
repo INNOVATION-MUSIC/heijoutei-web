@@ -7,6 +7,12 @@ export const metadata: Metadata = {
   description:
     "焼肉平壌亭からのお知らせ・最新情報の一覧です。営業案内やキャンペーン、季節のおすすめなどをご案内します。",
   alternates: { canonical: "/news" },
+  openGraph: {
+    title: "お知らせ | 焼肉平壌亭",
+    description:
+      "焼肉平壌亭からのお知らせ・最新情報の一覧です。営業案内やキャンペーン、季節のおすすめなどをご案内します。",
+    url: "/news",
+  },
 };
 
 export const revalidate = 60;
