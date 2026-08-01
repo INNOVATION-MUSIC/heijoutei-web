@@ -96,6 +96,7 @@ export default function HeroSection({ onOpenModal, lineLinks = [] }: { onOpenMod
               </p>
               <p style={{ fontFamily: sans, fontSize: 10, fontWeight: 300, letterSpacing: "0.15em", color: "#99948c", lineHeight: "22px", textAlign: "center" }}>
                 Celebrating 50 years.<br />A time-honored tradition, a timeless flavor.
+                
               </p>
             </div>
 
