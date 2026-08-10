@@ -3,7 +3,15 @@ import { buildCustomerMail, buildStoreMail, type OrderItem, type OrderPayload } 
 import { sendEmail } from "@/app/lib/email";
 import { verifyTurnstile } from "@/app/lib/turnstile";
 import { adminSupabase } from "@/lib/supabase/admin";
-import { TAKEOUT_MENU, TAKEOUT_STORES, TAKEOUT_TIME_SLOTS, formatJpDate } from "@/app/lib/takeoutData";
+import { resolveAvailableTimes } from "@/app/lib/takeoutOrderDb";
+import {
+  TAKEOUT_MENU,
+  TAKEOUT_STORES,
+  RESERVE_CUTOFF_MINUTES,
+  formatJpDate,
+  timeLabelToMinutes,
+  normTime,
+} from "@/app/lib/takeoutData";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -15,7 +23,6 @@ const MAX_QTY = 99;
 
 const pad = (n: number) => String(n).padStart(2, "0");
 const isoUTC = (dt: Date) => `${dt.getUTCFullYear()}-${pad(dt.getUTCMonth() + 1)}-${pad(dt.getUTCDate())}`;
-const normTime = (s: string) => s.replace(/\s/g, ""); // "11 : 30" / "11:30" を "1130" 比較用に揃える
 
 // クライアントから受け取る最小ペイロード（価格・合計・商品名は送らせない）
 type OrderRequest = {
@@ -101,38 +108,6 @@ async function resolveMenu(storeId: string | null): Promise<Map<string, { name: 
   return map;
 }
 
-/**
- * 受取日の受付可能な時間枠（正規化済み）を返す。空配列＝その日は受付不可。
- * DBに枠がある日はDB（休止/受付・時間枠）を優先し、無い日は既定（火曜定休・他は全枠）にフォールバック。
- * buildCalendar と同じ判定をサーバー側で再現する。
- */
-async function resolveAvailableTimes(storeId: string | null, pickupDate: string): Promise<Set<string>> {
-  const defaultTimes = (): Set<string> => {
-    const [y, m, d] = pickupDate.split("-").map(Number);
-    const weekday = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
-    if (weekday === 2) return new Set(); // 火曜定休（既定）
-    return new Set(TAKEOUT_TIME_SLOTS.map(normTime));
-  };
-
-  if (!storeId) return defaultTimes();
-
-  const { data: slot } = await adminSupabase
-    .from("takeout_slots")
-    .select("id, is_closed")
-    .eq("store_id", storeId)
-    .eq("available_date", pickupDate)
-    .maybeSingle();
-  if (!slot) return defaultTimes();
-  if (slot.is_closed) return new Set();
-
-  const { data: times } = await adminSupabase
-    .from("takeout_slot_times")
-    .select("time_label, is_active")
-    .eq("slot_id", slot.id);
-  const labels = (times ?? []).filter((t) => t.is_active !== false).map((t) => normTime(t.time_label));
-  return new Set(labels);
-}
-
 export async function POST(request: Request) {
   let body: unknown;
   try {
@@ -174,6 +149,14 @@ export async function POST(request: Request) {
     }
     if (!allowedTimes.has(normTime(req.pickupTime))) {
       return NextResponse.json({ error: "選択された受取時間は受付できません。" }, { status: 400 });
+    }
+
+    // 3.5) 受付締切（当日分は受取時刻の60分前まで・JST基準。Step1DateTime の「予約受付締切」表記と一致させる）
+    if (req.pickupDate === todayStr) {
+      const nowMinutes = now.getUTCHours() * 60 + now.getUTCMinutes();
+      if (timeLabelToMinutes(req.pickupTime) < nowMinutes + RESERVE_CUTOFF_MINUTES) {
+        return NextResponse.json({ error: "受付締切（受取時刻の1時間前まで）を過ぎています。別の時間帯をお選びください。" }, { status: 400 });
+      }
     }
 
     // 4) 商品・価格・合計（サーバー側でメニューから再計算）

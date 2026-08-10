@@ -1,8 +1,11 @@
 import { createStaticClient } from "@/lib/supabase/static";
+import { adminSupabase } from "@/lib/supabase/admin";
 import {
   TAKEOUT_STORES,
   TAKEOUT_CATEGORIES,
   TAKEOUT_MENU,
+  TAKEOUT_TIME_SLOTS,
+  normTime,
   type TakeoutStore,
   type TakeoutMenuItem,
   type DaySlotMap,
@@ -140,6 +143,8 @@ export async function fetchTakeoutMenuByStore(): Promise<Record<string, TakeoutM
 // 受付枠（takeout_slots / takeout_slot_times）を店舗slug別に取得。
 // 戻り値 = { storeSlug: { iso: DaySlotInfo } }。当月〜翌々月頭までの公開枠（31日先までの予約に必要な範囲）。
 // DB空・未投入時は {} を返し、buildCalendar はアルゴリズム既定にフォールバックする（注文不能にならない）。
+// 定員(capacity)は既存の takeout_orders 件数（組数）と突き合わせ、満枠の時間帯は fullTimeLabels に振り分ける。
+// takeout_orders は anon から読めない（RLS で service_role 専用）ため、この関数は adminSupabase を使う。
 export async function fetchTakeoutSlots(): Promise<Record<string, DaySlotMap>> {
   const iso = (y: number, m: number, d: number) =>
     `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
@@ -152,7 +157,7 @@ export async function fetchTakeoutSlots(): Promise<Record<string, DaySlotMap>> {
 
     const { data: slots, error } = await supabase
       .from("takeout_slots")
-      .select("id, available_date, is_closed, stores(slug)")
+      .select("id, store_id, available_date, is_closed, stores(slug)")
       .gte("available_date", start)
       .lte("available_date", end);
     if (error || !slots || slots.length === 0) return {};
@@ -160,30 +165,110 @@ export async function fetchTakeoutSlots(): Promise<Record<string, DaySlotMap>> {
     const slotIds = slots.map((s) => s.id);
     const { data: times } = await supabase
       .from("takeout_slot_times")
-      .select("slot_id, time_label, is_active, sort_order")
+      .select("slot_id, time_label, is_active, capacity, sort_order")
       .in("slot_id", slotIds)
       .order("sort_order", { ascending: true });
 
-    const labelsBySlot = new Map<string, string[]>();
+    // 定員との突き合わせに必要な既存注文件数（組数）を店舗×受取日×受取時間で集計する。
+    // キャンセル済みは枠を占有しないため対象外。
+    const storeIds = Array.from(new Set(slots.map((s) => s.store_id)));
+    const { data: existingOrders } = await adminSupabase
+      .from("takeout_orders")
+      .select("store_id, pickup_date, pickup_time")
+      .in("store_id", storeIds)
+      .gte("pickup_date", start)
+      .lte("pickup_date", end)
+      .neq("status", "cancelled");
+    const countByKey = new Map<string, number>();
+    for (const o of existingOrders ?? []) {
+      const key = `${o.store_id}|${o.pickup_date}|${normTime(o.pickup_time)}`;
+      countByKey.set(key, (countByKey.get(key) ?? 0) + 1);
+    }
+
+    const timesBySlot = new Map<string, { label: string; capacity: number }[]>();
     for (const t of times ?? []) {
       if (t.is_active === false) continue; // 受付可能な枠のみ
-      const arr = labelsBySlot.get(t.slot_id) ?? [];
-      arr.push(t.time_label);
-      labelsBySlot.set(t.slot_id, arr);
+      const arr = timesBySlot.get(t.slot_id) ?? [];
+      arr.push({ label: t.time_label, capacity: t.capacity });
+      timesBySlot.set(t.slot_id, arr);
     }
 
     const result: Record<string, DaySlotMap> = {};
     for (const s of slots) {
       const slug = (s as unknown as { stores?: { slug?: string } }).stores?.slug;
       if (!slug) continue;
+      const entries = timesBySlot.get(s.id) ?? [];
+      const timeLabels: string[] = [];
+      const fullTimeLabels: string[] = [];
+      for (const e of entries) {
+        const key = `${s.store_id}|${s.available_date}|${normTime(e.label)}`;
+        const used = countByKey.get(key) ?? 0;
+        if (used >= e.capacity) fullTimeLabels.push(e.label);
+        else timeLabels.push(e.label);
+      }
       const map = (result[slug] ??= {});
       map[s.available_date] = {
         isClosed: s.is_closed ?? false,
-        timeLabels: labelsBySlot.get(s.id) ?? [],
+        timeLabels,
+        fullTimeLabels,
       };
     }
     return result;
   } catch {
     return {};
   }
+}
+
+/**
+ * 受取日の受付可能な時間枠（正規化済み）を返す。空集合＝その日は受付不可。
+ * DBに枠がある日はDB（休止/受付・時間枠）を優先し、無い日は既定（火曜定休・他は全枠）にフォールバック。
+ * buildCalendar と同じ判定をサーバー側で再現する。
+ * 定員(組数)チェック：DBに枠がある場合、同一店舗・受取日・受取時間の既存注文数(キャンセル除く)が
+ * capacity に達している時間帯は除外する。api/takeout/route.ts の最終検証(POST)から呼ばれる。
+ */
+export async function resolveAvailableTimes(storeId: string | null, pickupDate: string): Promise<Set<string>> {
+  const defaultTimes = (): Set<string> => {
+    const [y, m, d] = pickupDate.split("-").map(Number);
+    const weekday = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
+    if (weekday === 2) return new Set(); // 火曜定休（既定）
+    return new Set(TAKEOUT_TIME_SLOTS.map(normTime));
+  };
+
+  if (!storeId) return defaultTimes();
+
+  const { data: slot } = await adminSupabase
+    .from("takeout_slots")
+    .select("id, is_closed")
+    .eq("store_id", storeId)
+    .eq("available_date", pickupDate)
+    .maybeSingle();
+  if (!slot) return defaultTimes();
+  if (slot.is_closed) return new Set();
+
+  const { data: times } = await adminSupabase
+    .from("takeout_slot_times")
+    .select("time_label, is_active, capacity")
+    .eq("slot_id", slot.id);
+  const activeTimes = (times ?? []).filter((t) => t.is_active !== false);
+  if (activeTimes.length === 0) return new Set();
+
+  const { data: existing } = await adminSupabase
+    .from("takeout_orders")
+    .select("pickup_time")
+    .eq("store_id", storeId)
+    .eq("pickup_date", pickupDate)
+    .neq("status", "cancelled");
+  const countByTime = new Map<string, number>();
+  for (const o of existing ?? []) {
+    const key = normTime(o.pickup_time);
+    countByTime.set(key, (countByTime.get(key) ?? 0) + 1);
+  }
+
+  const labels = new Set<string>();
+  for (const t of activeTimes) {
+    const key = normTime(t.time_label);
+    const used = countByTime.get(key) ?? 0;
+    if (used < t.capacity) labels.add(key);
+  }
+  return labels;
 }

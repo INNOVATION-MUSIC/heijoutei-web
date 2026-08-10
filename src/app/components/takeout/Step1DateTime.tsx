@@ -6,8 +6,8 @@ import {
   formatJpDate,
   type CalendarDay,
   type TakeoutStore,
+  type TimeSlotView,
 } from "@/app/lib/takeoutData";
-import { TAKEOUT_TIME_SLOTS } from "@/app/lib/takeoutData";
 
 const PANEL = "#171717";
 const GOLD_BAR = "rgba(217,184,107,0.8)";
@@ -41,7 +41,7 @@ type Props = {
   onSelectDate: (iso: string) => void;
   time: string | null;
   onSelectTime: (t: string) => void;
-  timeSlots?: string[]; // 選択中受取日の受付時間枠（省略時は既定の全枠）
+  timeSlots: TimeSlotView[]; // 選択中受取日の受取時間枠（満枠/受付締切のdisabledを含む）
   onNext: () => void;
 };
 
@@ -247,8 +247,7 @@ function CalendarCell({ cell, selected, onSelect }: { cell: CalendarDay; selecte
 }
 
 /* ─────────── 時間枠 ─────────── */
-function TimeGrid({ dateIso, time, onSelectTime, timeSlots }: { dateIso: string | null; time: string | null; onSelectTime: (t: string) => void; timeSlots?: string[] }) {
-  const slots = timeSlots && timeSlots.length > 0 ? timeSlots : TAKEOUT_TIME_SLOTS;
+function TimeGrid({ dateIso, time, onSelectTime, timeSlots }: { dateIso: string | null; time: string | null; onSelectTime: (t: string) => void; timeSlots: TimeSlotView[] }) {
   return (
     <div style={{ width: 580, background: PANEL, overflow: "hidden" }}>
       <div style={{ height: 2, background: GOLD_BAR }} />
@@ -263,13 +262,13 @@ function TimeGrid({ dateIso, time, onSelectTime, timeSlots }: { dateIso: string 
 
         {/* スロット */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(5,1fr)", gap: 9 }}>
-          {slots.map((t) => {
-            const sel = t === time;
-            const enabled = !!dateIso;
+          {timeSlots.map((slot) => {
+            const sel = slot.label === time;
+            const enabled = !slot.disabled;
             return (
               <button
-                key={t}
-                onClick={enabled ? () => onSelectTime(t) : undefined}
+                key={slot.label}
+                onClick={enabled ? () => onSelectTime(slot.label) : undefined}
                 disabled={!enabled}
                 style={{
                   height: 50,
@@ -285,8 +284,14 @@ function TimeGrid({ dateIso, time, onSelectTime, timeSlots }: { dateIso: string 
                   opacity: enabled ? 1 : 0.4,
                 }}
               >
-                <span style={{ fontFamily: mincho, fontSize: 13, color: "#ebe5db", lineHeight: 1 }}>{t}</span>
-                <span style={{ color: GREEN, fontSize: 9, lineHeight: 1 }}>○</span>
+                <span style={{ fontFamily: mincho, fontSize: 13, color: "#ebe5db", lineHeight: 1 }}>{slot.label}</span>
+                {slot.disabled && slot.reason ? (
+                  <span style={{ color: slot.reason === "full" ? "#b0322d" : "rgba(235,229,219,0.5)", fontSize: 9, lineHeight: 1 }}>
+                    {slot.reason === "full" ? "満席" : "受付終了"}
+                  </span>
+                ) : (
+                  <span style={{ color: GREEN, fontSize: 9, lineHeight: 1 }}>○</span>
+                )}
               </button>
             );
           })}

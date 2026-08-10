@@ -19,7 +19,7 @@ import FooterSP from "../sp/FooterSP";
 import SpStickyHeader from "../sp/SpStickyHeader";
 import HamburgerMenuSP from "../sp/HamburgerMenuSP";
 
-import { TAKEOUT_CATEGORIES, TAKEOUT_MENU, TAKEOUT_STORES, TAKEOUT_TIME_SLOTS, buildCalendar, type TakeoutStore, type TakeoutMenuItem, type DaySlotMap } from "@/app/lib/takeoutData";
+import { TAKEOUT_CATEGORIES, TAKEOUT_MENU, TAKEOUT_STORES, buildCalendar, buildTimeSlotViews, type TakeoutStore, type TakeoutMenuItem, type DaySlotMap } from "@/app/lib/takeoutData";
 import type { TakeoutMenuData } from "@/app/lib/takeoutOrderDb";
 
 const DESIGN_PC = 1440;
@@ -106,11 +106,8 @@ export default function TakeoutClient({
   const calendar = useMemo(() => buildCalendar(view.year, view.month, today, storeSlots), [view, today, storeSlots]);
   const weeks = calendar.length / 7;
 
-  // 選択中受取日の受付時間枠（DB枠がある日はその受付可能枠・無ければ既定の全枠）
-  const timeSlots = useMemo(() => {
-    const slot = dateIso ? storeSlots?.[dateIso] : undefined;
-    return slot ? slot.timeLabels : TAKEOUT_TIME_SLOTS;
-  }, [dateIso, storeSlots]);
+  // 選択中受取日の受取時間枠ビュー（DB枠の満枠・受付締切〔当日60分前〕を反映して disabled/reason を付与）
+  const timeSlotViews = useMemo(() => buildTimeSlotViews(dateIso, storeSlots, new Date()), [dateIso, storeSlots]);
 
   // カート計算
   const cartLines = useMemo(
@@ -128,6 +125,13 @@ export default function TakeoutClient({
       else next[id] = Math.min(qty, 99);
       return next;
     });
+
+  // 受取日の選択（新しい日の時間枠に選択中の時間が「選択可能」として残っていれば維持、満枠/締切なら解除）
+  const onSelectDate = (iso: string) => {
+    setDateIso(iso);
+    const views = buildTimeSlotViews(iso, storeSlots, new Date());
+    setTime((prev) => (prev && views.some((v) => v.label === prev && !v.disabled) ? prev : null));
+  };
 
   const goPrevMonth = () => setView((v) => (v.month === 0 ? { year: v.year - 1, month: 11 } : { ...v, month: v.month - 1 }));
   const goNextMonth = () => setView((v) => (v.month === 11 ? { year: v.year + 1, month: 0 } : { ...v, month: v.month + 1 }));
@@ -223,15 +227,10 @@ export default function TakeoutClient({
               onPrevMonth={goPrevMonth}
               onNextMonth={goNextMonth}
               dateIso={dateIso}
-              onSelectDate={(iso) => {
-                setDateIso(iso);
-                const slot = storeSlots?.[iso];
-                const nextSlots = slot ? slot.timeLabels : TAKEOUT_TIME_SLOTS;
-                setTime((prev) => (prev && nextSlots.includes(prev) ? prev : null));
-              }}
+              onSelectDate={onSelectDate}
               time={time}
               onSelectTime={setTime}
-              timeSlots={timeSlots}
+              timeSlots={timeSlotViews}
               onNext={() => goStep(2)}
             />
           )}
@@ -319,18 +318,10 @@ export default function TakeoutClient({
             onPrevMonth={goPrevMonth}
             onNextMonth={goNextMonth}
             dateIso={dateIso}
-            onSelectDate={(iso) => {
-              setDateIso(iso);
-              // 受取日を変えても、新しい日の受付時間枠に選択中の時間が含まれていれば維持する。
-              // 含まれない場合のみクリア。日付の再クリックや微調整で時間選択が黙って消え、
-              // 「メニュー選択へ進む」が押せなくなるのを防ぐ（DB枠で時間が異なる日のみリセット）。
-              const slot = storeSlots?.[iso];
-              const nextSlots = slot ? slot.timeLabels : TAKEOUT_TIME_SLOTS;
-              setTime((prev) => (prev && nextSlots.includes(prev) ? prev : null));
-            }}
+            onSelectDate={onSelectDate}
             time={time}
             onSelectTime={setTime}
-            timeSlots={timeSlots}
+            timeSlots={timeSlotViews}
             onNext={() => goStep(2)}
           />
         )}

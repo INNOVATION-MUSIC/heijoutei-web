@@ -93,6 +93,51 @@ export const TAKEOUT_TIME_SLOTS: string[] = (() => {
   return slots;
 })();
 
+// 受付締切（受取時間の何分前まで注文を受け付けるか。Step1DateTime の「予約受付締切」表記と一致させる）
+export const RESERVE_CUTOFF_MINUTES = 60;
+
+/** "11 : 30" / "11:30" の空白差を吸収して比較用に正規化する（"11:30"） */
+export function normTime(s: string): string {
+  return s.replace(/\s/g, "");
+}
+
+/** "11 : 30" / "11:30" 形式の時間ラベルを 0時からの分数に変換する */
+export function timeLabelToMinutes(label: string): number {
+  const [h, m] = normTime(label).split(":").map(Number);
+  return h * 60 + m;
+}
+
+/**
+ * 指定の受取日時が「今日」かつ受付締切（既定60分前）を過ぎているかを判定する。
+ * 日付が今日でなければ常に false（過去日は buildCalendar/API 側の別チェックで弾かれる）。
+ */
+export function isPastReserveCutoff(iso: string, timeLabel: string, now: Date, cutoffMinutes = RESERVE_CUTOFF_MINUTES): boolean {
+  const todayIso = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+  if (iso !== todayIso) return false;
+  const nowMinutes = now.getHours() * 60 + now.getMinutes();
+  return timeLabelToMinutes(timeLabel) < nowMinutes + cutoffMinutes;
+}
+
+// ───────── 受取時間枠の表示用ビュー（選択可否・不可の理由をUIへ渡す） ─────────
+export type TimeSlotView = { label: string; disabled: boolean; reason?: "full" | "cutoff" };
+
+/**
+ * 選択中の受取日に対する時間枠一覧を、満枠・受付締切を反映したビューに組み立てる。
+ * dateIso が未選択なら全枠を disabled で返す（従来「日付未選択で全ボタン disabled」の挙動を維持）。
+ */
+export function buildTimeSlotViews(dateIso: string | null, storeSlots: DaySlotMap | undefined, now: Date): TimeSlotView[] {
+  if (!dateIso) return TAKEOUT_TIME_SLOTS.map((label) => ({ label, disabled: true }));
+  const slot = storeSlots?.[dateIso];
+  const available = slot ? slot.timeLabels : TAKEOUT_TIME_SLOTS;
+  const full = slot ? slot.fullTimeLabels : [];
+  const labels = TAKEOUT_TIME_SLOTS.filter((t) => available.includes(t) || full.includes(t));
+  return labels.map((label) => {
+    if (full.includes(label)) return { label, disabled: true, reason: "full" };
+    if (isPastReserveCutoff(dateIso, label, now)) return { label, disabled: true, reason: "cutoff" };
+    return { label, disabled: false };
+  });
+}
+
 // ───────── カレンダー ─────────
 // 受取日の状態。火曜は店舗休業日(定休)。土日は残りわずか想定。それ以外は予約可能。
 export type DayStatus = "available" | "few" | "unavailable" | "closed" | "past" | "empty";
@@ -111,7 +156,8 @@ export { WEEKDAY_LABELS };
 // 管理画面「受付枠管理」(takeout_slots / takeout_slot_times) の1日ぶんを front 用に縮約したもの。
 export type DaySlotInfo = {
   isClosed: boolean;       // その日を休止にしているか
-  timeLabels: string[];    // 受付可能な時間枠（is_active=true のラベル・"11 : 30" 形式）
+  timeLabels: string[];    // 受付可能な時間枠（is_active=true かつ定員に空きがあるラベル・"11 : 30" 形式）
+  fullTimeLabels: string[]; // 満枠の時間枠（is_active=true だが予約件数が定員に達したラベル。表示はするが選択不可にする）
 };
 // iso(YYYY-MM-DD) → DaySlotInfo
 export type DaySlotMap = Record<string, DaySlotInfo>;
@@ -145,8 +191,12 @@ export function buildCalendar(year: number, month: number, today: Date, slots?: 
     if (date < t || date > max) {
       status = "past"; // 期間外（DB枠があっても予約不可。31日先までの制限を優先）
     } else if (slot) {
-      // DBに枠がある日はDBを優先（休止 or 受付時間が無ければ予約不可、あれば受付可能）
-      status = slot.isClosed || slot.timeLabels.length === 0 ? "closed" : "available";
+      // DBに枠がある日はDBを優先。休止/枠なし=定休、枠はあるが全部満枠=予約不可、それ以外=受付可能
+      status = slot.isClosed || (slot.timeLabels.length === 0 && slot.fullTimeLabels.length === 0)
+        ? "closed"
+        : slot.timeLabels.length === 0
+          ? "unavailable"
+          : "available";
     } else if (weekday === 2) {
       status = "closed";          // 火曜定休（既定）
     } else if (weekday === 0 || weekday === 6) {

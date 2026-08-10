@@ -8,10 +8,10 @@ import Turnstile, { turnstileEnabled } from "../Turnstile";
 import {
   WEEKDAY_LABELS,
   formatJpDate,
-  TAKEOUT_TIME_SLOTS,
   type CalendarDay,
   type TakeoutStore,
   type TakeoutMenuItem,
+  type TimeSlotView,
 } from "@/app/lib/takeoutData";
 import type { CartLine, TakeoutForm } from "../takeout/TakeoutClient";
 
@@ -171,7 +171,7 @@ export function Step1DateTimeSP(p: {
   onSelectDate: (iso: string) => void;
   time: string | null;
   onSelectTime: (t: string) => void;
-  timeSlots?: string[];
+  timeSlots: TimeSlotView[];
   onNext: () => void;
   onMeasured?: (h: number) => void;
 }) {
@@ -373,8 +373,7 @@ function CalendarCellSP({ cell, selected, onSelect }: { cell: CalendarDay; selec
 }
 
 /* ─────────── 時間枠（SP・3列） ─────────── */
-function TimeGridSP({ dateIso, time, onSelectTime, timeSlots }: { dateIso: string | null; time: string | null; onSelectTime: (t: string) => void; timeSlots?: string[] }) {
-  const slots = timeSlots && timeSlots.length > 0 ? timeSlots : TAKEOUT_TIME_SLOTS;
+function TimeGridSP({ dateIso, time, onSelectTime, timeSlots }: { dateIso: string | null; time: string | null; onSelectTime: (t: string) => void; timeSlots: TimeSlotView[] }) {
   return (
     <div style={{ width: "100%", background: PANEL, overflow: "hidden" }}>
       <div style={{ height: 2, background: GOLD_BAR }} />
@@ -389,13 +388,13 @@ function TimeGridSP({ dateIso, time, onSelectTime, timeSlots }: { dateIso: strin
 
         {/* スロット（3列） */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 7 }}>
-          {slots.map((t) => {
-            const sel = t === time;
-            const enabled = !!dateIso;
+          {timeSlots.map((slot) => {
+            const sel = slot.label === time;
+            const enabled = !slot.disabled;
             return (
               <button
-                key={t}
-                onClick={enabled ? () => onSelectTime(t) : undefined}
+                key={slot.label}
+                onClick={enabled ? () => onSelectTime(slot.label) : undefined}
                 disabled={!enabled}
                 style={{
                   height: 50,
@@ -411,8 +410,14 @@ function TimeGridSP({ dateIso, time, onSelectTime, timeSlots }: { dateIso: strin
                   opacity: enabled ? 1 : 0.4,
                 }}
               >
-                <span style={{ fontFamily: mincho, fontSize: 14, color: "#ebe5db", lineHeight: 1 }}>{t.replace(/ /g, "")}</span>
-                <span style={{ color: GREEN, fontSize: 9, lineHeight: 1 }}>○</span>
+                <span style={{ fontFamily: mincho, fontSize: 14, color: "#ebe5db", lineHeight: 1 }}>{slot.label.replace(/ /g, "")}</span>
+                {slot.disabled && slot.reason ? (
+                  <span style={{ color: slot.reason === "full" ? RED : "rgba(235,229,219,0.5)", fontSize: 9, lineHeight: 1 }}>
+                    {slot.reason === "full" ? "満席" : "受付終了"}
+                  </span>
+                ) : (
+                  <span style={{ color: GREEN, fontSize: 9, lineHeight: 1 }}>○</span>
+                )}
               </button>
             );
           })}
