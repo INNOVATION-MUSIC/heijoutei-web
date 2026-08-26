@@ -96,6 +96,28 @@ export const TAKEOUT_TIME_SLOTS: string[] = (() => {
 // 受付締切（受取時間の何分前まで注文を受け付けるか。Step1DateTime の「予約受付締切」表記と一致させる）
 export const RESERVE_CUTOFF_MINUTES = 60;
 
+// 「お家で焼肉セット」は他カテゴリと違い、店舗別に受取日の最短リード日数がある
+// （亀岡=当日不可・園部/福知山=前日〔1日前〕不可＝実質2日以上前の注文が必要）。
+// カテゴリ名はDB(takeout_categories.name)/静的データ共通の表示名で判定する。
+export const HOME_SET_CATEGORY_NAME = "お家で焼肉セット";
+const HOME_SET_MIN_LEAD_DAYS: Record<string, number> = {
+  kameoka: 1,
+  sonobe: 2,
+  fukuchiyama: 2,
+};
+
+/** 「お家で焼肉セット」が指定の店舗・受取日で注文可能かを返す。対象カテゴリでなければ常に true。 */
+export function isHomeSetOrderable(storeSlug: string, category: string, pickupDateIso: string | null, today: Date): boolean {
+  if (category !== HOME_SET_CATEGORY_NAME) return true;
+  if (!pickupDateIso) return false;
+  const minLead = HOME_SET_MIN_LEAD_DAYS[storeSlug] ?? 0;
+  const t = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  t.setDate(t.getDate() + minLead);
+  const [y, m, d] = pickupDateIso.split("-").map(Number);
+  const target = new Date(y, m - 1, d);
+  return target >= t;
+}
+
 /** "11 : 30" / "11:30" の空白差を吸収して比較用に正規化する（"11:30"） */
 export function normTime(s: string): string {
   return s.replace(/\s/g, "");

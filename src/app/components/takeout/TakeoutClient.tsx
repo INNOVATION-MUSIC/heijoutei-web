@@ -19,7 +19,7 @@ import FooterSP from "../sp/FooterSP";
 import SpStickyHeader from "../sp/SpStickyHeader";
 import HamburgerMenuSP from "../sp/HamburgerMenuSP";
 
-import { TAKEOUT_CATEGORIES, TAKEOUT_MENU, TAKEOUT_STORES, buildCalendar, buildTimeSlotViews, type TakeoutStore, type TakeoutMenuItem, type DaySlotMap } from "@/app/lib/takeoutData";
+import { TAKEOUT_CATEGORIES, TAKEOUT_MENU, TAKEOUT_STORES, buildCalendar, buildTimeSlotViews, isHomeSetOrderable, type TakeoutStore, type TakeoutMenuItem, type DaySlotMap } from "@/app/lib/takeoutData";
 import type { TakeoutMenuData } from "@/app/lib/takeoutOrderDb";
 
 const DESIGN_PC = 1440;
@@ -108,6 +108,9 @@ export default function TakeoutClient({
 
   // 選択中受取日の受取時間枠ビュー（DB枠の満枠・受付締切〔当日60分前〕を反映して disabled/reason を付与）
   const timeSlotViews = useMemo(() => buildTimeSlotViews(dateIso, storeSlots, new Date()), [dateIso, storeSlots]);
+
+  // 「お家で焼肉セット」は店舗別に受取日の制限があるため、カテゴリ単位で注文可否を判定する
+  const isItemOrderable = (item: TakeoutMenuItem) => isHomeSetOrderable(store.id, item.category, dateIso, today);
 
   // カート計算
   const cartLines = useMemo(
@@ -244,6 +247,7 @@ export default function TakeoutClient({
               onSelectCategory={setActiveCategory}
               cart={cart}
               onSetQty={setQty}
+              isItemOrderable={isItemOrderable}
               cartLines={cartLines}
               subtotal={subtotal}
               cartCount={cartCount}
@@ -339,6 +343,7 @@ export default function TakeoutClient({
             }}
             cart={cart}
             onSetQty={setQty}
+            isItemOrderable={isItemOrderable}
             cartLines={cartLines}
             subtotal={subtotal}
             cartCount={cartCount}

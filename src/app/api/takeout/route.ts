@@ -11,6 +11,7 @@ import {
   formatJpDate,
   timeLabelToMinutes,
   normTime,
+  isHomeSetOrderable,
 } from "@/app/lib/takeoutData";
 
 export const runtime = "nodejs";
@@ -89,21 +90,21 @@ async function resolveStore(slug: string): Promise<{ id: string | null; name: st
   return s ? { id: null, name: s.name, tel: s.tel } : null;
 }
 
-/** 店舗のテイクアウトメニュー（id → {name, price}）。DBに無ければ静的メニューにフォールバック（クライアント挙動と一致）。 */
-async function resolveMenu(storeId: string | null): Promise<Map<string, { name: string; price: number }>> {
-  const map = new Map<string, { name: string; price: number }>();
+/** 店舗のテイクアウトメニュー（id → {name, price, category}）。DBに無ければ静的メニューにフォールバック（クライアント挙動と一致）。 */
+async function resolveMenu(storeId: string | null): Promise<Map<string, { name: string; price: number; category: string }>> {
+  const map = new Map<string, { name: string; price: number; category: string }>();
   if (storeId) {
     const { data } = await adminSupabase
       .from("store_takeout_menus")
-      .select("id, name, price, store_takeout_menu_stores!inner(store_id)")
+      .select("id, name, price, takeout_categories(name), store_takeout_menu_stores!inner(store_id)")
       .eq("is_active", true)
       .eq("store_takeout_menu_stores.store_id", storeId);
-    for (const r of (data ?? []) as { id: string; name: string; price: number }[]) {
-      map.set(r.id, { name: r.name, price: r.price });
+    for (const r of (data ?? []) as { id: string; name: string; price: number; takeout_categories: { name: string } | null }[]) {
+      map.set(r.id, { name: r.name, price: r.price, category: r.takeout_categories?.name ?? "" });
     }
   }
   if (map.size === 0) {
-    for (const m of TAKEOUT_MENU) map.set(m.id, { name: m.name, price: m.price });
+    for (const m of TAKEOUT_MENU) map.set(m.id, { name: m.name, price: m.price, category: m.category });
   }
   return map;
 }
@@ -166,6 +167,9 @@ export async function POST(request: Request) {
     for (const line of req.items) {
       const m = menu.get(line.id);
       if (!m) return NextResponse.json({ error: "選択できない商品が含まれています。" }, { status: 400 });
+      if (!isHomeSetOrderable(req.storeSlug, m.category, req.pickupDate, todayDt)) {
+        return NextResponse.json({ error: `選択された受取日では「${m.name}」を注文できません。` }, { status: 400 });
+      }
       items.push({ name: m.name, price: m.price, qty: line.qty });
       total += m.price * line.qty;
     }

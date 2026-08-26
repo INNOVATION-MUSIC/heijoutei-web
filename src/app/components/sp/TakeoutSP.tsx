@@ -436,6 +436,7 @@ export function Step2MenuSP(p: {
   onSelectCategory: (c: string) => void;
   cart: Record<string, number>;
   onSetQty: (id: string, qty: number) => void;
+  isItemOrderable: (item: TakeoutMenuItem) => boolean;
   cartLines: CartLine[];
   subtotal: number;
   cartCount: number;
@@ -477,7 +478,7 @@ export function Step2MenuSP(p: {
       {/* メニューカード（1列） */}
       <div style={{ display: "flex", flexDirection: "column", gap: 10, paddingLeft: 20, paddingRight: 20, paddingTop: 16 }}>
         {items.map((item) => (
-          <MenuCardSP key={item.id} item={item} qty={p.cart[item.id] ?? 0} onSetQty={p.onSetQty} />
+          <MenuCardSP key={item.id} item={item} qty={p.cart[item.id] ?? 0} onSetQty={p.onSetQty} orderable={p.isItemOrderable(item)} />
         ))}
       </div>
 
@@ -498,7 +499,7 @@ export function Step2MenuSP(p: {
 }
 
 /* ─────────── メニューカード（SP・350×150） ─────────── */
-function MenuCardSP({ item, qty, onSetQty }: { item: TakeoutMenuItem; qty: number; onSetQty: (id: string, qty: number) => void }) {
+function MenuCardSP({ item, qty, onSetQty, orderable }: { item: TakeoutMenuItem; qty: number; onSetQty: (id: string, qty: number) => void; orderable: boolean }) {
   // 説明文がある商品は画像を上に、その下に情報を縦積みにする
   const vertical = !!item.desc?.trim();
   const info = (
@@ -513,7 +514,7 @@ function MenuCardSP({ item, qty, onSetQty }: { item: TakeoutMenuItem; qty: numbe
           <span style={{ fontFamily: mincho, fontSize: 20, color: "#ebe5db", lineHeight: 1 }}>{item.price.toLocaleString()}</span>
           <span style={{ fontFamily: mincho, fontSize: 12, color: "#ebe5db" }}>円</span>
         </div>
-        <QtyStepperSP qty={qty} onChange={(q) => onSetQty(item.id, q)} />
+        <QtyStepperSP qty={qty} onChange={(q) => onSetQty(item.id, q)} disabled={!orderable} />
       </div>
     </div>
   );
@@ -538,13 +539,13 @@ function MenuCardSP({ item, qty, onSetQty }: { item: TakeoutMenuItem; qty: numbe
   );
 }
 
-function QtyStepperSP({ qty, onChange }: { qty: number; onChange: (q: number) => void }) {
-  const btn: CSSProperties = { background: "none", border: "none", cursor: "pointer", color: "#ebe5db", fontSize: 16, lineHeight: 1, width: 22, height: 28, display: "flex", alignItems: "center", justifyContent: "center" };
+function QtyStepperSP({ qty, onChange, disabled }: { qty: number; onChange: (q: number) => void; disabled?: boolean }) {
+  const btn: CSSProperties = { background: "none", border: "none", cursor: disabled ? "not-allowed" : "pointer", color: "#ebe5db", fontSize: 16, lineHeight: 1, width: 22, height: 28, display: "flex", alignItems: "center", justifyContent: "center" };
   return (
-    <div style={{ display: "flex", alignItems: "center", width: 80, height: 30, borderRadius: 15, border: `1px solid ${GOLD_BORDER}`, justifyContent: "space-between", padding: "0 8px", flexShrink: 0 }}>
-      <button onClick={() => onChange(Math.max(0, qty - 1))} style={btn} aria-label="減らす">−</button>
+    <div style={{ display: "flex", alignItems: "center", width: 80, height: 30, borderRadius: 15, border: `1px solid ${GOLD_BORDER}`, justifyContent: "space-between", padding: "0 8px", flexShrink: 0, opacity: disabled ? 0.4 : 1 }}>
+      <button onClick={() => !disabled && onChange(Math.max(0, qty - 1))} disabled={disabled} style={btn} aria-label="減らす">−</button>
       <span style={{ fontFamily: mincho, fontSize: 14, color: "#ebe5db", minWidth: 12, textAlign: "center" }}>{qty}</span>
-      <button onClick={() => onChange(qty + 1)} style={btn} aria-label="増やす">+</button>
+      <button onClick={() => !disabled && onChange(qty + 1)} disabled={disabled} style={btn} aria-label="増やす">+</button>
     </div>
   );
 }
