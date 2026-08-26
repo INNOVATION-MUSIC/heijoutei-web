@@ -213,17 +213,20 @@ export function buildCalendar(year: number, month: number, today: Date, slots?: 
     if (date < t || date > max) {
       status = "past"; // 期間外（DB枠があっても予約不可。31日先までの制限を優先）
     } else if (slot) {
-      // DBに枠がある日はDBを優先。休止/枠なし=定休、枠はあるが全部満枠=予約不可、それ以外=受付可能
+      // DBに枠がある日はDBを優先。休止/枠なし=定休、全時間帯が満枠=予約不可、
+      // 一部の時間帯のみ満枠=残りわずか、それ以外=受付可能（実際の空き状況を反映）
       status = slot.isClosed || (slot.timeLabels.length === 0 && slot.fullTimeLabels.length === 0)
         ? "closed"
         : slot.timeLabels.length === 0
           ? "unavailable"
-          : "available";
+          : slot.fullTimeLabels.length > 0
+            ? "few"
+            : "available";
     } else if (weekday === 2) {
       status = "closed";          // 火曜定休（既定）
-    } else if (weekday === 0 || weekday === 6) {
-      status = "few"; // 土日は残りわずか
     } else {
+      // 土日を含め、DBに受付枠が無い日は全時間帯が選択可能なフォールバックのため "available"。
+      // 旧実装は土日を一律「残りわずか」表示していたが、実際の空き状況（時間帯一覧）と食い違うため撤去（2026-08-26）。
       status = "available";
     }
     cells.push({ day: d, weekday, status, iso });
