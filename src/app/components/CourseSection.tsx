@@ -14,9 +14,20 @@ const COURSES = [
   { img: "/images/course3.webp", sub: "すべてセットになった安心コース", name: "飲み放題付 ポッキリ宴会", price: "¥8,500〜", desc: "華やかで充実した料理内容で、少し改まった席や女性の多い宴会などにおすすめします。" },
 ];
 
+// トップ専用のサブテキスト上書き（DBのtype_labelは/menu/courseと共有のため触らず、
+// トップだけ見せたい文言はここでコード側から上書きする）。index: 0=1枚目...
+const TOP_SUB_OVERRIDE: Record<number, string> = {
+  0: "お肉と野菜をご用意。焼肉と野菜の盛り合わせ",
+  2: "前菜からデザートまでのフルコース",
+};
+
 export default function CourseSection({ courses }: { courses?: TopCourse[] } = {}) {
   // 画像はローカル固定のまま、テキストのみ DB で上書き（DB 無ければ静的）。
-  const cards = COURSES.map((c, i) => ({ ...c, ...(courses?.[i] ?? {}) }));
+  const cards = COURSES.map((c, i) => ({
+    ...c,
+    ...(courses?.[i] ?? {}),
+    ...(TOP_SUB_OVERRIDE[i] ? { sub: TOP_SUB_OVERRIDE[i] } : {}),
+  }));
   return (
     <section
       style={{

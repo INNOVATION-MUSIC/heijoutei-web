@@ -31,8 +31,19 @@ const COURSES = [
   },
 ];
 
+// トップ専用のサブテキスト上書き（DBのtype_labelは/menu/courseと共有のため触らず、
+// トップだけ見せたい文言はここでコード側から上書きする）。index: 0=1枚目...
+const TOP_SUB_OVERRIDE: Record<number, string> = {
+  0: "お肉と野菜をご用意。焼肉と野菜の盛り合わせ",
+  2: "前菜からデザートまでのフルコース",
+};
+
 export default function CourseSectionSP({ courses }: { courses?: TopCourse[] } = {}) {
-  const cards = COURSES.map((c, i) => ({ ...c, ...(courses?.[i] ?? {}) }));
+  const cards = COURSES.map((c, i) => ({
+    ...c,
+    ...(courses?.[i] ?? {}),
+    ...(TOP_SUB_OVERRIDE[i] ? { sub: TOP_SUB_OVERRIDE[i] } : {}),
+  }));
   return (
     <section
       style={{
