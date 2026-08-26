@@ -19,7 +19,7 @@ export default function LunchSection() {
       </div>
       {/* サブ写真 2 */}
       <div className="absolute overflow-hidden bg-[#241a14]" style={{ left: 1143, top: 550, width: 297, height: 276 }}>
-        <Image src="/images/lunch_sub2.webp" alt="" fill className="object-cover" sizes="297px" />
+        <Image src="/images/lunch_yakiniku.webp" alt="焼肉ランチ" fill className="object-cover" sizes="297px" />
       </div>
 
       {/* ラベル */}

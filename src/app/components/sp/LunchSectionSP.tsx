@@ -81,7 +81,7 @@ export default function LunchSectionSP() {
         </div>
         <div style={{ height: 30, flexShrink: 0 }} />
         <div style={{ width: 229, height: 186, overflow: "hidden", background: "#241a14", position: "relative", alignSelf: "flex-end" }}>
-          <Image src="/images/lunch_sub2.webp" alt="" fill className="object-cover" sizes="229px" />
+          <Image src="/images/lunch_yakiniku.webp" alt="焼肉ランチ" fill className="object-cover" sizes="229px" />
         </div>
       </div>
     </section>
