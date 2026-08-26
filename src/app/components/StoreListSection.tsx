@@ -113,23 +113,23 @@ function DetailButton({ slug }: { slug: string }) {
   return <OutlineButton jp="店舗詳細" href={`/store/${slug}`} width={119} height={40} />;
 }
 
-/** 店舗カード（1340×350）。左=写真742×350 / 右=情報パネル。 */
+/** 店舗カード（1340×400）。左=写真742×400 / 右=情報パネル。※実データの住所・営業時間等が長い店舗があり350では詳細ボタンが下にはみ出すため400に拡張（2026-08-26） */
 function StoreCard({ store }: { store: Store }) {
   return (
-    <div style={{ display: "flex", width: 1340, height: 350 }}>
+    <div style={{ display: "flex", width: 1340, height: 400 }}>
       {/* 写真 / ロゴ（白背景）/ Coming Soon */}
       {store.logo ? (
-        <div style={{ width: 742, height: 350, background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+        <div style={{ width: 742, height: 400, background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
           <div style={{ width: 280, height: 280, position: "relative", flexShrink: 0 }}>
             <Image src={store.logo} alt={store.name} fill className="object-contain" sizes="280px" />
           </div>
         </div>
       ) : store.img ? (
-        <div style={{ width: 742, height: 350, position: "relative", overflow: "hidden", background: "#1c110a", flexShrink: 0 }}>
+        <div style={{ width: 742, height: 400, position: "relative", overflow: "hidden", background: "#1c110a", flexShrink: 0 }}>
           <Image src={store.img} alt={store.name} fill className="object-cover" sizes="742px" />
         </div>
       ) : (
-        <div style={{ width: 742, height: 350, background: "#2b2b2b", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+        <div style={{ width: 742, height: 400, background: "#2b2b2b", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
           <p style={{ fontFamily: display, fontSize: 28, color: "rgba(255,255,255,0.5)", letterSpacing: "1px" }}>Coming Soon</p>
         </div>
       )}

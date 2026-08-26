@@ -20,8 +20,10 @@ import type { StoreCardData } from "@/app/lib/storeListDb";
 const DESIGN_PC = 1440;
 const DESIGN_SP = 390;
 
-// --- PC: 店舗カードは可変件数。高さを件数から算出する（5件のとき Figma の y=3050 に一致） ---
-const CARD_H = 350; // カード高さ
+// --- PC: 店舗カードは可変件数。高さを件数から算出する ---
+// カード高さ。Figma初期値は350だが、実データの住所・営業時間等が長い店舗（亀岡など）で
+// 詳細ボタンが下にはみ出すため400に拡張（2026-08-26）。StoreListSectionのStoreCardと一致させる。
+const CARD_H = 400;
 const CARD_GAP = 60; // カード間ギャップ
 const TOP_OFFSET = 803; // 先頭カード上端 y（ヘッダー＋StoreInfo見出し領域）
 const BOTTOM_PAD = 257; // 最終カード下〜フッターまでの余白
