@@ -46,11 +46,13 @@ export default function FooterSP({ onOpenModal }: { onOpenModal: () => void }) {
             fontFamily: mincho,
             fontSize: 15,
             letterSpacing: "2px",
+            lineHeight: "24px",
             color: "#fff",
             margin: 0,
+            textAlign: "center",
           }}
         >
-          創業50年の伝統と技術
+          創業50年以上。<br />受け継がれる伝統と、<br />変わらない美味しさ。
         </p>
         <p
           style={{

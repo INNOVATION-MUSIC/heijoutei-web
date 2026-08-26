@@ -17,11 +17,11 @@ export default function Footer({ onOpenModal }: { onOpenModal: () => void }) {
         <Image src="/images/footer_logo.webp" alt="焼肉平壌亭" fill className="object-contain" sizes="260px" />
       </Link>
 
-      {/* キャッチコピー */}
-      <p className="absolute" style={{ left: 175, top: 310, width: 260, textAlign: "center", fontFamily: mincho, fontSize: 13, letterSpacing: "0.4em", color: "rgba(235,229,219,0.65)", lineHeight: "normal" }}>
-        創業50年の伝統と技術
+      {/* キャッチコピー（Heroと同じ文言・2026-08-26に統一） */}
+      <p className="absolute" style={{ left: 145, top: 305, width: 320, textAlign: "center", fontFamily: mincho, fontSize: 14, letterSpacing: "0.2em", color: "rgba(235,229,219,0.65)", lineHeight: "26px" }}>
+        創業50年以上。<br />受け継がれる伝統と、<br />変わらない美味しさ。
       </p>
-      <p className="absolute" style={{ left: 148, top: 346, width: 316, textAlign: "center", fontFamily: mincho, fontSize: 13, letterSpacing: "0.3em", color: "rgba(235,229,219,0.65)", lineHeight: "normal" }}>
+      <p className="absolute" style={{ left: 148, top: 400, width: 316, textAlign: "center", fontFamily: mincho, fontSize: 13, letterSpacing: "0.3em", color: "rgba(235,229,219,0.65)", lineHeight: "normal" }}>
         京都・亀岡、園部、福知山で愛される味
       </p>
 
