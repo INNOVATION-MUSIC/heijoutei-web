@@ -5,7 +5,7 @@ export const NAV_LINKS = [
   { label: "メニュー",           href: "/menu" },
   { label: "ご進物",             href: "/gift" },
   { label: "店舗一覧",           href: "/store" },
-  { label: "ご予約",             href: "/reserve" },
+  // { label: "ご予約", href: "/reserve" }, // /reserveページが無く404のため削除（予約はモーダルで対応）
   // { label: "公式オンラインストア", href: "/online-shop" }, // OnlineShop非公開中（公開後に解除）
   { label: "採用情報",           href: "/recruit" },
   { label: "お問い合せ",         href: "/contact" },

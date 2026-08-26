@@ -97,7 +97,7 @@ export default function CourseSection({ courses }: { courses?: TopCourse[] } = {
               display: "flex",
               flexDirection: "column",
               width: 420,
-              height: 576,
+              height: 616,
               backgroundColor: "#171717",
               overflow: "hidden",
               flexShrink: 0,
@@ -115,7 +115,7 @@ export default function CourseSection({ courses }: { courses?: TopCourse[] } = {
                 gap: 12,
               }}
             >
-              <p style={{ fontFamily: mincho, fontSize: 12, letterSpacing: "0.3em", color: "rgba(217,184,107,0.7)" }}>{c.sub}</p>
+              <p style={{ fontFamily: mincho, fontSize: 18, letterSpacing: "0.15em", lineHeight: "26px", color: "rgba(217,184,107,0.7)" }}>{c.sub}</p>
               <div style={{ width: 32, height: 1, backgroundColor: "rgba(217,184,107,0.5)", flexShrink: 0 }} />
               <p style={{ fontFamily: mincho, fontSize: 26, fontWeight: 600, letterSpacing: "0.077em", color: "#ebe5db" }}>{c.name}</p>
               <p style={{ fontFamily: mincho, fontSize: 24, fontWeight: 700, letterSpacing: "0.042em", color: "#d9b86b" }}>{c.price}</p>
