@@ -9,7 +9,7 @@ const display = "'Cormorant Garamond', serif";
 // 画像はトップ専用ローカル据え置き。テキストは DB(courses) があれば上書き、無ければこの静的コピー。
 const COURSES = [
   {
-    img: "/images/course1.webp",
+    img: "/images/menu_course_yasai.webp",
     sub: "前菜からデザートまで",
     name: "フルコース",
     price: "¥8,500〜",

@@ -9,7 +9,7 @@ const display = "'Cormorant Garamond', serif";
 
 // 画像はトップ専用ローカル据え置き。テキストは DB(courses) があれば上書き、無ければこの静的コピー。
 const COURSES = [
-  { img: "/images/course1.webp", sub: "前菜からデザートまで", name: "フルコース", price: "¥8,500〜", desc: "華やかで充実した料理内容で、少し改まった席や女性の多い宴会などにおすすめします。" },
+  { img: "/images/menu_course_yasai.webp", sub: "前菜からデザートまで", name: "フルコース", price: "¥8,500〜", desc: "華やかで充実した料理内容で、少し改まった席や女性の多い宴会などにおすすめします。" },
   { img: "/images/course2.webp", sub: "お肉と野菜をご用意", name: "焼き肉と野菜の盛り合わせ", price: "¥4,950〜", desc: "ご飯ものやデザートは自由に選びたいという方へ。焼肉・焼き野菜・サラダのみのコースです。" },
   { img: "/images/course3.webp", sub: "すべてセットになった安心コース", name: "飲み放題付 ポッキリ宴会", price: "¥8,500〜", desc: "華やかで充実した料理内容で、少し改まった席や女性の多い宴会などにおすすめします。" },
 ];
