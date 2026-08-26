@@ -98,7 +98,7 @@ export async function saveMonthSlots(
   year: number,
   month: number, // 1-12
   mode: 'open' | 'closed',
-  capacity = 5
+  capacity = 10
 ) {
   if (!(await isAuthed())) return { error: '認証が必要です' }
   if (!storeId) return { error: '店舗を選択してください' }

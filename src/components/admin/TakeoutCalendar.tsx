@@ -6,7 +6,7 @@ import { defaultTimeLabels } from '@/lib/takeout-times'
 import type { StoreRef } from '@/lib/actions/refs'
 
 const WEEK = ['日', '月', '火', '水', '木', '金', '土']
-const DEFAULT_CAPACITY = 5
+const DEFAULT_CAPACITY = 10
 
 function iso(y: number, m: number, d: number) {
   return `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`
