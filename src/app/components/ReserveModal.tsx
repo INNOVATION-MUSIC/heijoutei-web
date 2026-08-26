@@ -201,10 +201,6 @@ export default function ReserveModal({ open, onClose, isMobile: isMobileProp = f
               marginTop: 40,
             }}
           >
-            予約時間：月/水～日 10:00〜23:00
-            <br />
-            来店日の前日17時まで受付可能です
-            <br />
             おかけ間違いのないようお願いいたします
           </p>
         </div>
@@ -357,10 +353,6 @@ export default function ReserveModal({ open, onClose, isMobile: isMobileProp = f
             margin: 0,
           }}
         >
-          予約時間：月/水～日　10:00〜23:00
-          <br />
-          来店日の前日17時まで受付可能です
-          <br />
           おかけ間違いのないようお願いいたします
         </p>
       </div>
