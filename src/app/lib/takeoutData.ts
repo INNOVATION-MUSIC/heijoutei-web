@@ -82,10 +82,10 @@ export const TAKEOUT_MENU: TakeoutMenuItem[] = [
   { id: "platter-premium", category: "焼肉盛合わせ", name: "特選盛合わせ", desc: "特選部位を贅沢に\n盛り合わせ（4〜5人前）", price: 8800, img: IMG.steak },
 ];
 
-// ───────── 受取時間枠（11:30〜22:00 / 30分刻み・全22枠） ─────────
+// ───────── 受取時間枠（13:30〜21:45 / 15分刻み） ─────────
 export const TAKEOUT_TIME_SLOTS: string[] = (() => {
   const slots: string[] = [];
-  for (let m = 11 * 60 + 30; m <= 22 * 60; m += 30) {
+  for (let m = 13 * 60 + 30; m <= 21 * 60 + 45; m += 15) {
     const h = Math.floor(m / 60);
     const min = m % 60;
     slots.push(`${String(h).padStart(2, "0")} : ${String(min).padStart(2, "0")}`);
