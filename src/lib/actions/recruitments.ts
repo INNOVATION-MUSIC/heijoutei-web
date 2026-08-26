@@ -57,10 +57,12 @@ async function replaceDetails(recruitId: string, details: DetailInput[]) {
 }
 
 export async function getRecruitTags(recruitId: string): Promise<Tables<'recruitment_tags'>[]> {
+  if (!(await isAuthed())) return []
   const { data } = await adminSupabase.from('recruitment_tags').select('*').eq('recruitment_id', recruitId).order('sort_order')
   return data ?? []
 }
 export async function getRecruitDetails(recruitId: string): Promise<Tables<'recruitment_details'>[]> {
+  if (!(await isAuthed())) return []
   const { data } = await adminSupabase.from('recruitment_details').select('*').eq('recruitment_id', recruitId).order('sort_order')
   return data ?? []
 }

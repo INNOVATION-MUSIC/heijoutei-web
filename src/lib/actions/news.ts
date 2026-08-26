@@ -54,6 +54,7 @@ async function replaceTags(newsId: string, tags: NewsTagInput[]) {
 }
 
 export async function getNewsTags(newsId: string): Promise<Tables<'news_tags'>[]> {
+  if (!(await isAuthed())) return []
   const { data } = await adminSupabase.from('news_tags').select('*').eq('news_id', newsId).order('sort_order')
   return data ?? []
 }

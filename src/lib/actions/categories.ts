@@ -57,6 +57,7 @@ function autoSlug(name: string): string {
 }
 
 export async function getCategories(kind: CategoryKind): Promise<Category[]> {
+  if (!(await isAuthed())) return []
   // card_image_url はメニューのみ。store_ids はメニュー／テイクアウトが持つ（対象店舗）
   const cols =
     kind === 'menu'

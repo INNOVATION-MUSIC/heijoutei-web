@@ -12,6 +12,7 @@ export async function getBusinessMonth(
   year: number,
   month: number
 ): Promise<Record<string, CalDay>> {
+  if (!(await isAuthed())) return {}
   const start = `${year}-${String(month).padStart(2, '0')}-01`
   const endDate = new Date(year, month, 0).getDate()
   const end = `${year}-${String(month).padStart(2, '0')}-${String(endDate).padStart(2, '0')}`

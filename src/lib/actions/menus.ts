@@ -72,6 +72,7 @@ async function replaceItems(storeMenuId: string, items: MenuItemInput[]): Promis
 }
 
 export async function getMenuItems(storeMenuId: string): Promise<Tables<'menu_items'>[]> {
+  if (!(await isAuthed())) return []
   const { data } = await adminSupabase
     .from('menu_items')
     .select('*')

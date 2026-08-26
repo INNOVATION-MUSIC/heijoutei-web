@@ -53,6 +53,7 @@ async function syncStores(menuId: string, storeIds: string[]) {
 }
 
 export async function getTakeoutMenuStoreIds(menuId: string): Promise<string[]> {
+  if (!(await isAuthed())) return []
   const { data } = await adminSupabase
     .from('store_takeout_menu_stores')
     .select('store_id')
