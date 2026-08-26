@@ -11,7 +11,6 @@ import {
   formatJpDate,
   timeLabelToMinutes,
   normTime,
-  getMinLeadDays,
 } from "@/app/lib/takeoutData";
 
 export const runtime = "nodejs";
@@ -133,25 +132,14 @@ export async function POST(request: Request) {
     const store = await resolveStore(req.storeSlug);
     if (!store) return NextResponse.json({ error: "受取店舗が見つかりません。" }, { status: 400 });
 
-    // 2) 受取日（店舗別の最短リード日数〜31日先まで・JST基準）
+    // 2) 受取日（本日〜31日先のみ・JST基準）
     const now = new Date(Date.now() + 9 * 3600 * 1000);
     const todayDt = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
-    const minLeadDays = getMinLeadDays(req.storeSlug);
-    const minDt = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + minLeadDays));
     const maxDt = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + PICKUP_WINDOW_DAYS));
     const todayStr = isoUTC(todayDt);
-    const minStr = isoUTC(minDt);
     const maxStr = isoUTC(maxDt);
-    if (req.pickupDate < minStr || req.pickupDate > maxStr) {
-      return NextResponse.json(
-        {
-          error:
-            minLeadDays > 0
-              ? `受取日は本日から${minLeadDays}日先以降・31日以内で選択してください。`
-              : "受取日は本日から31日以内で選択してください。",
-        },
-        { status: 400 }
-      );
+    if (req.pickupDate < todayStr || req.pickupDate > maxStr) {
+      return NextResponse.json({ error: "受取日は本日から31日以内で選択してください。" }, { status: 400 });
     }
 
     // 3) 受取時間（定休日・休止・満枠・対象外の時刻を拒否）

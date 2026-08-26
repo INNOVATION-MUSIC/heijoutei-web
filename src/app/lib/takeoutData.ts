@@ -96,18 +96,6 @@ export const TAKEOUT_TIME_SLOTS: string[] = (() => {
 // 受付締切（受取時間の何分前まで注文を受け付けるか。Step1DateTime の「予約受付締切」表記と一致させる）
 export const RESERVE_CUTOFF_MINUTES = 60;
 
-// 店舗ごとの受取日の最短リード日数（本日からこの日数未満の直近日は選択不可・カレンダー上は "past" 扱い）。
-// 未設定の店舗は 0（従来どおり当日〜受付、時間帯の締切は RESERVE_CUTOFF_MINUTES で別途制御）。
-export const STORE_MIN_LEAD_DAYS: Record<string, number> = {
-  kameoka: 2,
-  fukuchiyama: 3,
-  sonobe: 3,
-};
-
-export function getMinLeadDays(storeSlug: string): number {
-  return STORE_MIN_LEAD_DAYS[storeSlug] ?? 0;
-}
-
 /** "11 : 30" / "11:30" の空白差を吸収して比較用に正規化する（"11:30"） */
 export function normTime(s: string): string {
   return s.replace(/\s/g, "");
@@ -180,16 +168,14 @@ export type DaySlotMap = Record<string, DaySlotInfo>;
  * 枠が無い日は従来アルゴリズム（火曜定休・土日わずか）にフォールバックする。
  * 本日〜31日先の予約可能期間は DB 有無に関わらず外側のゲートとして維持する。
  */
-export function buildCalendar(year: number, month: number, today: Date, slots?: DaySlotMap, minLeadDays = 0): CalendarDay[] {
+export function buildCalendar(year: number, month: number, today: Date, slots?: DaySlotMap): CalendarDay[] {
   const first = new Date(year, month, 1);
   const startWeekday = first.getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-  const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-  const t = new Date(todayStart);
-  t.setDate(t.getDate() + minLeadDays); // 店舗別の最短リード日数（この日より前は選択不可）
-  const max = new Date(todayStart);
-  max.setDate(max.getDate() + 31); // 本日から31日先まで予約可能（リード日数に関わらず固定）
+  const t = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const max = new Date(t);
+  max.setDate(max.getDate() + 31); // 本日から31日先まで予約可能
 
   const cells: CalendarDay[] = [];
   // 先頭の空セル

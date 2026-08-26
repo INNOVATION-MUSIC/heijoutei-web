@@ -19,7 +19,7 @@ import FooterSP from "../sp/FooterSP";
 import SpStickyHeader from "../sp/SpStickyHeader";
 import HamburgerMenuSP from "../sp/HamburgerMenuSP";
 
-import { TAKEOUT_CATEGORIES, TAKEOUT_MENU, TAKEOUT_STORES, buildCalendar, buildTimeSlotViews, getMinLeadDays, type TakeoutStore, type TakeoutMenuItem, type DaySlotMap } from "@/app/lib/takeoutData";
+import { TAKEOUT_CATEGORIES, TAKEOUT_MENU, TAKEOUT_STORES, buildCalendar, buildTimeSlotViews, type TakeoutStore, type TakeoutMenuItem, type DaySlotMap } from "@/app/lib/takeoutData";
 import type { TakeoutMenuData } from "@/app/lib/takeoutOrderDb";
 
 const DESIGN_PC = 1440;
@@ -103,10 +103,7 @@ export default function TakeoutClient({
 
   // 選択中店舗のDB受付枠（未投入なら undefined → buildCalendar はアルゴリズム既定）
   const storeSlots = SLOTS[store.id];
-  const calendar = useMemo(
-    () => buildCalendar(view.year, view.month, today, storeSlots, getMinLeadDays(store.id)),
-    [view, today, storeSlots, store.id]
-  );
+  const calendar = useMemo(() => buildCalendar(view.year, view.month, today, storeSlots), [view, today, storeSlots]);
   const weeks = calendar.length / 7;
 
   // 選択中受取日の受取時間枠ビュー（DB枠の満枠・受付締切〔当日60分前〕を反映して disabled/reason を付与）
