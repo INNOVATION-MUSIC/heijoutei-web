@@ -21,6 +21,9 @@ import { CONTACT_STORES, INQUIRY_TYPES } from "@/app/lib/contactData";
 import type { PublicStore } from "@/app/lib/storesDb";
 import type { ContactPayload } from "@/app/lib/contactMail";
 
+// API へ送るのは最小ペイロード（storeTel/storeHours/storeClosedDays はサーバー側で解決するため不要）
+type ContactRequestPayload = Omit<ContactPayload, "storeHours" | "storeClosedDays">;
+
 const DESIGN_PC = 1440;
 const DESIGN_SP = 390;
 const CONTACT_HEIGHT = 2008; // Figma(PC): フッター開始 y=2008（各ステップ共通）
@@ -95,7 +98,7 @@ export default function ContactClient({ stores }: { stores?: PublicStore[] }) {
   const handleConfirm = async () => {
     setSubmitting(true);
     setSubmitError(null);
-    const payload: ContactPayload = {
+    const payload: ContactRequestPayload = {
       name: form.name,
       kana: form.kana,
       email: form.email,

@@ -5,12 +5,24 @@ import Image from "next/image";
 import PageHeader from "./PageHeader";
 import OutlineButton from "./OutlineButton";
 import { MENU_STORES, type MenuItem } from "@/app/lib/menuData";
+import { getStoreDetail } from "@/app/lib/storeDetailData";
 
 // 受取店舗タブ1件分（id=slug）。DB 連動時は stores テーブル由来、未指定時は静的 MENU_STORES。
 export type StoreTab = { id: string; name: string };
 
+// 店舗タブに電話番号・定休日を含めたもの（DB連動時の fetchPublicStores 由来）。
+export type StoreContact = StoreTab & { tel?: string; closedDays?: string };
+
 function tabsOf(stores?: readonly StoreTab[]): readonly StoreTab[] {
   return stores && stores.length > 0 ? stores : MENU_STORES;
+}
+
+/** storeId から電話番号・定休日を解決する（stores prop 優先・無ければ実店舗データ storeDetailData.ts にフォールバック）。 */
+export function resolveStoreContact(storeId: string, stores?: readonly StoreContact[]): { tel: string; closedDays: string } {
+  const hit = stores?.find((s) => s.id === storeId);
+  if (hit?.tel) return { tel: hit.tel, closedDays: hit.closedDays || "" };
+  const detail = getStoreDetail(storeId) ?? getStoreDetail("kameoka");
+  return { tel: detail?.phone ?? "", closedDays: detail?.closed ?? "" };
 }
 
 // ?store= の変更を購読するための内部イベント（history.replaceState は popstate を発火しないため）

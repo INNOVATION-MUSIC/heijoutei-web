@@ -13,6 +13,7 @@ import {
   normTime,
   isHomeSetOrderable,
 } from "@/app/lib/takeoutData";
+import { getStoreDetail } from "@/app/lib/storeDetailData";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -78,16 +79,22 @@ function parseRequest(data: unknown): Fail | { ok: true; value: OrderRequest } {
 }
 
 /** 店舗を解決（DB優先・DB空時のみ静的フォールバック）。id は DB のときのみ INSERT に使える。 */
-async function resolveStore(slug: string): Promise<{ id: string | null; name: string; tel: string } | null> {
+async function resolveStore(
+  slug: string
+): Promise<{ id: string | null; name: string; tel: string; hours: string; closedDays: string } | null> {
   const { data } = await adminSupabase
     .from("stores")
-    .select("id, name, phone")
+    .select("id, name, phone, business_hours, closed_days")
     .eq("slug", slug)
     .eq("is_active", true)
     .maybeSingle();
-  if (data) return { id: data.id, name: data.name, tel: data.phone ?? "" };
+  if (data) {
+    return { id: data.id, name: data.name, tel: data.phone ?? "", hours: data.business_hours ?? "", closedDays: data.closed_days ?? "" };
+  }
   const s = TAKEOUT_STORES.find((s) => s.id === slug);
-  return s ? { id: null, name: s.name, tel: s.tel } : null;
+  if (!s) return null;
+  const detail = getStoreDetail(slug);
+  return { id: null, name: s.name, tel: s.tel, hours: detail?.hours.join("\n") ?? "", closedDays: detail?.closed ?? "" };
 }
 
 /** 店舗のテイクアウトメニュー（id → {name, price, category}）。DBに無ければ静的メニューにフォールバック（クライアント挙動と一致）。 */
@@ -178,6 +185,8 @@ export async function POST(request: Request) {
     const order: OrderPayload = {
       store: store.name,
       storeTel: store.tel,
+      storeHours: store.hours,
+      storeClosedDays: store.closedDays,
       dateLabel: `${formatJpDate(req.pickupDate)} ${normTime(req.pickupTime)}`.trim(),
       items,
       total,

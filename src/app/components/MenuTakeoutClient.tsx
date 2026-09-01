@@ -7,7 +7,7 @@ import ReserveModal from "./ReserveModal";
 import StickyButton from "./StickyButton";
 import Footer from "./Footer";
 import MenuTakeoutSection from "./MenuTakeoutSection";
-import { useStoreParam, type StoreTab } from "./MenuShared";
+import { useStoreParam, type StoreContact } from "./MenuShared";
 import { getTakeoutTabs, TAKEOUT_MENU_TABS, type TakeoutMenuTab } from "@/app/lib/menuData";
 
 // SP
@@ -47,7 +47,7 @@ function spEstimateContent(itemCount: number) {
  * カテゴリタブの切替はリロードせず state で行う。
  * SP は品目/CTA の折返しで高さ可変のため実測してセクション全高を確定する。
  */
-export default function MenuTakeoutClient({ tabsByStore, stores }: { tabsByStore?: Record<string, TakeoutMenuTab[]>; stores?: StoreTab[] }) {
+export default function MenuTakeoutClient({ tabsByStore, stores }: { tabsByStore?: Record<string, TakeoutMenuTab[]>; stores?: StoreContact[] }) {
   const isMobile = useIsMobile();
   const [modalOpen, setModalOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);

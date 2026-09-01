@@ -4,6 +4,7 @@ import { sendEmail } from "@/app/lib/email";
 import { verifyTurnstile } from "@/app/lib/turnstile";
 import { adminSupabase } from "@/lib/supabase/admin";
 import { CONTACT_STORES, INQUIRY_TYPES } from "@/app/lib/contactData";
+import { getStoreDetail } from "@/app/lib/storeDetailData";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -66,18 +67,20 @@ function parseRequest(data: unknown): Fail | { ok: true; value: ContactRequest }
  * 店舗名を許可リストで解決し、電話番号をサーバー側で確定する（クライアントの storeTel は信用しない）。
  * DB（stores・active）優先、空時のみ静的 CONTACT_STORES にフォールバック（フロントの挙動と一致）。
  */
-async function resolveStore(name: string): Promise<{ name: string; tel: string } | null> {
+async function resolveStore(name: string): Promise<{ name: string; tel: string; hours: string; closedDays: string } | null> {
   const { data } = await adminSupabase
     .from("stores")
-    .select("name, phone")
+    .select("name, phone, business_hours, closed_days")
     .eq("is_active", true);
-  const rows = (data ?? []) as { name: string; phone: string | null }[];
+  const rows = (data ?? []) as { name: string; phone: string | null; business_hours: string | null; closed_days: string | null }[];
   if (rows.length > 0) {
     const hit = rows.find((r) => r.name === name);
-    return hit ? { name: hit.name, tel: hit.phone ?? "" } : null;
+    return hit ? { name: hit.name, tel: hit.phone ?? "", hours: hit.business_hours ?? "", closedDays: hit.closed_days ?? "" } : null;
   }
   const s = CONTACT_STORES.find((s) => s.name === name);
-  return s ? { name: s.name, tel: s.tel } : null;
+  if (!s) return null;
+  const detail = getStoreDetail(s.id);
+  return { name: s.name, tel: s.tel, hours: detail?.hours.join("\n") ?? "", closedDays: detail?.closed ?? "" };
 }
 
 export async function POST(request: Request) {
@@ -112,6 +115,8 @@ export async function POST(request: Request) {
     inquiryType: req.inquiryType,
     store: store.name,
     storeTel: store.tel,
+    storeHours: store.hours,
+    storeClosedDays: store.closedDays,
     message: req.message,
   };
 

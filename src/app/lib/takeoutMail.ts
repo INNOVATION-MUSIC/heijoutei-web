@@ -5,6 +5,8 @@ export type OrderItem = { name: string; price: number; qty: number };
 export type OrderPayload = {
   store: string;        // 店舗名（例: 亀岡店）
   storeTel: string;     // 店舗電話番号
+  storeHours: string;   // 受取店舗の営業時間（行区切りは\n）
+  storeClosedDays: string; // 受取店舗の定休日
   dateLabel: string;    // 受取日時（例: 6月15日(月) 13:00）
   items: OrderItem[];
   total: number;
@@ -40,6 +42,17 @@ function itemsHtml(items: OrderItem[]): string {
 
 function escapeHtml(s: string): string {
   return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c] as string));
+}
+
+/** 複数行の営業時間をプレーンテキスト整形（2行目以降を字下げ） */
+function hoursText(hours: string): string {
+  return (hours || "").split("\n").filter(Boolean).join("\n　　　　　");
+}
+
+function storeContactBlock(o: OrderPayload): string {
+  return `${o.store}　${o.storeTel}
+営業時間　${hoursText(o.storeHours) || "店舗までお問い合わせください"}
+定休日　　${o.storeClosedDays || "-"}`;
 }
 
 function baseHtml(title: string, bodyHtml: string): string {
@@ -84,8 +97,7 @@ ${itemsText(o.items)}
 お支払いは店頭・お受け取り時にお願いいたします。
 ご注文内容のご確認やご変更は、下記までお電話ください。
 
-${o.store}　${o.storeTel}
-受付時間　10:00〜21:30
+${storeContactBlock(o)}
 
 スタッフ一同、ご来店を心よりお待ちしております。
 
@@ -96,7 +108,9 @@ ${o.store}　${o.storeTel}
     "テイクアウトのご注文を承りました",
     `<p style="font-size:14px;color:#333;line-height:1.9;margin:0 0 16px;">${escapeHtml(o.customer.name)} 様<br/>この度はテイクアウトのご注文をいただき、誠にありがとうございます。以下の内容で承りました。</p>
      ${summaryHtml(o)}
-     <p style="font-size:13px;color:#555;line-height:1.9;margin:20px 0 0;">お支払いは店頭・お受け取り時にお願いいたします。<br/>ご確認・ご変更は <strong>${escapeHtml(o.store)}　${escapeHtml(o.storeTel)}</strong>（受付 10:00〜21:30）までお電話ください。</p>`
+     <p style="font-size:13px;color:#555;line-height:1.9;margin:20px 0 0;">お支払いは店頭・お受け取り時にお願いいたします。<br/>ご確認・ご変更は <strong>${escapeHtml(o.store)}　${escapeHtml(o.storeTel)}</strong> までお電話ください。</p>
+     <p style="font-size:12px;color:#777;line-height:1.8;margin:8px 0 0;white-space:pre-wrap;">営業時間　${escapeHtml(o.storeHours) || "店舗までお問い合わせください"}
+定休日　　${escapeHtml(o.storeClosedDays) || "-"}</p>`
   );
   return { subject, text, html };
 }

@@ -414,9 +414,8 @@ export const TAKEOUT_MENU_NOTE = {
   ] as [string, string][],
 };
 
+// お電話でのご注文CTAの電話番号・定休日は選択中の店舗ごとに解決する（MenuShared.tsx の resolveStoreContact 参照）。
 export const TAKEOUT_MENU_CONTACT = {
-  tel: "0771-00-0000",
-  telHours: "受付時間：11:00〜21:00　※火曜定休",
   onlineHours: "24時間予約受付中",
 };
 

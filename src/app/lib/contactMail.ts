@@ -8,6 +8,8 @@ export type ContactPayload = {
   inquiryType: string; // お問い合わせ種別
   store: string;       // ご利用予定店舗
   storeTel: string;    // ご利用予定店舗の電話番号
+  storeHours: string;  // ご利用予定店舗の営業時間（行区切りは\n）
+  storeClosedDays: string; // ご利用予定店舗の定休日
   message: string;     // お問合せ内容
 };
 
@@ -24,6 +26,17 @@ function baseHtml(title: string, bodyHtml: string): string {
     <p style="font-size:12px;color:#999;line-height:1.8;margin:0;">焼肉平壌亭（亀岡・園部・福知山・焼肉ゆらの）<br/>※ このメールは送信専用です。ご返信いただいてもお答えできません。</p>
   </div>
 </body></html>`;
+}
+
+/** 複数行の営業時間をプレーンテキスト整形（2行目以降を字下げ） */
+function hoursText(hours: string): string {
+  return (hours || "").split("\n").filter(Boolean).join("\n　　　　　");
+}
+
+function storeContactBlock(o: ContactPayload): string {
+  return `${o.store}　${o.storeTel}
+営業時間　${hoursText(o.storeHours) || "店舗までお問い合わせください"}
+定休日　　${o.storeClosedDays || "-"}`;
 }
 
 function detailsHtml(o: ContactPayload): string {
@@ -65,8 +78,7 @@ ${detailsText(o)}
 ご予約の変更やキャンセルなどお急ぎの場合は、
 お手数ではございますがお電話にてお願いいたします。
 
-${o.store}　${o.storeTel}
-受付時間　10:00〜21:30
+${storeContactBlock(o)}
 
 焼肉平壌亭
 ※ このメールは送信専用です。`;
@@ -75,7 +87,9 @@ ${o.store}　${o.storeTel}
     "お問い合わせを承りました",
     `<p style="font-size:14px;color:#333;line-height:1.9;margin:0 0 16px;">${escapeHtml(o.name)} 様<br/>この度はお問い合わせをいただき、誠にありがとうございます。以下の内容で承りました。内容を確認のうえ、担当者より改めてご連絡いたします。</p>
      ${detailsHtml(o)}
-     <p style="font-size:13px;color:#555;line-height:1.9;margin:20px 0 0;">ご予約の変更やキャンセルなどお急ぎの場合は、<strong>${escapeHtml(o.store)}　${escapeHtml(o.storeTel)}</strong>（受付 10:00〜21:30）までお電話ください。</p>`
+     <p style="font-size:13px;color:#555;line-height:1.9;margin:20px 0 0;">ご予約の変更やキャンセルなどお急ぎの場合は、<strong>${escapeHtml(o.store)}　${escapeHtml(o.storeTel)}</strong> までお電話ください。</p>
+     <p style="font-size:12px;color:#777;line-height:1.8;margin:8px 0 0;white-space:pre-wrap;">営業時間　${escapeHtml(o.storeHours) || "店舗までお問い合わせください"}
+定休日　　${escapeHtml(o.storeClosedDays) || "-"}</p>`
   );
   return { subject, text, html };
 }

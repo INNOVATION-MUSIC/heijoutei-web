@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import OutlineButton from "./OutlineButton";
-import { MenuHeading, StoreTabs, ItemCard, BackToMenuButton, mincho, sans, display, PANEL, GOLD, type StoreTab } from "./MenuShared";
+import { MenuHeading, StoreTabs, ItemCard, BackToMenuButton, resolveStoreContact, mincho, sans, display, PANEL, GOLD, type StoreContact } from "./MenuShared";
 import { TAKEOUT_MENU_NOTE, TAKEOUT_MENU_CONTACT, type MenuItem, type TakeoutMenuTab } from "@/app/lib/menuData";
 import { SECTION_LINKS } from "@/app/lib/navLinks";
 
@@ -94,7 +94,7 @@ function TakeoutNote() {
 }
 
 /* ─────────── 下部CTA帯（お電話 / オンライン注文） ─────────── */
-function TakeoutCta() {
+function TakeoutCta({ tel, closedDays }: { tel: string; closedDays: string }) {
   return (
     <div style={{ position: "relative", width: 1440, height: 500, overflow: "hidden" }}>
       <Image src="/images/takeout_hero.webp" alt="" fill className="object-cover" sizes="1440px" />
@@ -104,8 +104,8 @@ function TakeoutCta() {
         <div style={{ width: 440, display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
           <span style={{ fontFamily: display, fontSize: 13, letterSpacing: "0.2em", color: "rgba(217,184,107,0.6)" }}>ORDER BY PHONE</span>
           <span style={{ fontFamily: mincho, fontSize: 20, fontWeight: 800, letterSpacing: "0.08em", color: "#ebe5db", marginTop: 12 }}>お電話でのご注文</span>
-          <span style={{ fontFamily: mincho, fontSize: 30, fontWeight: 800, letterSpacing: "0.04em", color: GOLD, marginTop: 24 }}>{TAKEOUT_MENU_CONTACT.tel}</span>
-          <span style={{ fontFamily: sans, fontSize: 13, letterSpacing: "0.04em", color: "#99948c", marginTop: 16 }}>{TAKEOUT_MENU_CONTACT.telHours}</span>
+          <span style={{ fontFamily: mincho, fontSize: 30, fontWeight: 800, letterSpacing: "0.04em", color: GOLD, marginTop: 24 }}>{tel}</span>
+          <span style={{ fontFamily: sans, fontSize: 13, letterSpacing: "0.04em", color: "#99948c", marginTop: 16 }}>{closedDays ? `定休日：${closedDays}` : ""}</span>
         </div>
         {/* 区切り */}
         <div style={{ width: 1, height: 200, background: "rgba(234,229,219,0.2)" }} />
@@ -143,12 +143,13 @@ export default function MenuTakeoutSection({
   activeSlug: string;
   items: MenuItem[];
   storeId: string;
-  stores?: StoreTab[];
+  stores?: StoreContact[];
   onSelectTab: (slug: string) => void;
   onSelectStore: (id: string) => void;
   onOpenModal: () => void;
   height: number;
 }) {
+  const contact = resolveStoreContact(storeId, stores);
   return (
     <section style={{ display: "flex", flexDirection: "column", width: 1440, height, background: "#0a0a0a" }}>
       <MenuHeading onOpenModal={onOpenModal} />
@@ -181,7 +182,7 @@ export default function MenuTakeoutSection({
       <BackToMenuButton />
 
       {/* 下部CTA帯 */}
-      <TakeoutCta />
+      <TakeoutCta tel={contact.tel} closedDays={contact.closedDays} />
     </section>
   );
 }

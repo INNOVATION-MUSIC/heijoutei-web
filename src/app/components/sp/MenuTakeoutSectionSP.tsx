@@ -5,7 +5,7 @@ import { useEffect, useRef } from "react";
 import OutlineButton from "../OutlineButton";
 import { TAKEOUT_MENU_NOTE, TAKEOUT_MENU_CONTACT, type MenuItem, type TakeoutMenuTab } from "@/app/lib/menuData";
 import { SECTION_LINKS } from "@/app/lib/navLinks";
-import { type StoreTab } from "../MenuShared";
+import { resolveStoreContact, type StoreContact } from "../MenuShared";
 import { MenuHeadingSP, StoreTabsSP, MenuSelectBoxSP, ItemCardSP, mincho, sans, display, PANEL, GOLD } from "./MenuSharedSP";
 
 /* ─────────── カテゴリサブタブ（SP・横スクロール・アクティブは金下線） ─────────── */
@@ -74,7 +74,7 @@ function TakeoutNoteSP() {
 }
 
 /* ─────────── 下部CTA帯（SP・縦積み: お電話 / オンライン注文） ─────────── */
-function TakeoutCtaSP() {
+function TakeoutCtaSP({ tel, closedDays }: { tel: string; closedDays: string }) {
   return (
     <div style={{ position: "relative", width: 390, overflow: "hidden" }}>
       <Image src="/images/takeout_hero.webp" alt="" fill className="object-cover" sizes="390px" />
@@ -84,8 +84,8 @@ function TakeoutCtaSP() {
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
           <span style={{ fontFamily: display, fontSize: 13, letterSpacing: "0.2em", color: "rgba(217,184,107,0.6)" }}>ORDER BY PHONE</span>
           <span style={{ fontFamily: mincho, fontSize: 18, fontWeight: 800, letterSpacing: "0.08em", color: "#ebe5db", marginTop: 12 }}>お電話でのご注文</span>
-          <a href={`tel:${TAKEOUT_MENU_CONTACT.tel.replace(/[^0-9+]/g, "")}`} style={{ fontFamily: mincho, fontSize: 28, fontWeight: 800, letterSpacing: "0.04em", color: GOLD, marginTop: 20, textDecoration: "none" }}>{TAKEOUT_MENU_CONTACT.tel}</a>
-          <span style={{ fontFamily: sans, fontSize: 12, letterSpacing: "0.04em", color: "#99948c", marginTop: 14 }}>{TAKEOUT_MENU_CONTACT.telHours}</span>
+          <a href={`tel:${tel.replace(/[^0-9+]/g, "")}`} style={{ fontFamily: mincho, fontSize: 28, fontWeight: 800, letterSpacing: "0.04em", color: GOLD, marginTop: 20, textDecoration: "none" }}>{tel}</a>
+          <span style={{ fontFamily: sans, fontSize: 12, letterSpacing: "0.04em", color: "#99948c", marginTop: 14 }}>{closedDays ? `定休日：${closedDays}` : ""}</span>
         </div>
         {/* 区切り */}
         <div style={{ width: 200, height: 1, background: "rgba(234,229,219,0.2)" }} />
@@ -108,7 +108,7 @@ type Props = {
   activeSlug: string;
   items: MenuItem[];
   storeId: string;
-  stores?: StoreTab[];
+  stores?: StoreContact[];
   onSelectTab: (slug: string) => void;
   onSelectStore: (id: string) => void;
   height: number;
@@ -122,6 +122,7 @@ type Props = {
  * カテゴリ切替はリロードせず state で行う。品目/CTA の折返しで高さ可変のため実測する。
  */
 export default function MenuTakeoutSectionSP({ tabs, activeSlug, items, storeId, stores, onSelectTab, onSelectStore, height, onMeasured }: Props) {
+  const contact = resolveStoreContact(storeId, stores);
   const contentRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = contentRef.current;
@@ -161,7 +162,7 @@ export default function MenuTakeoutSectionSP({ tabs, activeSlug, items, storeId,
 
         {/* 下部CTA帯 */}
         <div style={{ paddingTop: 60 }}>
-          <TakeoutCtaSP />
+          <TakeoutCtaSP tel={contact.tel} closedDays={contact.closedDays} />
         </div>
       </div>
     </div>
