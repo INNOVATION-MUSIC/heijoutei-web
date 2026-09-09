@@ -22,9 +22,22 @@ function Field({ label, children, hint }: { label: string; children: React.React
   )
 }
 
-export default function StoreForm({ initial }: { initial?: Tables<'stores'> }) {
+type MailSettings = { takeout_notify_emails: string[]; contact_notify_emails: string[] }
+
+export default function StoreForm({
+  initial,
+  mailSettings,
+}: {
+  initial?: Tables<'stores'>
+  mailSettings?: MailSettings
+}) {
   const router = useRouter()
   const isEdit = Boolean(initial)
+
+  // 通知先メールは1行1アドレスのテキストエリアで編集する
+  const [takeoutEmails, setTakeoutEmails] = useState((mailSettings?.takeout_notify_emails ?? []).join('\n'))
+  const [contactEmails, setContactEmails] = useState((mailSettings?.contact_notify_emails ?? []).join('\n'))
+  const toList = (s: string) => s.split(/[\n,]/).map((e) => e.trim()).filter(Boolean)
 
   const [form, setForm] = useState<StorePayload>({
     name: initial?.name ?? '',
@@ -88,7 +101,12 @@ export default function StoreForm({ initial }: { initial?: Tables<'stores'> }) {
     setSaving(true)
     setError(null)
     setSaved(false)
-    const result = isEdit ? await updateStore(initial!.id, form) : await createStore(form)
+    const payload: StorePayload = {
+      ...form,
+      takeout_notify_emails: toList(takeoutEmails),
+      contact_notify_emails: toList(contactEmails),
+    }
+    const result = isEdit ? await updateStore(initial!.id, payload) : await createStore(payload)
     if (result?.error) {
       setError(result.error)
       setSaving(false)
@@ -201,6 +219,31 @@ export default function StoreForm({ initial }: { initial?: Tables<'stores'> }) {
               <ImageUploader label="ヒーロー画像" value={form.hero_image_url ?? ''} onChange={(url) => set('hero_image_url', url)} />
               <ImageUploader label="ロゴ画像（白背景に表示・写真が無い店舗向け）" value={form.logo_image_url ?? ''} onChange={(url) => set('logo_image_url', url)} />
               <GalleryUploader value={form.gallery_image_urls ?? []} onChange={(urls) => set('gallery_image_urls', urls)} />
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-[#23232e] bg-[#14141a] p-5">
+            <h2 className="mb-1 text-sm font-semibold text-[#ebe5db]">通知メール設定</h2>
+            <p className="mb-4 text-xs text-[#5a5a6a]">
+              この店舗宛の通知を受け取るメールアドレス。1行に1つ入力（最大10件）。未入力の場合は共通の通知先に届きます。お客様には表示されません。
+            </p>
+            <div className="space-y-4">
+              <Field label="テイクアウト注文の通知先" hint="この店舗のテイクアウト注文が入ったときに届きます">
+                <textarea
+                  className={`${inputClass} min-h-20 font-mono`}
+                  value={takeoutEmails}
+                  onChange={(e) => setTakeoutEmails(e.target.value)}
+                  placeholder={'store-a@example.com\nstore-b@example.com'}
+                />
+              </Field>
+              <Field label="お問い合わせの通知先" hint="この店舗を選んだお問い合わせが入ったときに届きます">
+                <textarea
+                  className={`${inputClass} min-h-20 font-mono`}
+                  value={contactEmails}
+                  onChange={(e) => setContactEmails(e.target.value)}
+                  placeholder={'store-a@example.com\nstore-b@example.com'}
+                />
+              </Field>
             </div>
           </div>
         </div>

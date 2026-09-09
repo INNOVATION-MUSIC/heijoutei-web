@@ -67,20 +67,41 @@ function parseRequest(data: unknown): Fail | { ok: true; value: ContactRequest }
  * 店舗名を許可リストで解決し、電話番号をサーバー側で確定する（クライアントの storeTel は信用しない）。
  * DB（stores・active）優先、空時のみ静的 CONTACT_STORES にフォールバック（フロントの挙動と一致）。
  */
-async function resolveStore(name: string): Promise<{ name: string; tel: string; hours: string; closedDays: string } | null> {
+// 埋め込み store_mail_settings は to-one（object|null）だが配列で返る環境もあるため両対応で正規化する
+function pickContactNotifyEmails(raw: unknown): string[] {
+  const row = Array.isArray(raw) ? raw[0] : raw;
+  const list = (row as { contact_notify_emails?: unknown } | null)?.contact_notify_emails;
+  return Array.isArray(list) ? list.filter((e): e is string => typeof e === "string" && e.trim() !== "") : [];
+}
+
+async function resolveStore(name: string): Promise<{ name: string; tel: string; hours: string; closedDays: string; notifyEmails: string[] } | null> {
   const { data } = await adminSupabase
     .from("stores")
-    .select("name, phone, business_hours, closed_days")
+    .select("name, phone, business_hours, closed_days, store_mail_settings(contact_notify_emails)")
     .eq("is_active", true);
-  const rows = (data ?? []) as { name: string; phone: string | null; business_hours: string | null; closed_days: string | null }[];
+  const rows = (data ?? []) as {
+    name: string;
+    phone: string | null;
+    business_hours: string | null;
+    closed_days: string | null;
+    store_mail_settings: unknown;
+  }[];
   if (rows.length > 0) {
     const hit = rows.find((r) => r.name === name);
-    return hit ? { name: hit.name, tel: hit.phone ?? "", hours: hit.business_hours ?? "", closedDays: hit.closed_days ?? "" } : null;
+    return hit
+      ? {
+          name: hit.name,
+          tel: hit.phone ?? "",
+          hours: hit.business_hours ?? "",
+          closedDays: hit.closed_days ?? "",
+          notifyEmails: pickContactNotifyEmails(hit.store_mail_settings),
+        }
+      : null;
   }
   const s = CONTACT_STORES.find((s) => s.name === name);
   if (!s) return null;
   const detail = getStoreDetail(s.id);
-  return { name: s.name, tel: s.tel, hours: detail?.hours.join("\n") ?? "", closedDays: detail?.closed ?? "" };
+  return { name: s.name, tel: s.tel, hours: detail?.hours.join("\n") ?? "", closedDays: detail?.closed ?? "", notifyEmails: [] };
 }
 
 export async function POST(request: Request) {
@@ -136,8 +157,10 @@ export async function POST(request: Request) {
 
   // メール送信（Brevo HTTP API・best-effort）。本文生成/送信が失敗しても受付は保存済みなので ok を返す。
   try {
-    const notifyTo = process.env.CONTACT_NOTIFY_TO || process.env.ORDER_NOTIFY_TO;
-    if (notifyTo) {
+    // 店舗ごとの通知先（管理画面で設定）を優先。未設定なら環境変数にフォールバック。
+    const envNotify = process.env.CONTACT_NOTIFY_TO || process.env.ORDER_NOTIFY_TO;
+    const notifyTo = store.notifyEmails.length > 0 ? store.notifyEmails : (envNotify ? [envNotify] : []);
+    if (notifyTo.length > 0) {
       const storeMail = buildContactStoreMail(contact);
       await sendEmail({ to: notifyTo, replyTo: contact.email, subject: storeMail.subject, text: storeMail.text, html: storeMail.html });
     }

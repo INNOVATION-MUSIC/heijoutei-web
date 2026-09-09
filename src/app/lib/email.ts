@@ -3,7 +3,7 @@
 // BREVO_API_KEY 未設定時は送信せず false を返す（best-effort：呼び出し側は受付を成立させる）。
 
 type Mail = {
-  to: string
+  to: string | string[]
   subject: string
   text: string
   html: string
@@ -24,6 +24,10 @@ export async function sendEmail(mail: Mail): Promise<boolean> {
   const from = parseFrom(process.env.MAIL_FROM || process.env.SMTP_USER)
   if (!apiKey || !from) return false // 未設定＝送信スキップ（受付自体は成立させる）
 
+  // 複数宛先に対応（重複除去・空要素除去）。1件も無ければ送信スキップ。
+  const recipients = [...new Set((Array.isArray(mail.to) ? mail.to : [mail.to]).map((e) => e.trim()).filter(Boolean))]
+  if (recipients.length === 0) return false
+
   try {
     const res = await fetch('https://api.brevo.com/v3/smtp/email', {
       method: 'POST',
@@ -34,7 +38,7 @@ export async function sendEmail(mail: Mail): Promise<boolean> {
       },
       body: JSON.stringify({
         sender: from.name ? { name: from.name, email: from.email } : { email: from.email },
-        to: [{ email: mail.to }],
+        to: recipients.map((email) => ({ email })),
         ...(mail.replyTo ? { replyTo: { email: mail.replyTo } } : {}),
         subject: mail.subject,
         textContent: mail.text,

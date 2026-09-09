@@ -11,6 +11,12 @@ export default async function EditStorePage({ params }: { params: Promise<{ id: 
 
   if (!store) notFound()
 
+  const { data: mail } = await adminSupabase
+    .from('store_mail_settings')
+    .select('takeout_notify_emails, contact_notify_emails')
+    .eq('store_id', id)
+    .maybeSingle()
+
   return (
     <div className="space-y-6">
       <div>
@@ -19,7 +25,13 @@ export default async function EditStorePage({ params }: { params: Promise<{ id: 
         </Link>
         <h1 className="mt-1 text-2xl font-bold text-[#ebe5db]">店舗を編集：{store.name}</h1>
       </div>
-      <StoreForm initial={store} />
+      <StoreForm
+        initial={store}
+        mailSettings={{
+          takeout_notify_emails: mail?.takeout_notify_emails ?? [],
+          contact_notify_emails: mail?.contact_notify_emails ?? [],
+        }}
+      />
     </div>
   )
 }

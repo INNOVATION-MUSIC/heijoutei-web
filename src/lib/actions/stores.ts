@@ -23,6 +23,44 @@ export type StorePayload = {
   is_active?: boolean
   is_coming_soon?: boolean
   sort_order?: number
+  // テイクアウト注文／お問い合わせの通知先メール（store_mail_settings へ保存・フロント非公開）
+  takeout_notify_emails?: string[]
+  contact_notify_emails?: string[]
+}
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+// 入力（配列 or 改行/カンマ区切り文字列）を正規化。形式不正が1件でもあればエラー文言を返す。
+function cleanEmails(input: unknown): { emails: string[] } | { error: string } {
+  const raw = Array.isArray(input)
+    ? input
+    : typeof input === 'string'
+      ? input.split(/[\n,]/)
+      : []
+  const emails = [...new Set(raw.map((e) => String(e).trim()).filter(Boolean))]
+  if (emails.length > 10) return { error: '通知先メールは10件までです' }
+  const bad = emails.find((e) => !EMAIL_RE.test(e))
+  if (bad) return { error: `メールアドレスの形式が正しくありません: ${bad}` }
+  return { emails }
+}
+
+async function saveMailSettings(storeId: string, payload: StorePayload): Promise<{ error?: string }> {
+  const takeout = cleanEmails(payload.takeout_notify_emails)
+  if ('error' in takeout) return { error: takeout.error }
+  const contact = cleanEmails(payload.contact_notify_emails)
+  if ('error' in contact) return { error: contact.error }
+
+  const { error } = await adminSupabase.from('store_mail_settings').upsert(
+    {
+      store_id: storeId,
+      takeout_notify_emails: takeout.emails,
+      contact_notify_emails: contact.emails,
+      updated_at: new Date().toISOString(),
+    },
+    { onConflict: 'store_id' },
+  )
+  if (error) return { error: error.message }
+  return {}
 }
 
 // 店舗マスタ更新時に関連フロントページのキャッシュをクリアする
@@ -60,8 +98,10 @@ export async function createStore(payload: StorePayload) {
   if (!payload.name?.trim() || !payload.slug?.trim()) {
     return { error: '店舗名とスラッグは必須です' }
   }
-  const { error } = await adminSupabase.from('stores').insert(normalize(payload))
+  const { data, error } = await adminSupabase.from('stores').insert(normalize(payload)).select('id').single()
   if (error) return { error: error.message }
+  const mail = await saveMailSettings(data.id, payload)
+  if (mail.error) return { error: mail.error }
   revalidateStoreFronts()
   return { success: true }
 }
@@ -73,6 +113,8 @@ export async function updateStore(id: string, payload: StorePayload) {
   }
   const { error } = await adminSupabase.from('stores').update(normalize(payload)).eq('id', id)
   if (error) return { error: error.message }
+  const mail = await saveMailSettings(id, payload)
+  if (mail.error) return { error: mail.error }
   revalidateStoreFronts()
   return { success: true }
 }

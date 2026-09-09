@@ -746,6 +746,35 @@ export type Database = {
           },
         ]
       }
+      store_mail_settings: {
+        Row: {
+          contact_notify_emails: string[]
+          store_id: string
+          takeout_notify_emails: string[]
+          updated_at: string
+        }
+        Insert: {
+          contact_notify_emails?: string[]
+          store_id: string
+          takeout_notify_emails?: string[]
+          updated_at?: string
+        }
+        Update: {
+          contact_notify_emails?: string[]
+          store_id?: string
+          takeout_notify_emails?: string[]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "store_mail_settings_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: true
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       stores: {
         Row: {
           access: string | null
