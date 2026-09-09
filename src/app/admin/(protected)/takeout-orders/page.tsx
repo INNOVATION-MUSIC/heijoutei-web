@@ -2,7 +2,6 @@ import Link from 'next/link'
 import { adminSupabase } from '@/lib/supabase/admin'
 import { scopedStoreIds } from '@/lib/auth-guard'
 import OrderActions from '@/components/admin/OrderActions'
-import OrderDeepLink from '@/components/admin/OrderDeepLink'
 import type { OrderStatus } from '@/lib/actions/takeout-orders'
 
 export const dynamic = 'force-dynamic'
@@ -17,9 +16,9 @@ const STATUS_BADGE: Record<string, { label: string; cls: string }> = {
 export default async function AdminTakeoutOrdersPage({
   searchParams,
 }: {
-  searchParams: Promise<{ store?: string; read?: string; order?: string }>
+  searchParams: Promise<{ store?: string; read?: string }>
 }) {
-  const { store, read, order } = await searchParams
+  const { store, read } = await searchParams
   const today = new Date().toISOString().slice(0, 10)
 
   // store / read を保ちつつ片方だけ差し替えたURLを作る
@@ -67,8 +66,7 @@ export default async function AdminTakeoutOrdersPage({
   const todayTotal = todays.reduce((sum, o) => sum + o.total_price, 0)
 
   const filteredOrders =
-    order ? allOrders // メールの深いリンク（?order=）指定時は未読/既読フィルタを無視
-    : read === 'unread' ? allOrders.filter((o) => !o.is_read)
+    read === 'unread' ? allOrders.filter((o) => !o.is_read)
     : read === 'read' ? allOrders.filter((o) => o.is_read)
     : allOrders
 
@@ -105,11 +103,9 @@ export default async function AdminTakeoutOrdersPage({
         ))}
       </div>
 
-      <OrderDeepLink targetId={order} />
-
       <div className="space-y-3">
         {filteredOrders.map((o) => (
-          <details key={o.id} id={`order-${o.id}`} open={o.id === order || undefined} className={`scroll-mt-24 rounded-xl border ${o.is_read ? 'border-[#23232e] bg-[#14141a]' : 'border-l-2 border-l-blue-500 border-[#23232e] bg-blue-500/[0.06]'}`}>
+          <details key={o.id} className={`rounded-xl border ${o.is_read ? 'border-[#23232e] bg-[#14141a]' : 'border-l-2 border-l-blue-500 border-[#23232e] bg-blue-500/[0.06]'}`}>
             <summary className="flex cursor-pointer items-center gap-3 px-5 py-4">
               {!o.is_read && <span className="flex-shrink-0 rounded bg-blue-500/20 px-1.5 py-0.5 text-[10px] font-bold tracking-wide text-blue-400">未読</span>}
               <div className="min-w-0 flex-1">

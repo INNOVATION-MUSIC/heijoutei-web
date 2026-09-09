@@ -118,10 +118,10 @@ ${storeContactBlock(o)}
   return { subject, text, html };
 }
 
-/** 注文詳細（管理画面）へのURL。orderId が無ければ注文一覧へ。 */
+/** 注文詳細（管理画面・その注文のみ表示・要ログイン）へのURL。orderId が無ければ注文一覧へ。 */
 function adminOrderUrl(orderId?: string): string {
   const base = SITE_URL.replace(/\/$/, "");
-  return orderId ? `${base}/admin/takeout-orders?order=${orderId}` : `${base}/admin/takeout-orders`;
+  return orderId ? `${base}/admin/order/${orderId}` : `${base}/admin/takeout-orders`;
 }
 
 /**
