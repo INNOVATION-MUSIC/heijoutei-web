@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import ReserveModal from "./ReserveModal";
 import { SECTION_LINKS } from "@/app/lib/navLinks";
 import { useIsMobile } from "@/app/lib/useIsMobile";
@@ -50,6 +51,10 @@ function ArrowIcon({ size = 10 }: { size?: number }) {
 export default function StickyButton() {
   const [modalOpen, setModalOpen] = useState(false);
   const isMobile = useIsMobile();
+  const pathname = usePathname();
+  // /takeout では「テイクアウト」リンク（= 今いるページへのリンク）を出さない。
+  // 注文フローの途中で押すとフルリロードで step1 に戻ってしまうため。
+  const showTakeoutLink = pathname !== SECTION_LINKS.takeout;
 
   // SP のみ：少しスクロールしてから表示する（PC は常時表示）
   const [scrolled, setScrolled] = useState(false);
@@ -85,10 +90,12 @@ export default function StickyButton() {
           予約する
           <ArrowIcon size={arrowSize} />
         </button>
-        <a href={SECTION_LINKS.takeout} style={btnStyle}>
-          テイクアウト
-          <ArrowIcon size={arrowSize} />
-        </a>
+        {showTakeoutLink && (
+          <a href={SECTION_LINKS.takeout} style={btnStyle}>
+            テイクアウト
+            <ArrowIcon size={arrowSize} />
+          </a>
+        )}
       </div>
       <ReserveModal open={modalOpen} onClose={() => setModalOpen(false)} />
     </>
