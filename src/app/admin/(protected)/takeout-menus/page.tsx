@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { adminSupabase } from '@/lib/supabase/admin'
+import { scopedStoreIds } from '@/lib/auth-guard'
 import DraggableTakeoutMenuTable, { type TakeoutMenuRow } from '@/components/admin/DraggableTakeoutMenuTable'
 
 export const dynamic = 'force-dynamic'
@@ -10,7 +11,10 @@ export default async function AdminTakeoutMenusPage({
   searchParams: Promise<{ store?: string; category?: string }>
 }) {
   const { store, category } = await searchParams
+  const allowed = await scopedStoreIds()
 
+  const storesQ = adminSupabase.from('stores').select('id, name').eq('is_active', true).order('sort_order')
+  if (allowed) storesQ.in('id', allowed)
   const [{ data: menus }, { data: cats }, { data: junction }, { data: stores }] = await Promise.all([
     adminSupabase
       .from('store_takeout_menus')
@@ -18,7 +22,7 @@ export default async function AdminTakeoutMenusPage({
       .order('sort_order'),
     adminSupabase.from('takeout_categories').select('id, name').order('sort_order'),
     adminSupabase.from('store_takeout_menu_stores').select('takeout_menu_id, store_id'),
-    adminSupabase.from('stores').select('id, name').eq('is_active', true).order('sort_order'),
+    storesQ,
   ])
 
   const catName = new Map((cats ?? []).map((c) => [c.id, c.name]))
@@ -31,8 +35,15 @@ export default async function AdminTakeoutMenusPage({
     storeIdsByMenu.set(j.takeout_menu_id, arr)
   }
 
-  // カテゴリ絞り込み
-  const filtered = (menus ?? []).filter((m) => !category || m.category_id === category)
+  // カテゴリ絞り込み ＋ 店舗スコープ（リンク先店舗の集合 ⊆ 許可店舗 のメニューのみ）
+  const filtered = (menus ?? []).filter((m) => {
+    if (category && m.category_id !== category) return false
+    if (allowed) {
+      const linked = storeIdsByMenu.get(m.id) ?? []
+      if (linked.length === 0 || !linked.every((sid) => allowed.includes(sid))) return false
+    }
+    return true
+  })
 
   // 店舗ごとにまとめる（1メニューが複数店舗に属する場合は各店舗に表示）。
   // ?store= 指定時はその店舗のみ。

@@ -1,8 +1,17 @@
 'use server'
 
 import { adminSupabase } from '@/lib/supabase/admin'
-import { isAuthed } from '@/lib/auth-guard'
+import { isAuthed, assertStoreAccess } from '@/lib/auth-guard'
 import { revalidatePath } from 'next/cache'
+
+// テイクアウトメニュー id → 紐づく店舗 id[]（担当店舗チェック用）
+async function takeoutMenuStoreIds(menuId: string): Promise<string[]> {
+  const { data } = await adminSupabase
+    .from('store_takeout_menu_stores')
+    .select('store_id')
+    .eq('takeout_menu_id', menuId)
+  return (data ?? []).map((r) => r.store_id)
+}
 
 export type TakeoutMenuPayload = {
   category_id: string | null
@@ -64,6 +73,9 @@ export async function getTakeoutMenuStoreIds(menuId: string): Promise<string[]> 
 export async function createTakeoutMenu(p: TakeoutMenuPayload) {
   if (!(await isAuthed())) return { error: '認証が必要です' }
   if (!p.name?.trim()) return { error: 'メニュー名は必須です' }
+  if (!p.store_ids || p.store_ids.length === 0) return { error: '取扱店舗を選択してください' }
+  const denied = await assertStoreAccess(p.store_ids)
+  if (denied) return { error: denied.error }
   const { data, error } = await adminSupabase
     .from('store_takeout_menus')
     .insert({ ...normalize(p), sort_order: await nextSortOrder() })
@@ -78,6 +90,9 @@ export async function createTakeoutMenu(p: TakeoutMenuPayload) {
 export async function updateTakeoutMenu(id: string, p: TakeoutMenuPayload) {
   if (!(await isAuthed())) return { error: '認証が必要です' }
   if (!p.name?.trim()) return { error: 'メニュー名は必須です' }
+  // 変更前の紐づき店舗・変更後の店舗のいずれもが担当範囲内であること
+  const denied = await assertStoreAccess([...(await takeoutMenuStoreIds(id)), ...(p.store_ids ?? [])])
+  if (denied) return { error: denied.error }
   const { error } = await adminSupabase.from('store_takeout_menus').update(normalize(p)).eq('id', id)
   if (error) return { error: error.message }
   await syncStores(id, p.store_ids)
@@ -87,6 +102,8 @@ export async function updateTakeoutMenu(id: string, p: TakeoutMenuPayload) {
 
 export async function deleteTakeoutMenu(id: string) {
   if (!(await isAuthed())) return { error: '認証が必要です' }
+  const denied = await assertStoreAccess(await takeoutMenuStoreIds(id))
+  if (denied) return { error: denied.error }
   const { error } = await adminSupabase.from('store_takeout_menus').delete().eq('id', id)
   if (error) return { error: error.message }
   revalidateTakeout()
@@ -103,6 +120,8 @@ export async function duplicateTakeoutMenu(id: string) {
       .eq('id', id)
       .single()
     if (e1 || !src) return { error: e1?.message ?? '複製元が見つかりません' }
+    const denied = await assertStoreAccess(await takeoutMenuStoreIds(id))
+    if (denied) return { error: denied.error }
     const { data: created, error: e2 } = await adminSupabase
       .from('store_takeout_menus')
       .insert({
@@ -129,6 +148,13 @@ export async function duplicateTakeoutMenu(id: string) {
 // 一覧のドラッグ並べ替え。渡された順に sort_order=1..n を振り直す。
 export async function reorderTakeoutMenus(orderedIds: string[]) {
   if (!(await isAuthed())) return { error: '認証が必要です' }
+  if (orderedIds.length === 0) return { success: true }
+  const { data: links } = await adminSupabase
+    .from('store_takeout_menu_stores')
+    .select('store_id')
+    .in('takeout_menu_id', orderedIds)
+  const denied = await assertStoreAccess((links ?? []).map((r) => r.store_id))
+  if (denied) return { error: denied.error }
   await Promise.all(
     orderedIds.map((id, idx) =>
       adminSupabase.from('store_takeout_menus').update({ sort_order: idx + 1 }).eq('id', id),

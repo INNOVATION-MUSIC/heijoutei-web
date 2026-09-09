@@ -51,6 +51,7 @@ CMS 管理画面・Supabase 連携・フロント動的化など **実装/検証
 | ファイル | 機能領域 | 主なプレフィックス |
 |----------|----------|--------------------|
 | [admin-auth.md](./admin-auth.md) | 認証・ルートガード・パスワード再設定・表示トグル・ブランド UI | AUTH / PWRESET / PWUI / BRAND |
+| [admin-store-scope.md](./admin-store-scope.md) | 店舗別管理アカウント（自店のみ・本部専用機能の遮断・担当店舗割当） | SCOPE |
 | [admin-news.md](./admin-news.md) | お知らせ CRUD（TipTap・タグ・公開状態）・ダッシュボード | NEWS / DASH |
 | [admin-stores.md](./admin-stores.md) | 店舗 CRUD（画像・並び順・マスタ連動） | STORE |
 | [admin-menu.md](./admin-menu.md) | メニュー / コース / テイクアウトメニュー / カテゴリ | MENU / COURSE / TKMENU / CAT |

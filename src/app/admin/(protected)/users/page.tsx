@@ -26,6 +26,10 @@ export default async function AdminUsersPage() {
   }
 
   const users = await getUsers()
+  const { data: storeRows } = await adminSupabase.from('stores').select('id, name')
+  const storeName = new Map((storeRows ?? []).map((s) => [s.id, s.name]))
+  const scopeLabel = (ids: string[] | null) =>
+    !ids || ids.length === 0 ? '全店（本部）' : ids.map((id) => storeName.get(id) ?? '不明な店舗').join(' / ')
 
   return (
     <div className="space-y-6">
@@ -46,6 +50,7 @@ export default async function AdminUsersPage() {
               <th className="w-20 px-4 py-3 font-medium">アイコン</th>
               <th className="px-4 py-3 font-medium">メール</th>
               <th className="px-4 py-3 font-medium">氏名</th>
+              <th className="px-4 py-3 font-medium">担当店舗</th>
               <th className="px-4 py-3 font-medium">作成日</th>
               <th className="px-4 py-3 text-right font-medium">ロール / 操作</th>
             </tr>
@@ -56,6 +61,7 @@ export default async function AdminUsersPage() {
                 <td className="px-4 py-3"><UserAvatarCell id={u.id} avatarUrl={u.avatar_url} /></td>
                 <td className="px-4 py-3 text-[#ebe5db]">{u.email}</td>
                 <td className="px-4 py-3 text-[#9a9aa8]">{u.full_name ?? '—'}</td>
+                <td className="px-4 py-3 text-xs text-[#9a9aa8]">{u.role === 'admin' ? '全店（本部）' : scopeLabel(u.store_ids)}</td>
                 <td className="px-4 py-3 text-[#9a9aa8]">{u.created_at ? new Date(u.created_at).toLocaleDateString('ja-JP') : '—'}</td>
                 <td className="px-4 py-3">
                   <div className="flex items-center justify-end gap-3">

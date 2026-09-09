@@ -1,6 +1,8 @@
 import Link from 'next/link'
+import { notFound } from 'next/navigation'
 import { getCategories, type CategoryKind } from '@/lib/actions/categories'
 import { getStoreRefs } from '@/lib/actions/refs'
+import { scopedStoreIds } from '@/lib/auth-guard'
 import DraggableCategoryTable from '@/components/admin/DraggableCategoryTable'
 
 export const dynamic = 'force-dynamic'
@@ -10,6 +12,7 @@ export default async function CategoriesSettingsPage({
 }: {
   searchParams: Promise<{ tab?: string }>
 }) {
+  if ((await scopedStoreIds()) !== null) notFound() // 本部のみ
   const { tab } = await searchParams
   const kind: CategoryKind =
     tab === 'takeout' ? 'takeout' : tab === 'course' ? 'course' : tab === 'lunch' ? 'lunch' : 'menu'

@@ -1,10 +1,13 @@
 import Link from 'next/link'
+import { notFound } from 'next/navigation'
 import { adminSupabase } from '@/lib/supabase/admin'
+import { scopedStoreIds } from '@/lib/auth-guard'
 import DraggableGiftTable, { type GiftRow } from '@/components/admin/DraggableGiftTable'
 
 export const dynamic = 'force-dynamic'
 
 export default async function AdminGiftsPage() {
+  if ((await scopedStoreIds()) !== null) notFound() // 本部のみ
   const { data: gifts } = await adminSupabase
     .from('gift_products')
     .select('id, title, price_amount, price_note, is_active, sort_order')

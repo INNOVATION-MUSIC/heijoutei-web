@@ -1,7 +1,7 @@
 'use server'
 
 import { adminSupabase } from '@/lib/supabase/admin'
-import { isAuthed } from '@/lib/auth-guard'
+import { isAuthed, assertStoreAccess } from '@/lib/auth-guard'
 import { revalidatePath } from 'next/cache'
 
 export type CalStatus = 'open' | 'closed' | 'special_closed' | 'limited'
@@ -13,6 +13,7 @@ export async function getBusinessMonth(
   month: number
 ): Promise<Record<string, CalDay>> {
   if (!(await isAuthed())) return {}
+  if (await assertStoreAccess(storeId)) return {}
   const start = `${year}-${String(month).padStart(2, '0')}-01`
   const endDate = new Date(year, month, 0).getDate()
   const end = `${year}-${String(month).padStart(2, '0')}-${String(endDate).padStart(2, '0')}`
@@ -31,6 +32,8 @@ export async function getBusinessMonth(
 
 export async function saveBusinessDay(storeId: string, date: string, status: CalStatus, note: string | null) {
   if (!(await isAuthed())) return { error: '認証が必要です' }
+  const denied = await assertStoreAccess(storeId)
+  if (denied) return { error: denied.error }
   const { error } = await adminSupabase
     .from('business_calendars')
     .upsert(
@@ -44,6 +47,8 @@ export async function saveBusinessDay(storeId: string, date: string, status: Cal
 
 export async function deleteBusinessDay(storeId: string, date: string) {
   if (!(await isAuthed())) return { error: '認証が必要です' }
+  const denied = await assertStoreAccess(storeId)
+  if (denied) return { error: denied.error }
   const { error } = await adminSupabase
     .from('business_calendars')
     .delete()
@@ -63,6 +68,8 @@ export async function bulkSetWeekday(
   status: CalStatus
 ) {
   if (!(await isAuthed())) return { error: '認証が必要です' }
+  const denied = await assertStoreAccess(storeId)
+  if (denied) return { error: denied.error }
   const daysInMonth = new Date(year, month, 0).getDate()
   const rows: { store_id: string; date: string; status: CalStatus; note: null }[] = []
   for (let d = 1; d <= daysInMonth; d++) {

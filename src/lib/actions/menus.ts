@@ -1,9 +1,15 @@
 'use server'
 
 import { adminSupabase } from '@/lib/supabase/admin'
-import { isAuthed } from '@/lib/auth-guard'
+import { isAuthed, assertStoreAccess } from '@/lib/auth-guard'
 import { revalidatePath } from 'next/cache'
 import type { Tables } from '@/types/supabase'
+
+// store_menus 行 id → その店舗 id（担当店舗チェック用）
+async function storeMenuStoreId(id: string): Promise<string | null> {
+  const { data } = await adminSupabase.from('store_menus').select('store_id').eq('id', id).maybeSingle()
+  return data?.store_id ?? null
+}
 
 // 品目の追加メニュー1件（例: サムギョプサルの「豚バラ」）。価格は文字列（数字のみ想定）。
 export type MenuAddon = { name: string; price: string }
@@ -84,6 +90,8 @@ export async function getMenuItems(storeMenuId: string): Promise<Tables<'menu_it
 export async function createStoreMenu(p: StoreMenuPayload, items: MenuItemInput[]) {
   if (!(await isAuthed())) return { error: '認証が必要です' }
   if (!p.store_id) return { error: '店舗を選択してください' }
+  const denied = await assertStoreAccess(p.store_id)
+  if (denied) return { error: denied.error }
   const { data, error } = await adminSupabase
     .from('store_menus')
     .insert(normalize(p))
@@ -98,6 +106,9 @@ export async function createStoreMenu(p: StoreMenuPayload, items: MenuItemInput[
 
 export async function updateStoreMenu(id: string, p: StoreMenuPayload, items: MenuItemInput[]) {
   if (!(await isAuthed())) return { error: '認証が必要です' }
+  // 変更前の店舗・変更後の店舗の双方が担当範囲内であること
+  const denied = await assertStoreAccess([await storeMenuStoreId(id), p.store_id])
+  if (denied) return { error: denied.error }
   const { error } = await adminSupabase.from('store_menus').update(normalize(p)).eq('id', id)
   if (error) return { error: error.message }
   const itemsResult = await replaceItems(id, items)
@@ -108,6 +119,8 @@ export async function updateStoreMenu(id: string, p: StoreMenuPayload, items: Me
 
 export async function deleteStoreMenu(id: string) {
   if (!(await isAuthed())) return { error: '認証が必要です' }
+  const denied = await assertStoreAccess(await storeMenuStoreId(id))
+  if (denied) return { error: denied.error }
   const { error } = await adminSupabase.from('store_menus').delete().eq('id', id)
   if (error) return { error: error.message }
   revalidateMenus()
@@ -118,6 +131,10 @@ export async function deleteStoreMenu(id: string) {
 // ※ store_menus.sort_order はフロント表示順に影響せず、管理画面の一覧並びのみに作用する。
 export async function reorderStoreMenus(orderedIds: string[]) {
   if (!(await isAuthed())) return { error: '認証が必要です' }
+  if (orderedIds.length === 0) return { success: true }
+  const { data: rows } = await adminSupabase.from('store_menus').select('store_id').in('id', orderedIds)
+  const denied = await assertStoreAccess((rows ?? []).map((r) => r.store_id))
+  if (denied) return { error: denied.error }
   await Promise.all(
     orderedIds.map((id, idx) => adminSupabase.from('store_menus').update({ sort_order: idx + 1 }).eq('id', id)),
   )

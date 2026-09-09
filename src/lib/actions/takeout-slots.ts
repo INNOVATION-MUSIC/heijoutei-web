@@ -1,7 +1,7 @@
 'use server'
 
 import { adminSupabase } from '@/lib/supabase/admin'
-import { isAuthed } from '@/lib/auth-guard'
+import { isAuthed, assertStoreAccess } from '@/lib/auth-guard'
 import { defaultTimeLabels } from '@/lib/takeout-times'
 import { revalidatePath } from 'next/cache'
 
@@ -20,6 +20,7 @@ export async function getMonthSlots(
   month: number // 1-12
 ): Promise<Record<string, DaySlot>> {
   if (!(await isAuthed())) return {}
+  if (await assertStoreAccess(storeId)) return {}
   const start = `${year}-${String(month).padStart(2, '0')}-01`
   const endDate = new Date(year, month, 0).getDate()
   const end = `${year}-${String(month).padStart(2, '0')}-${String(endDate).padStart(2, '0')}`
@@ -61,6 +62,8 @@ export async function getMonthSlots(
 // 1日分の受付枠を upsert（slot を upsert し、slot_times を総入れ替え）
 export async function saveDaySlot(storeId: string, day: DaySlot) {
   if (!(await isAuthed())) return { error: '認証が必要です' }
+  const denied = await assertStoreAccess(storeId)
+  if (denied) return { error: denied.error }
 
   const { data: slot, error } = await adminSupabase
     .from('takeout_slots')
@@ -102,6 +105,8 @@ export async function saveMonthSlots(
 ) {
   if (!(await isAuthed())) return { error: '認証が必要です' }
   if (!storeId) return { error: '店舗を選択してください' }
+  const denied = await assertStoreAccess(storeId)
+  if (denied) return { error: denied.error }
 
   const daysInMonth = new Date(year, month, 0).getDate()
   const dates: string[] = []

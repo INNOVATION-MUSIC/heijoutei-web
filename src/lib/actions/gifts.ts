@@ -1,7 +1,7 @@
 'use server'
 
 import { adminSupabase } from '@/lib/supabase/admin'
-import { isAuthed } from '@/lib/auth-guard'
+import { isAuthed, assertAllStores } from '@/lib/auth-guard'
 import { revalidatePath } from 'next/cache'
 import type { Json } from '@/types/supabase'
 
@@ -48,6 +48,8 @@ function normalize(p: GiftPayload) {
 
 export async function createGift(p: GiftPayload) {
   if (!(await isAuthed())) return { error: '認証が必要です' }
+  const _hq = await assertAllStores()
+  if (_hq) return { error: _hq.error }
   if (!p.title?.trim()) return { error: '商品名は必須です' }
   const { error } = await adminSupabase.from('gift_products').insert(normalize(p))
   if (error) return { error: error.message }
@@ -57,6 +59,8 @@ export async function createGift(p: GiftPayload) {
 
 export async function updateGift(id: string, p: GiftPayload) {
   if (!(await isAuthed())) return { error: '認証が必要です' }
+  const _hq = await assertAllStores()
+  if (_hq) return { error: _hq.error }
   if (!p.title?.trim()) return { error: '商品名は必須です' }
   const { error } = await adminSupabase.from('gift_products').update(normalize(p)).eq('id', id)
   if (error) return { error: error.message }
@@ -66,6 +70,8 @@ export async function updateGift(id: string, p: GiftPayload) {
 
 export async function deleteGift(id: string) {
   if (!(await isAuthed())) return { error: '認証が必要です' }
+  const _hq = await assertAllStores()
+  if (_hq) return { error: _hq.error }
   const { error } = await adminSupabase.from('gift_products').delete().eq('id', id)
   if (error) return { error: error.message }
   revalidateGift()
@@ -75,6 +81,8 @@ export async function deleteGift(id: string) {
 // ギフト商品を複製する。末尾に配置し、誤公開を避けるため非公開で作成する。
 export async function duplicateGift(id: string) {
   if (!(await isAuthed())) return { error: '認証が必要です' }
+  const _hq = await assertAllStores()
+  if (_hq) return { error: _hq.error }
   try {
     const { data: src, error: e1 } = await adminSupabase.from('gift_products').select('*').eq('id', id).single()
     if (e1 || !src) return { error: e1?.message ?? '複製元が見つかりません' }
@@ -110,6 +118,8 @@ export async function duplicateGift(id: string) {
 // 一覧のドラッグ並べ替え。渡された順に sort_order=1..n を振り直す。
 export async function reorderGifts(orderedIds: string[]) {
   if (!(await isAuthed())) return { error: '認証が必要です' }
+  const _hq = await assertAllStores()
+  if (_hq) return { error: _hq.error }
   await Promise.all(
     orderedIds.map((id, idx) => adminSupabase.from('gift_products').update({ sort_order: idx + 1 }).eq('id', id)),
   )

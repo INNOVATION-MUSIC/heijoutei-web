@@ -1,7 +1,7 @@
 'use server'
 
 import { adminSupabase } from '@/lib/supabase/admin'
-import { isAuthed } from '@/lib/auth-guard'
+import { isAuthed, assertAllStores } from '@/lib/auth-guard'
 import { revalidatePath } from 'next/cache'
 
 export type GiftShippingInput = {
@@ -13,6 +13,8 @@ export type GiftShippingInput = {
 // 送料金表を一括保存する。渡された順（表示順）で全置換する。
 export async function saveGiftShipping(areas: GiftShippingInput[]) {
   if (!(await isAuthed())) return { error: '認証が必要です' }
+  const _hq = await assertAllStores()
+  if (_hq) return { error: _hq.error }
 
   const rows = areas
     .map((a, idx) => ({

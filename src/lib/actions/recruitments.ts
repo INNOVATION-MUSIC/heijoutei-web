@@ -1,9 +1,14 @@
 'use server'
 
 import { adminSupabase } from '@/lib/supabase/admin'
-import { isAuthed } from '@/lib/auth-guard'
+import { isAuthed, assertStoreAccess } from '@/lib/auth-guard'
 import { revalidatePath } from 'next/cache'
 import type { Tables } from '@/types/supabase'
+
+async function recruitStoreId(id: string): Promise<string | null> {
+  const { data } = await adminSupabase.from('recruitments').select('store_id').eq('id', id).maybeSingle()
+  return data?.store_id ?? null
+}
 
 export type TagInput = { label: string; color: string }
 export type DetailInput = { label: string; value: string }
@@ -71,6 +76,8 @@ export async function createRecruit(p: RecruitPayload, tags: TagInput[], details
   if (!(await isAuthed())) return { error: '認証が必要です' }
   if (!p.store_id) return { error: '店舗を選択してください' }
   if (!p.title?.trim()) return { error: 'タイトルは必須です' }
+  const denied = await assertStoreAccess(p.store_id)
+  if (denied) return { error: denied.error }
   const { data, error } = await adminSupabase.from('recruitments').insert(normalize(p)).select('id').single()
   if (error || !data) return { error: error?.message ?? '作成に失敗しました' }
   await replaceTags(data.id, tags)
@@ -82,6 +89,8 @@ export async function createRecruit(p: RecruitPayload, tags: TagInput[], details
 export async function updateRecruit(id: string, p: RecruitPayload, tags: TagInput[], details: DetailInput[]) {
   if (!(await isAuthed())) return { error: '認証が必要です' }
   if (!p.title?.trim()) return { error: 'タイトルは必須です' }
+  const denied = await assertStoreAccess([await recruitStoreId(id), p.store_id])
+  if (denied) return { error: denied.error }
   const { error } = await adminSupabase.from('recruitments').update(normalize(p)).eq('id', id)
   if (error) return { error: error.message }
   await replaceTags(id, tags)
@@ -92,6 +101,8 @@ export async function updateRecruit(id: string, p: RecruitPayload, tags: TagInpu
 
 export async function deleteRecruit(id: string) {
   if (!(await isAuthed())) return { error: '認証が必要です' }
+  const denied = await assertStoreAccess(await recruitStoreId(id))
+  if (denied) return { error: denied.error }
   const { error } = await adminSupabase.from('recruitments').delete().eq('id', id)
   if (error) return { error: error.message }
   revalidateRecruit()

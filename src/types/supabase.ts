@@ -63,6 +63,7 @@ export type Database = {
           name: string
           phone: string | null
           read_at: string | null
+          store_id: string | null
           subject: string | null
         }
         Insert: {
@@ -75,6 +76,7 @@ export type Database = {
           name: string
           phone?: string | null
           read_at?: string | null
+          store_id?: string | null
           subject?: string | null
         }
         Update: {
@@ -87,9 +89,18 @@ export type Database = {
           name?: string
           phone?: string | null
           read_at?: string | null
+          store_id?: string | null
           subject?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "contact_messages_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       course_categories: {
         Row: {
@@ -475,6 +486,7 @@ export type Database = {
           full_name: string | null
           id: string
           role: string
+          store_ids: string[] | null
         }
         Insert: {
           avatar_url?: string | null
@@ -482,6 +494,7 @@ export type Database = {
           full_name?: string | null
           id: string
           role?: string
+          store_ids?: string[] | null
         }
         Update: {
           avatar_url?: string | null
@@ -489,6 +502,7 @@ export type Database = {
           full_name?: string | null
           id?: string
           role?: string
+          store_ids?: string[] | null
         }
         Relationships: []
       }

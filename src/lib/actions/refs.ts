@@ -1,21 +1,25 @@
 'use server'
 
 import { adminSupabase } from '@/lib/supabase/admin'
-import { isAuthed } from '@/lib/auth-guard'
+import { isAuthed, scopedStoreIds } from '@/lib/auth-guard'
 
 export type StoreRef = { id: string; name: string; slug: string }
 // store_ids はメニューカテゴリのみ設定される（対象店舗）。null/空=全店。
 export type CategoryRef = { id: string; name: string; slug: string; store_ids?: string[] | null }
 
 // 各管理フォームのプルダウン用。店舗マスタが単一マスタなので各所で再利用する。
+// 店舗スタッフには担当店舗のみ返す（フォームの店舗選択肢が自動的に絞られる）。
 export async function getStoreRefs(): Promise<StoreRef[]> {
   if (!(await isAuthed())) return []
+  const allowed = await scopedStoreIds()
   // 非公開（is_active=false）の店舗は各フォームの選択肢に出さない。
-  const { data } = await adminSupabase
+  const q = adminSupabase
     .from('stores')
     .select('id, name, slug')
     .eq('is_active', true)
     .order('sort_order', { ascending: true })
+  if (allowed) q.in('id', allowed)
+  const { data } = await q
   return data ?? []
 }
 

@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { adminSupabase } from '@/lib/supabase/admin'
+import { scopedStoreIds } from '@/lib/auth-guard'
 import { getStoreRefs, getMenuCategoryRefs } from '@/lib/actions/refs'
 import { getMenuItems, type MenuAddon } from '@/lib/actions/menus'
 import MenuForm from '@/components/admin/MenuForm'
@@ -17,8 +18,12 @@ export default async function EditMenuPage({ params }: { params: Promise<{ id: s
     adminSupabase.from('store_menus').select('id, store_id, category_id'),
   ])
   if (!menu) notFound()
+  const allowed = await scopedStoreIds()
+  if (allowed && !allowed.includes(menu.store_id)) notFound()
   // 店舗×カテゴリ → メニューid の索引（カテゴリ切替で該当メニューへ遷移するため）
-  const menuIndex = (allMenus ?? []).map((m) => ({ id: m.id, store_id: m.store_id, category_id: m.category_id }))
+  const menuIndex = (allMenus ?? [])
+    .filter((m) => !allowed || allowed.includes(m.store_id))
+    .map((m) => ({ id: m.id, store_id: m.store_id, category_id: m.category_id }))
 
   const initialItems = items.map((it) => ({
     name: it.name,

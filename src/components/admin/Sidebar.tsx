@@ -4,7 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
-type NavItem = { href: string; label: string; icon: string; badge?: number; adminOnly?: boolean }
+type NavItem = { href: string; label: string; icon: string; badge?: number; adminOnly?: boolean; hqOnly?: boolean }
 type NavGroup = { title: string; items: NavItem[] }
 
 // 白(currentColor)モノクロのラインアイコン。emoji を廃し見た目を統一する。
@@ -164,12 +164,16 @@ export default function AdminSidebar({
   userRole,
   unreadOrders = 0,
   unreadContacts = 0,
+  isHq = true,
+  storeNames = [],
   open = false,
   onClose,
 }: {
   userRole: string
   unreadOrders?: number
   unreadContacts?: number
+  isHq?: boolean
+  storeNames?: string[]
   open?: boolean
   onClose?: () => void
 }) {
@@ -188,8 +192,8 @@ export default function AdminSidebar({
         { href: '/admin/menus', label: 'メニュー', icon: 'menu' },
         { href: '/admin/lunch', label: 'ランチ', icon: 'lunch' },
         { href: '/admin/courses', label: 'コース', icon: 'course' },
-        { href: '/admin/gifts', label: 'ギフト', icon: 'gift' },
-        { href: '/admin/gift-shipping', label: '送料金表', icon: 'package' },
+        { href: '/admin/gifts', label: 'ギフト', icon: 'gift', hqOnly: true },
+        { href: '/admin/gift-shipping', label: '送料金表', icon: 'package', hqOnly: true },
         { href: '/admin/business-calendar', label: '営業カレンダー', icon: 'calendar' },
       ],
     },
@@ -211,7 +215,7 @@ export default function AdminSidebar({
     {
       title: 'システム',
       items: [
-        { href: '/admin/settings/categories', label: 'カテゴリ管理', icon: 'tag' },
+        { href: '/admin/settings/categories', label: 'カテゴリ管理', icon: 'tag', hqOnly: true },
         { href: '/admin/media', label: 'メディア', icon: 'image' },
         { href: '/admin/users', label: 'ユーザー管理', icon: 'users', adminOnly: true },
       ],
@@ -237,15 +241,28 @@ export default function AdminSidebar({
         <Image src="/images/logo.webp" alt="焼肉平壌亭" width={104} height={54} className="object-contain" priority />
       </Link>
 
+      {!isHq && (
+        <div className="flex-shrink-0 border-b border-[#23232e] bg-[#d9b86b]/[0.06] px-4 py-2.5">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-[#5a5a6a]">担当店舗</p>
+          <p className="mt-0.5 text-sm font-medium text-[#d9b86b]">
+            {storeNames.length > 0 ? storeNames.join(' / ') : '（店舗未割当）'}
+          </p>
+        </div>
+      )}
+
       <nav className="flex-1 px-3 py-4">
-        {groups.map((group) => (
+        {groups.map((group) => {
+          const items = group.items
+            .filter((item) => !item.adminOnly || userRole === 'admin')
+            .filter((item) => !item.hqOnly || isHq)
+          if (items.length === 0) return null
+          return (
           <div key={group.title} className="mb-5">
             <p className="mb-1.5 px-3 text-[10px] font-semibold uppercase tracking-wider text-[#5a5a6a]">
               {group.title}
             </p>
             <ul className="space-y-0.5">
-              {group.items
-                .filter((item) => !item.adminOnly || userRole === 'admin')
+              {items
                 .map((item) => {
                   const active = isActive(item.href)
                   return (
@@ -272,7 +289,8 @@ export default function AdminSidebar({
                 })}
             </ul>
           </div>
-        ))}
+          )
+        })}
       </nav>
     </aside>
   )

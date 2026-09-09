@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { adminSupabase } from '@/lib/supabase/admin'
+import { scopedStoreIds } from '@/lib/auth-guard'
 
 export const dynamic = 'force-dynamic'
 
@@ -40,6 +41,25 @@ function StatCard({ label, value, href }: { label: string; value: number | strin
 export default async function AdminDashboard() {
   const { todayStart, todayEnd } = jstTodayRange()
   const { monthStart, monthEnd } = jstThisMonthRange()
+  const allowed = await scopedStoreIds()
+
+  // 店舗スタッフのときは注文・問い合わせを担当店舗に絞る
+  const unreadOrdersQ = adminSupabase.from('takeout_orders').select('id', { count: 'exact', head: true }).eq('is_read', false)
+  const unreadContactsQ = adminSupabase.from('contact_messages').select('id', { count: 'exact', head: true }).eq('is_read', false)
+  const todayOrdersQ = adminSupabase.from('takeout_orders').select('total_price').gte('created_at', todayStart).lt('created_at', todayEnd)
+  const monthOrdersQ = adminSupabase.from('takeout_orders').select('total_price').gte('created_at', monthStart).lt('created_at', monthEnd).neq('status', 'cancelled')
+  const recentOrdersQ = adminSupabase.from('takeout_orders').select('id, customer_name, total_price, pickup_date, is_read, created_at, stores(name)').order('created_at', { ascending: false }).limit(10)
+  const recentContactsQ = adminSupabase.from('contact_messages').select('id, name, subject, message, is_read, created_at').order('created_at', { ascending: false }).limit(10)
+  const storeCountQ = adminSupabase.from('stores').select('id', { count: 'exact', head: true }).eq('is_active', true)
+  if (allowed) {
+    unreadOrdersQ.in('store_id', allowed)
+    unreadContactsQ.in('store_id', allowed)
+    todayOrdersQ.in('store_id', allowed)
+    monthOrdersQ.in('store_id', allowed)
+    recentOrdersQ.in('store_id', allowed)
+    recentContactsQ.in('store_id', allowed)
+    storeCountQ.in('id', allowed)
+  }
 
   const [
     { count: publishedNews },
@@ -53,14 +73,14 @@ export default async function AdminDashboard() {
     { data: recentNews },
   ] = await Promise.all([
     adminSupabase.from('news').select('id', { count: 'exact', head: true }).eq('is_published', true),
-    adminSupabase.from('stores').select('id', { count: 'exact', head: true }).eq('is_active', true),
-    adminSupabase.from('takeout_orders').select('id', { count: 'exact', head: true }).eq('is_read', false),
-    adminSupabase.from('contact_messages').select('id', { count: 'exact', head: true }).eq('is_read', false),
-    adminSupabase.from('takeout_orders').select('total_price').gte('created_at', todayStart).lt('created_at', todayEnd),
+    storeCountQ,
+    unreadOrdersQ,
+    unreadContactsQ,
+    todayOrdersQ,
     // 今月の売上はキャンセルを除外（売上として計上しない）
-    adminSupabase.from('takeout_orders').select('total_price').gte('created_at', monthStart).lt('created_at', monthEnd).neq('status', 'cancelled'),
-    adminSupabase.from('takeout_orders').select('id, customer_name, total_price, pickup_date, is_read, created_at, stores(name)').order('created_at', { ascending: false }).limit(10),
-    adminSupabase.from('contact_messages').select('id, name, subject, message, is_read, created_at').order('created_at', { ascending: false }).limit(10),
+    monthOrdersQ,
+    recentOrdersQ,
+    recentContactsQ,
     adminSupabase.from('news').select('id, title, is_published, published_at, news_tags(label, color, sort_order)').order('created_at', { ascending: false }).limit(5),
   ])
 

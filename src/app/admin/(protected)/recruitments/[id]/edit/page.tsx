@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { adminSupabase } from '@/lib/supabase/admin'
+import { scopedStoreIds } from '@/lib/auth-guard'
 import { getStoreRefs } from '@/lib/actions/refs'
 import { getRecruitTags, getRecruitDetails } from '@/lib/actions/recruitments'
 import RecruitForm from '@/components/admin/RecruitForm'
@@ -16,6 +17,8 @@ export default async function EditRecruitPage({ params }: { params: Promise<{ id
     getRecruitDetails(id),
   ])
   if (!recruit) notFound()
+  const allowed = await scopedStoreIds()
+  if (allowed && !allowed.includes(recruit.store_id)) notFound()
 
   return (
     <div className="space-y-6">

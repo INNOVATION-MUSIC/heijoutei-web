@@ -3,19 +3,21 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import AvatarUploader from '@/components/admin/AvatarUploader'
+import StoreScopePicker from '@/components/admin/StoreScopePicker'
 import { createUser } from '@/lib/actions/users'
 
 const inputClass =
   'w-full rounded-lg border border-[#2f2f3c] bg-[#0a0a0f] px-3 py-2 text-sm text-[#ebe5db] focus:border-[#d9b86b] focus:outline-none'
 const labelClass = 'mb-1.5 block text-xs font-medium text-[#9a9aa8]'
 
-export default function UserCreateForm() {
+export default function UserCreateForm({ stores = [] }: { stores?: { id: string; name: string }[] }) {
   const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [fullName, setFullName] = useState('')
   const [role, setRole] = useState('editor')
   const [avatarUrl, setAvatarUrl] = useState('')
+  const [storeIds, setStoreIds] = useState<string[]>([])
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -23,7 +25,7 @@ export default function UserCreateForm() {
     e.preventDefault()
     setSaving(true)
     setError(null)
-    const res = await createUser({ email, password, full_name: fullName, role, avatar_url: avatarUrl })
+    const res = await createUser({ email, password, full_name: fullName, role, avatar_url: avatarUrl, store_ids: storeIds })
     if (res?.error) { setError(res.error); setSaving(false); return }
     router.push('/admin/users')
     router.refresh()
@@ -55,6 +57,7 @@ export default function UserCreateForm() {
           <option value="admin">管理者</option>
         </select>
       </div>
+      <StoreScopePicker stores={stores} value={storeIds} onChange={setStoreIds} disabled={role === 'admin'} />
       <div className="flex gap-2">
         <button type="submit" disabled={saving} className="rounded-lg bg-[#d9b86b] px-4 py-2 text-sm font-medium text-[#1a1410] hover:opacity-90 disabled:opacity-50">
           {saving ? '作成中...' : 'ユーザーを作成'}

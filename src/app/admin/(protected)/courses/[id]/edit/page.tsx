@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { adminSupabase } from '@/lib/supabase/admin'
+import { scopedStoreIds } from '@/lib/auth-guard'
 import { getStoreRefs, getCourseCategoryRefs } from '@/lib/actions/refs'
 import CourseForm from '@/components/admin/CourseForm'
 
@@ -14,6 +15,8 @@ export default async function EditCoursePage({ params }: { params: Promise<{ id:
     getCourseCategoryRefs(),
   ])
   if (!course) notFound()
+  const allowed = await scopedStoreIds()
+  if (allowed && !allowed.includes(course.store_id)) notFound()
 
   return (
     <div className="space-y-6">

@@ -21,27 +21,48 @@ export default async function AdminProtectedLayout({
     redirect('/admin/login') // /admin/login は (protected) 外なので無限ループにならない
   }
 
-  let profile: { full_name: string | null; role: string; avatar_url: string | null } | null = null
+  let profile: { full_name: string | null; role: string; avatar_url: string | null; store_ids: string[] | null } | null = null
   {
     const { data } = await adminSupabase
       .from('profiles')
-      .select('full_name, role, avatar_url')
+      .select('full_name, role, avatar_url, store_ids')
       .eq('id', user.id)
       .single()
     profile = data
   }
 
-  // 未読バッジ（注文受付・お問い合わせ）
-  const [{ count: unreadOrders }, { count: unreadContacts }] = await Promise.all([
-    adminSupabase.from('takeout_orders').select('id', { count: 'exact', head: true }).eq('is_read', false),
-    adminSupabase.from('contact_messages').select('id', { count: 'exact', head: true }).eq('is_read', false),
-  ])
+  // 店舗スコープ: admin か store_ids 未設定は全店（null）。指定ありの editor はその店舗のみ。
+  const role = profile?.role ?? 'editor'
+  const assigned = profile?.store_ids ?? null
+  const scopedStoreIds = role === 'admin' || !assigned || assigned.length === 0 ? null : assigned
+  const isHq = scopedStoreIds === null
+
+  let storeNames: string[] = []
+  if (!isHq) {
+    const { data: rows } = await adminSupabase
+      .from('stores')
+      .select('name')
+      .in('id', scopedStoreIds)
+      .order('sort_order')
+    storeNames = (rows ?? []).map((r) => r.name)
+  }
+
+  // 未読バッジ（注文受付・お問い合わせ）。店舗スタッフは担当店舗分のみ数える。
+  const ordersQ = adminSupabase.from('takeout_orders').select('id', { count: 'exact', head: true }).eq('is_read', false)
+  const contactsQ = adminSupabase.from('contact_messages').select('id', { count: 'exact', head: true }).eq('is_read', false)
+  if (!isHq) {
+    ordersQ.in('store_id', scopedStoreIds)
+    contactsQ.in('store_id', scopedStoreIds)
+  }
+  const [{ count: unreadOrders }, { count: unreadContacts }] = await Promise.all([ordersQ, contactsQ])
 
   return (
     <AdminShell
-      userRole={profile?.role ?? 'editor'}
+      userRole={role}
       unreadOrders={unreadOrders ?? 0}
       unreadContacts={unreadContacts ?? 0}
+      isHq={isHq}
+      storeNames={storeNames}
       user={{
         email: user?.email ?? '',
         full_name: profile?.full_name ?? null,

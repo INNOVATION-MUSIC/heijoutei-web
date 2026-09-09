@@ -1,11 +1,14 @@
 import Link from 'next/link'
+import { notFound } from 'next/navigation'
 import { adminSupabase } from '@/lib/supabase/admin'
+import { scopedStoreIds } from '@/lib/auth-guard'
 import GiftShippingEditor from '@/components/admin/GiftShippingEditor'
 import type { GiftShippingArea } from '@/app/lib/giftData'
 
 export const dynamic = 'force-dynamic'
 
 export default async function AdminGiftShippingPage() {
+  if ((await scopedStoreIds()) !== null) notFound() // 本部のみ
   const { data } = await adminSupabase
     .from('gift_shipping_areas')
     .select('region, prefectures, fee')

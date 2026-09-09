@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { adminSupabase } from '@/lib/supabase/admin'
+import { scopedStoreIds } from '@/lib/auth-guard'
 import DraggableMenuTable, { type MenuRow } from '@/components/admin/DraggableMenuTable'
 
 export const dynamic = 'force-dynamic'
@@ -10,10 +11,13 @@ export default async function AdminMenusPage({
   searchParams: Promise<{ store?: string; category?: string }>
 }) {
   const { store, category } = await searchParams
+  const allowed = await scopedStoreIds()
 
   // ランチは専用画面（/admin/lunch）で管理するため、この一覧・絞り込みからは除外する
+  const storesQ = adminSupabase.from('stores').select('id, name').eq('is_active', true).order('sort_order')
+  if (allowed) storesQ.in('id', allowed)
   const [{ data: stores }, { data: cats }, { data: lunchCat }] = await Promise.all([
-    adminSupabase.from('stores').select('id, name').eq('is_active', true).order('sort_order'),
+    storesQ,
     adminSupabase.from('menu_categories').select('id, name').neq('slug', 'lunch').order('sort_order'),
     adminSupabase.from('menu_categories').select('id').eq('slug', 'lunch').maybeSingle(),
   ])
@@ -24,7 +28,8 @@ export default async function AdminMenusPage({
     .select('id, store_id, category_id, is_active, sort_order')
     .order('store_id')
     .order('sort_order')
-  if (store) query = query.eq('store_id', store)
+  if (allowed) query = query.in('store_id', allowed)
+  if (store && (!allowed || allowed.includes(store))) query = query.eq('store_id', store)
   if (category) query = query.eq('category_id', category)
   const { data: rawMenus } = await query
   const menus = (rawMenus ?? []).filter((m) => m.category_id !== lunchId)

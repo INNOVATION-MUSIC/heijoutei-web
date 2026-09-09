@@ -1,8 +1,13 @@
 'use server'
 
 import { adminSupabase } from '@/lib/supabase/admin'
-import { isAuthed } from '@/lib/auth-guard'
+import { isAuthed, assertStoreAccess } from '@/lib/auth-guard'
 import { revalidatePath } from 'next/cache'
+
+async function courseStoreId(id: string): Promise<string | null> {
+  const { data } = await adminSupabase.from('courses').select('store_id').eq('id', id).maybeSingle()
+  return data?.store_id ?? null
+}
 
 export type CoursePayload = {
   store_id: string
@@ -43,6 +48,8 @@ export async function createCourse(p: CoursePayload) {
   if (!(await isAuthed())) return { error: '認証が必要です' }
   if (!p.store_id) return { error: '店舗を選択してください' }
   if (!p.name?.trim()) return { error: 'コース名は必須です' }
+  const denied = await assertStoreAccess(p.store_id)
+  if (denied) return { error: denied.error }
   const { error } = await adminSupabase.from('courses').insert(normalize(p))
   if (error) return { error: error.message }
   revalidateCourses()
@@ -52,6 +59,8 @@ export async function createCourse(p: CoursePayload) {
 export async function updateCourse(id: string, p: CoursePayload) {
   if (!(await isAuthed())) return { error: '認証が必要です' }
   if (!p.name?.trim()) return { error: 'コース名は必須です' }
+  const denied = await assertStoreAccess([await courseStoreId(id), p.store_id])
+  if (denied) return { error: denied.error }
   const { error } = await adminSupabase.from('courses').update(normalize(p)).eq('id', id)
   if (error) return { error: error.message }
   revalidateCourses()
@@ -60,6 +69,8 @@ export async function updateCourse(id: string, p: CoursePayload) {
 
 export async function deleteCourse(id: string) {
   if (!(await isAuthed())) return { error: '認証が必要です' }
+  const denied = await assertStoreAccess(await courseStoreId(id))
+  if (denied) return { error: denied.error }
   const { error } = await adminSupabase.from('courses').delete().eq('id', id)
   if (error) return { error: error.message }
   revalidateCourses()
@@ -72,6 +83,8 @@ export async function duplicateCourse(id: string) {
   try {
     const { data: src, error: e1 } = await adminSupabase.from('courses').select('*').eq('id', id).single()
     if (e1 || !src) return { error: e1?.message ?? '複製元が見つかりません' }
+    const denied = await assertStoreAccess(src.store_id)
+    if (denied) return { error: denied.error }
     // 同店舗の末尾に配置
     const { data: last } = await adminSupabase
       .from('courses')
@@ -105,6 +118,10 @@ export async function duplicateCourse(id: string) {
 // 一覧のドラッグ並べ替え。渡された順に sort_order=1..n を振り直す（店舗ごとに呼ぶ）。
 export async function reorderCourses(orderedIds: string[]) {
   if (!(await isAuthed())) return { error: '認証が必要です' }
+  if (orderedIds.length === 0) return { success: true }
+  const { data: rows } = await adminSupabase.from('courses').select('store_id').in('id', orderedIds)
+  const denied = await assertStoreAccess((rows ?? []).map((r) => r.store_id))
+  if (denied) return { error: denied.error }
   await Promise.all(
     orderedIds.map((id, idx) => adminSupabase.from('courses').update({ sort_order: idx + 1 }).eq('id', id)),
   )

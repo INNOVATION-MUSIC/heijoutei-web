@@ -1,7 +1,7 @@
 'use server'
 
 import { adminSupabase } from '@/lib/supabase/admin'
-import { isAuthed } from '@/lib/auth-guard'
+import { isAuthed, assertStoreAccess, requireAllStores } from '@/lib/auth-guard'
 import { revalidatePath } from 'next/cache'
 import type { TablesInsert } from '@/types/supabase'
 
@@ -94,7 +94,8 @@ function normalize(payload: StorePayload): TablesInsert<'stores'> {
 }
 
 export async function createStore(payload: StorePayload) {
-  if (!(await isAuthed())) return { error: '認証が必要です' }
+  const guard = await requireAllStores()
+  if (!guard.ok) return { error: guard.error }
   if (!payload.name?.trim() || !payload.slug?.trim()) {
     return { error: '店舗名とスラッグは必須です' }
   }
@@ -108,6 +109,8 @@ export async function createStore(payload: StorePayload) {
 
 export async function updateStore(id: string, payload: StorePayload) {
   if (!(await isAuthed())) return { error: '認証が必要です' }
+  const denied = await assertStoreAccess(id)
+  if (denied) return { error: denied.error }
   if (!payload.name?.trim() || !payload.slug?.trim()) {
     return { error: '店舗名とスラッグは必須です' }
   }
@@ -120,7 +123,8 @@ export async function updateStore(id: string, payload: StorePayload) {
 }
 
 export async function deleteStore(id: string) {
-  if (!(await isAuthed())) return { error: '認証が必要です' }
+  const guard = await requireAllStores()
+  if (!guard.ok) return { error: guard.error }
   const { error } = await adminSupabase.from('stores').delete().eq('id', id)
   if (error) return { error: error.message }
   revalidateStoreFronts()

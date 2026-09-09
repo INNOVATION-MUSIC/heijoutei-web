@@ -967,6 +967,42 @@ export const revalidate = 60 を各ページに設定。
 
 ---
 
+## 権限モデル（店舗スコープ・2026-09-09 追加 / migration 023）
+
+各店舗の管理者にアカウントを配布し、自店のデータのみ管理させるための仕組み。
+
+### profiles
+
+| 条件 | アクセス範囲 |
+|------|--------------|
+| `role = 'admin'` | 全店（本部）。`store_ids` は無視 |
+| `role = 'editor'` かつ `store_ids` が NULL / 空 | 全店（本部エディター・既存アカウント互換） |
+| `role = 'editor'` かつ `store_ids = [uuid, ...]` | **その店舗のみ**（店舗スタッフ）。複数店舗の割当可 |
+
+- `profiles.store_ids uuid[]` を追加。ユーザー管理画面（admin のみ）の「担当店舗」チェックボックスで設定。
+- `contact_messages.store_id` を追加（`/api/contact` が保存時に解決。既存行は subject の「（店舗名）」から backfill 済み）。
+
+### 認可の実装（`src/lib/auth-guard.ts`）
+
+認可はすべてアプリ層（`adminSupabase` = service_role は RLS をバイパスするため）。
+
+- `requireAuth()` … 成功時 `{ storeIds: string[] | null }` を返す（`null` = 全店）
+- `scopedStoreIds()` … 一覧ページ用。`null` なら絞り込まない
+- `canAccessStore(guard, storeId)` / `canAccessAllStores(guard, storeIds[])`
+- `assertStoreAccess(storeId | storeId[])` … Server Action 用。範囲外なら `{ error }`
+- `assertAllStores()` / `requireAllStores()` … 本部限定操作用（ギフト・送料金表・カテゴリ管理・店舗の新規作成/削除）
+
+### 適用箇所
+
+- **サイドバー**（`Sidebar.tsx`）: ギフト・送料金表・カテゴリ管理は `hqOnly`。担当店舗バッジを表示
+- **一覧ページ**: `store_id in (allowed)` で絞り込み、店舗セレクトも許可店舗のみ（`getStoreRefs()` がスコープ済み）
+- **編集ページ**: 対象行の店舗が範囲外なら `notFound()`
+- **Server Actions**: `menus` / `courses` / `takeout-menus` / `recruitments` / `takeout-slots` / `business-calendar` / `takeout-orders` / `stores` の各 create/update/delete/duplicate/reorder で対象店舗を検証。`gifts` / `gift-shipping` / `categories` は本部限定
+- **お知らせ・メディア**: 全アカウント共通で編集可（news に店舗区分なし）
+- 店舗マスタ: 店舗スタッフは自店のみ編集可（新規作成・削除は本部のみ）
+
+---
+
 ## チェックリスト（実装完了後に確認）
 
 - [ ] Supabase SQL Editor で 001 → 002 → 003 を実行済み

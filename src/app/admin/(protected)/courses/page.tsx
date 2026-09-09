@@ -1,16 +1,21 @@
 import Link from 'next/link'
 import { adminSupabase } from '@/lib/supabase/admin'
+import { scopedStoreIds } from '@/lib/auth-guard'
 import DraggableCourseTable, { type CourseRow } from '@/components/admin/DraggableCourseTable'
 
 export const dynamic = 'force-dynamic'
 
 export default async function AdminCoursesPage() {
-  const { data: stores } = await adminSupabase.from('stores').select('id, name').eq('is_active', true).order('sort_order')
-  const { data: courses } = await adminSupabase
+  const allowed = await scopedStoreIds()
+  const storesQ = adminSupabase.from('stores').select('id, name').eq('is_active', true).order('sort_order')
+  if (allowed) storesQ.in('id', allowed)
+  const coursesQ = adminSupabase
     .from('courses')
     .select('id, store_id, name, type_label, price_label, is_active, sort_order, course_categories(name)')
     .order('store_id')
     .order('sort_order')
+  if (allowed) coursesQ.in('store_id', allowed)
+  const [{ data: stores }, { data: courses }] = await Promise.all([storesQ, coursesQ])
 
   // 店舗ごとにまとめる（並び順＝表示順は店舗単位で意味を持つため店舗別にドラッグ並べ替え）
   const byStore = new Map<string, CourseRow[]>()

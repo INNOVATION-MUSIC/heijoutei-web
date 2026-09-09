@@ -15,12 +15,16 @@ export default function AdminShell({
   userRole,
   unreadOrders,
   unreadContacts,
+  isHq = true,
+  storeNames = [],
   user,
   children,
 }: {
   userRole: string
   unreadOrders: number
   unreadContacts: number
+  isHq?: boolean
+  storeNames?: string[]
   user: AdminUser
   children: React.ReactNode
 }) {
@@ -41,6 +45,8 @@ export default function AdminShell({
         userRole={userRole}
         unreadOrders={unreadOrders}
         unreadContacts={unreadContacts}
+        isHq={isHq}
+        storeNames={storeNames}
         open={open}
         onClose={() => setOpen(false)}
       />

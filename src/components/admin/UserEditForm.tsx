@@ -4,18 +4,20 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import AvatarUploader from '@/components/admin/AvatarUploader'
 import SaveSuccessBanner from '@/components/admin/SaveSuccessBanner'
+import StoreScopePicker from '@/components/admin/StoreScopePicker'
 import { updateUserProfile, type AdminUserRow } from '@/lib/actions/users'
 
 const inputClass =
   'w-full rounded-lg border border-[#2f2f3c] bg-[#0a0a0f] px-3 py-2 text-sm text-[#ebe5db] focus:border-[#d9b86b] focus:outline-none'
 const labelClass = 'mb-1.5 block text-xs font-medium text-[#9a9aa8]'
 
-export default function UserEditForm({ user }: { user: AdminUserRow }) {
+export default function UserEditForm({ user, stores = [] }: { user: AdminUserRow; stores?: { id: string; name: string }[] }) {
   const router = useRouter()
   const [fullName, setFullName] = useState(user.full_name ?? '')
   const [email, setEmail] = useState(user.email)
   const [role, setRole] = useState(user.role === 'admin' ? 'admin' : 'editor')
   const [avatarUrl, setAvatarUrl] = useState(user.avatar_url ?? '')
+  const [storeIds, setStoreIds] = useState<string[]>(user.store_ids ?? [])
   const [password, setPassword] = useState('')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -30,6 +32,7 @@ export default function UserEditForm({ user }: { user: AdminUserRow }) {
       full_name: fullName,
       role,
       avatar_url: avatarUrl,
+      store_ids: storeIds,
       // メールが変わった時だけ送る（無変更時は送らない）
       email: email.trim() !== user.email ? email : undefined,
       password: password || undefined,
@@ -71,6 +74,7 @@ export default function UserEditForm({ user }: { user: AdminUserRow }) {
           <option value="admin">管理者</option>
         </select>
       </div>
+      <StoreScopePicker stores={stores} value={storeIds} onChange={setStoreIds} disabled={role === 'admin'} />
       <div>
         <label className={labelClass}>新しいパスワード（変更する場合のみ・8文字以上）</label>
         <input type="password" className={inputClass} value={password} onChange={(e) => setPassword(e.target.value)} minLength={8} autoComplete="new-password" placeholder="変更しない場合は空欄" />

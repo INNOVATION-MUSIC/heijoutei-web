@@ -1,7 +1,7 @@
 'use server'
 
 import { adminSupabase } from '@/lib/supabase/admin'
-import { isAuthed } from '@/lib/auth-guard'
+import { isAuthed, assertAllStores } from '@/lib/auth-guard'
 import { revalidatePath } from 'next/cache'
 
 export type CategoryKind = 'menu' | 'takeout' | 'course' | 'lunch'
@@ -78,6 +78,8 @@ export async function getCategories(kind: CategoryKind): Promise<Category[]> {
 
 export async function createCategory(kind: CategoryKind, name: string, slug?: string) {
   if (!(await isAuthed())) return { error: '認証が必要です' }
+  const _hq = await assertAllStores()
+  if (_hq) return { error: _hq.error }
   if (!name.trim()) return { error: 'カテゴリ名は必須です' }
   const finalSlug = (slug?.trim() || autoSlug(name))
   // 末尾に追加するため現在の最大 sort_order を取得
@@ -108,6 +110,8 @@ export async function updateCategory(
   patch: { name?: string; slug?: string; is_active?: boolean; card_image_url?: string | null; store_ids?: string[] | null }
 ) {
   if (!(await isAuthed())) return { error: '認証が必要です' }
+  const _hq = await assertAllStores()
+  if (_hq) return { error: _hq.error }
   const update: { name?: string; slug?: string; is_active?: boolean; card_image_url?: string | null; store_ids?: string[] | null } = {}
   if (patch.name !== undefined) update.name = patch.name.trim()
   if (patch.slug !== undefined) update.slug = patch.slug.trim()
@@ -127,6 +131,8 @@ export async function updateCategory(
 
 export async function deleteCategory(kind: CategoryKind, id: string) {
   if (!(await isAuthed())) return { error: '認証が必要です' }
+  const _hq = await assertAllStores()
+  if (_hq) return { error: _hq.error }
   // 紐づくメニュー／コース／ランチ品目が存在する場合は削除を拒否（警告）
   // ※ course は courses.course_category_id、lunch は menu_items.lunch_category_id、
   //   menu/takeout は <linked>.category_id を参照（列名が異なるため分岐）
@@ -153,6 +159,8 @@ export async function deleteCategory(kind: CategoryKind, id: string) {
 
 export async function reorderCategories(kind: CategoryKind, orderedIds: string[]) {
   if (!(await isAuthed())) return { error: '認証が必要です' }
+  const _hq = await assertAllStores()
+  if (_hq) return { error: _hq.error }
   // index を sort_order として一括更新
   await Promise.all(
     orderedIds.map((id, idx) =>

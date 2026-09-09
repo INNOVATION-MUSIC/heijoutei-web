@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { adminSupabase } from '@/lib/supabase/admin'
+import { scopedStoreIds } from '@/lib/auth-guard'
 import { getStoreRefs, getLunchCategory, getLunchCategoryRefs } from '@/lib/actions/refs'
 import { getMenuItems } from '@/lib/actions/menus'
 import MenuForm from '@/components/admin/MenuForm'
@@ -17,6 +18,8 @@ export default async function EditLunchPage({ params }: { params: Promise<{ id: 
     getMenuItems(id),
   ])
   if (!menu || !lunchCat) notFound()
+  const allowed = await scopedStoreIds()
+  if (allowed && !allowed.includes(menu.store_id)) notFound()
 
   const initialItems = items.map((it) => ({
     name: it.name,

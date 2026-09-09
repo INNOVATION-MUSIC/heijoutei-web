@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { adminSupabase } from '@/lib/supabase/admin'
+import { scopedStoreIds } from '@/lib/auth-guard'
 import OrderActions from '@/components/admin/OrderActions'
 import type { OrderStatus } from '@/lib/actions/takeout-orders'
 
@@ -31,13 +32,17 @@ export default async function AdminTakeoutOrdersPage({
     return qs ? `/admin/takeout-orders?${qs}` : '/admin/takeout-orders'
   }
 
-  const { data: stores } = await adminSupabase.from('stores').select('id, name').eq('is_active', true).order('sort_order')
+  const allowed = await scopedStoreIds()
+  const storesQ = adminSupabase.from('stores').select('id, name').eq('is_active', true).order('sort_order')
+  if (allowed) storesQ.in('id', allowed)
+  const { data: stores } = await storesQ
 
   let q = adminSupabase
     .from('takeout_orders')
     .select('*')
     .order('created_at', { ascending: false })
-  if (store) q = q.eq('store_id', store)
+  if (allowed) q = q.in('store_id', allowed)
+  if (store && (!allowed || allowed.includes(store))) q = q.eq('store_id', store)
   const { data: orders } = await q
 
   const orderIds = (orders ?? []).map((o) => o.id)

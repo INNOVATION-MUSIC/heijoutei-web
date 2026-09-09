@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { adminSupabase } from '@/lib/supabase/admin'
+import { scopedStoreIds } from '@/lib/auth-guard'
 
 export const dynamic = 'force-dynamic'
 
@@ -7,19 +8,22 @@ export const dynamic = 'force-dynamic'
 // フロント /menu/lunch は menu_categories(slug='lunch') を固定で参照するため、ここでは
 // 店舗ごとのランチを一覧・編集する専用ビューとして見せる（データ構造は通常メニューと共通）。
 export default async function AdminLunchPage() {
+  const allowed = await scopedStoreIds()
+  const storesQ = adminSupabase.from('stores').select('id, name').eq('is_active', true).order('sort_order')
+  if (allowed) storesQ.in('id', allowed)
   const [{ data: stores }, { data: lunchCat }] = await Promise.all([
-    adminSupabase.from('stores').select('id, name').eq('is_active', true).order('sort_order'),
+    storesQ,
     adminSupabase.from('menu_categories').select('id').eq('slug', 'lunch').maybeSingle(),
   ])
   const lunchId = lunchCat?.id ?? null
 
   // 店舗ごとのランチ store_menu（カテゴリ=lunch）を取得
-  const { data: menus } = lunchId
-    ? await adminSupabase
-        .from('store_menus')
-        .select('id, store_id, is_active')
-        .eq('category_id', lunchId)
-    : { data: [] }
+  const menusQ = adminSupabase
+    .from('store_menus')
+    .select('id, store_id, is_active')
+    .eq('category_id', lunchId ?? '')
+  if (allowed) menusQ.in('store_id', allowed)
+  const { data: menus } = lunchId ? await menusQ : { data: [] }
   const menuByStore = new Map((menus ?? []).map((m) => [m.store_id, m]))
 
   // 品目数

@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { adminSupabase } from '@/lib/supabase/admin'
+import { scopedStoreIds } from '@/lib/auth-guard'
 import MarkReadButton from '@/components/admin/MarkReadButton'
 
 export const dynamic = 'force-dynamic'
@@ -10,11 +11,15 @@ export default async function AdminContactPage({
   searchParams: Promise<{ read?: string }>
 }) {
   const { read } = await searchParams
+  const allowed = await scopedStoreIds()
 
-  const { data: messages } = await adminSupabase
+  const messagesQ = adminSupabase
     .from('contact_messages')
     .select('*')
     .order('created_at', { ascending: false })
+  // 店舗スタッフは担当店舗宛のみ（store_id 未設定の古い行は本部のみ閲覧）
+  if (allowed) messagesQ.in('store_id', allowed)
+  const { data: messages } = await messagesQ
 
   const all = messages ?? []
   const unread = all.filter((m) => !m.is_read).length

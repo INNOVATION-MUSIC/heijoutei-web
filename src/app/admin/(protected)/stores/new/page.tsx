@@ -1,9 +1,14 @@
 import Link from 'next/link'
+import { notFound } from 'next/navigation'
+import { scopedStoreIds } from '@/lib/auth-guard'
 import StoreForm from '@/components/admin/StoreForm'
 
 export const dynamic = 'force-dynamic'
 
-export default function NewStorePage() {
+export default async function NewStorePage() {
+  // 店舗の新規作成は本部のみ
+  if ((await scopedStoreIds()) !== null) notFound()
+
   return (
     <div className="space-y-6">
       <div>

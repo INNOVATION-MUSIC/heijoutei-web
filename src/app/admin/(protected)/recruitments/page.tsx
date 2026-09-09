@@ -1,14 +1,16 @@
 import Link from 'next/link'
 import { adminSupabase } from '@/lib/supabase/admin'
+import { scopedStoreIds } from '@/lib/auth-guard'
 import RecruitDeleteButton from '@/components/admin/RecruitDeleteButton'
 
 export const dynamic = 'force-dynamic'
 
 export default async function AdminRecruitmentsPage() {
-  const [{ data: recruits }, { data: stores }] = await Promise.all([
-    adminSupabase.from('recruitments').select('id, store_id, title, is_published, sort_order').order('store_id').order('sort_order'),
-    adminSupabase.from('stores').select('id, name').eq('is_active', true),
-  ])
+  const allowed = await scopedStoreIds()
+  const recruitsQ = adminSupabase.from('recruitments').select('id, store_id, title, is_published, sort_order').order('store_id').order('sort_order')
+  const storesQ = adminSupabase.from('stores').select('id, name').eq('is_active', true)
+  if (allowed) { recruitsQ.in('store_id', allowed); storesQ.in('id', allowed) }
+  const [{ data: recruits }, { data: stores }] = await Promise.all([recruitsQ, storesQ])
   const storeName = new Map((stores ?? []).map((s) => [s.id, s.name]))
 
   return (

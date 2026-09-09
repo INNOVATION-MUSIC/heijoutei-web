@@ -1,9 +1,12 @@
 import Link from 'next/link'
+import { notFound } from 'next/navigation'
+import { scopedStoreIds } from '@/lib/auth-guard'
 import GiftForm from '@/components/admin/GiftForm'
 
 export const dynamic = 'force-dynamic'
 
-export default function NewGiftPage() {
+export default async function NewGiftPage() {
+  if ((await scopedStoreIds()) !== null) notFound() // 本部のみ
   return (
     <div className="space-y-6">
       <div>

@@ -1,4 +1,5 @@
 import { adminSupabase } from '@/lib/supabase/admin'
+import { scopedStoreIds } from '@/lib/auth-guard'
 import BusinessCalendar from '@/components/admin/BusinessCalendar'
 
 export const dynamic = 'force-dynamic'
@@ -10,6 +11,21 @@ export default async function BusinessCalendarPage() {
     .select('id, name')
     .eq('slug', 'kameoka')
     .single()
+
+  // 営業カレンダーは亀岡本店専用。亀岡の担当でない店舗スタッフには見せない。
+  const allowed = await scopedStoreIds()
+  if (store && allowed && !allowed.includes(store.id)) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold text-[#ebe5db]">営業カレンダー管理</h1>
+        </div>
+        <p className="rounded-lg border border-[#23232e] bg-[#14141a] px-4 py-3 text-sm text-[#9a9aa8]">
+          営業カレンダー（亀岡本店）は本部で管理しています。
+        </p>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">

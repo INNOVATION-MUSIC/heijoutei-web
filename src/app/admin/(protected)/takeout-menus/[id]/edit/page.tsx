@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { adminSupabase } from '@/lib/supabase/admin'
+import { scopedStoreIds } from '@/lib/auth-guard'
 import { getStoreRefs, getTakeoutCategoryRefs } from '@/lib/actions/refs'
 import { getTakeoutMenuStoreIds } from '@/lib/actions/takeout-menus'
 import TakeoutMenuForm from '@/components/admin/TakeoutMenuForm'
@@ -16,6 +17,9 @@ export default async function EditTakeoutMenuPage({ params }: { params: Promise<
     getTakeoutMenuStoreIds(id),
   ])
   if (!menu) notFound()
+  // リンク先店舗のいずれかが担当外なら編集不可（他店と共有のメニューは本部のみ）
+  const allowed = await scopedStoreIds()
+  if (allowed && (storeIds.length === 0 || !storeIds.every((s) => allowed.includes(s)))) notFound()
 
   return (
     <div className="space-y-6">
