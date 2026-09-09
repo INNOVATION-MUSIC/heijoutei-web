@@ -232,6 +232,7 @@ export async function POST(request: Request) {
         if (orderErr) {
           console.error("[takeout] order insert failed:", orderErr);
         } else if (created) {
+          order.orderId = created.id; // 店舗通知メールの詳細リンク用
           const rows = order.items.map((i) => ({ order_id: created.id, item_name: i.name, price: i.price, quantity: i.qty }));
           if (rows.length) await adminSupabase.from("takeout_order_items").insert(rows);
         }

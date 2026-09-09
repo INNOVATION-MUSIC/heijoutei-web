@@ -1004,6 +1004,22 @@ export const revalidate = 60 を各ページに設定。
 
 ---
 
+## 通知メールの方針（2026-09-09）
+
+- **店舗宛のテイクアウト注文通知（`buildStoreMail`）には個人情報を載せない**。受取店舗・受取日時・注文明細・合計・注文番号＋「管理画面で詳細を見る」リンク（`${SITE_URL}/admin/takeout-orders?order=<id>`）のみ。氏名・連絡先はリンク先の管理画面で確認する（メール流出・宛先タイポによる第三者流出の防止）。
+- **お客様控え（`buildCustomerMail`）は従来どおり**（本人の情報を本人へ）。
+- お問い合わせ通知（`contactMail.ts`）は現状維持（本文を読む必要があるため）。
+- リンクは `SITE_URL`（`NEXT_PUBLIC_SITE_URL` で独自ドメインに自動追従）。
+
+## ログイン挟み込みとセッション保持
+
+- OpenNext は Node middleware 非対応 → **セッション更新用の middleware は使えない**。
+- 未ログインで `(protected)` を開くと **`redirect` せず `LoginCard` をインライン表示**（URL 保持）。ログイン成功 → `router.refresh()` → 本来のページ。メールの深いリンク（`?order=`）がログインを挟んでも維持される。
+- `/auth/refresh`（Route Handler・cookie 書き込み可）＋ `SessionKeepalive`（`AdminShell` に配置・マウント時に fetch）でローテーション後のセッション cookie を再永続化。
+- 「ログイン状態を保持する」チェック（既定 ON）: OFF はブラウザを閉じるとログアウト（`sessionStorage` 検知）。
+
+---
+
 ## チェックリスト（実装完了後に確認）
 
 - [ ] Supabase SQL Editor で 001 → 002 → 003 を実行済み

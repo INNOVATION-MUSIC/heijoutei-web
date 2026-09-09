@@ -1,7 +1,7 @@
-import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { adminSupabase } from '@/lib/supabase/admin'
 import AdminShell from '@/components/admin/AdminShell'
+import LoginCard from '@/components/admin/LoginCard'
 
 export const dynamic = 'force-dynamic'
 
@@ -11,14 +11,15 @@ export default async function AdminProtectedLayout({
   children: React.ReactNode
 }) {
   // getUser() で Auth サーバにトークンを検証（署名・期限・失効）。
-  // 期限切れトークンは middleware（updateSession）で更新されるため getUser は安定動作する。
   const supabase = await createClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()
 
   if (!user) {
-    redirect('/admin/login') // /admin/login は (protected) 外なので無限ループにならない
+    // リダイレクトせずインラインでログイン表示＝URL（?order= 等の深いリンク）を保つ。
+    // ログイン成功で router.refresh() → このレイアウトが再評価され本来のページが表示される。
+    return <LoginCard />
   }
 
   let profile: { full_name: string | null; role: string; avatar_url: string | null; store_ids: string[] | null } | null = null

@@ -1,4 +1,5 @@
 // テイクアウト注文メールの組み立て（お客様控え / 店舗通知）
+import { SITE_URL } from "@/app/lib/site";
 
 export type OrderItem = { name: string; price: number; qty: number };
 
@@ -21,6 +22,8 @@ export type OrderPayload = {
   storeSlug?: string;
   pickupDate?: string;  // "YYYY-MM-DD"
   pickupTime?: string;  // "13:00"
+  // takeout_orders.id（DB保存成功時のみ）。店舗通知メールの詳細リンクに使う。
+  orderId?: string;
 };
 
 const yen = (n: number) => `${n.toLocaleString("ja-JP")}円`;
@@ -115,37 +118,43 @@ ${storeContactBlock(o)}
   return { subject, text, html };
 }
 
-/** 店舗通知メール */
+/** 注文詳細（管理画面）へのURL。orderId が無ければ注文一覧へ。 */
+function adminOrderUrl(orderId?: string): string {
+  const base = SITE_URL.replace(/\/$/, "");
+  return orderId ? `${base}/admin/takeout-orders?order=${orderId}` : `${base}/admin/takeout-orders`;
+}
+
+/**
+ * 店舗通知メール。
+ * 個人情報（氏名・フリガナ・メール・電話・連絡事項）は載せない。
+ * お客様情報は「管理画面で詳細を見る」リンクから確認してもらう。
+ */
 export function buildStoreMail(o: OrderPayload): { subject: string; text: string; html: string } {
-  const subject = `【テイクアウト注文】${o.store} ${o.dateLabel} ${o.customer.name}様`;
+  const subject = `【テイクアウト注文】${o.store} ${o.dateLabel}`;
+  const url = adminOrderUrl(o.orderId);
+  const orderNo = o.orderId ? `#${o.orderId.slice(0, 8)}` : "";
+
   const text = `テイクアウトの新規注文が入りました。
 
 【受取店舗】${o.store}
-【受取日時】${o.dateLabel}
+【受取日時】${o.dateLabel}${orderNo ? `\n【注文番号】${orderNo}` : ""}
 
 ［ご注文内容］
 ${itemsText(o.items)}
 合計　${yen(o.total)}
 
-［お客様情報］
-お名前　　　：${o.customer.name}
-フリガナ　　：${o.customer.kana}
-メール　　　：${o.customer.email}
-電話番号　　：${o.customer.phone || "（未入力）"}
-連絡事項　　：${o.customer.note || "（なし）"}
+お客様のお名前・ご連絡先は下記の管理画面でご確認ください。
+${url}
 `;
 
   const html = baseHtml(
     "テイクアウト 新規注文",
     `${summaryHtml(o)}
-     <h2 style="font-size:14px;color:#b0322d;margin:24px 0 6px;">お客様情報</h2>
-     <table style="width:100%;border-collapse:collapse;font-size:14px;">
-       <tr><td style="padding:6px 0;color:#888;width:120px;">お名前</td><td style="padding:6px 0;color:#333;">${escapeHtml(o.customer.name)}</td></tr>
-       <tr><td style="padding:6px 0;color:#888;">フリガナ</td><td style="padding:6px 0;color:#333;">${escapeHtml(o.customer.kana)}</td></tr>
-       <tr><td style="padding:6px 0;color:#888;">メール</td><td style="padding:6px 0;color:#333;">${escapeHtml(o.customer.email)}</td></tr>
-       <tr><td style="padding:6px 0;color:#888;">電話番号</td><td style="padding:6px 0;color:#333;">${escapeHtml(o.customer.phone || "（未入力）")}</td></tr>
-       <tr><td style="padding:6px 0;color:#888;vertical-align:top;">連絡事項</td><td style="padding:6px 0;color:#333;white-space:pre-wrap;">${escapeHtml(o.customer.note || "（なし）")}</td></tr>
-     </table>`
+     ${orderNo ? `<p style="font-size:12px;color:#888;margin:8px 0 0;">注文番号 ${orderNo}</p>` : ""}
+     <p style="font-size:13px;color:#555;line-height:1.9;margin:24px 0 12px;">お客様のお名前・ご連絡先は管理画面でご確認ください。</p>
+     <p style="margin:0;">
+       <a href="${url}" style="display:inline-block;background:#d9b86b;color:#1a1410;text-decoration:none;font-weight:bold;font-size:14px;padding:12px 24px;border-radius:6px;">管理画面で詳細を見る</a>
+     </p>`
   );
   return { subject, text, html };
 }

@@ -39,6 +39,23 @@
 | AUTH-012 | editor がユーザー管理 Server Action を実行 | editor でログイン（または手動でアクション呼び出し） | `createUser` / `updateUserRole` / `deleteUser` を実行 | `{ error: '権限がありません（管理者のみ）' }` が返り、DB は変更されない | 高 |
 | AUTH-013 | 未ログインでユーザー管理 Server Action | ログアウト状態 | `createUser` 等を直接呼び出し | `{ error: '認証が必要です' }` が返る | 高 |
 
+## インラインログイン / ログイン保持（LOGIN）
+
+設計メモ:
+- 未ログインで `(protected)` 配下を開くと、`redirect` せず **`LoginCard` をその URL のままインライン表示**（`layout.tsx`）。ログイン成功で `router.refresh()` → レイアウト再評価 → 本来のページ。深いリンク（`?order=`）を保つのが目的。
+- `/admin/login`（直アクセス・`/auth/callback` からの `?error=auth`）は従来どおり独立ルート。`?next=` があれば成功時にそこへ。
+- 「ログイン状態を保持する」チェック（既定 ON）: `localStorage["admin-remember"]`。OFF は `sessionStorage["admin-session-alive"]` の有無でブラウザ再起動を検知し `SessionKeepalive` が `signOut`。
+- `/auth/refresh`（Route Handler）: `AdminShell` の `SessionKeepalive` がマウント時に叩き、ローテーション後のセッション cookie を再永続化（middleware が使えない OpenNext の代替）。
+
+| ID | テスト項目 | 前提条件 | 操作手順 | 期待結果 | 優先度 |
+|----|-----------|----------|----------|----------|--------|
+| LOGIN-001 | インラインログイン（URL保持） | ログアウト状態 | `/admin/takeout-orders?order=<id>` を開く | `/admin/login` へ遷移せず、その URL のままログインフォーム表示。ログイン後、同じ URL のページが表示される | 高 |
+| LOGIN-002 | `/admin/login` 直アクセス | ログアウト状態 | `/admin/login` を開いてログイン | `/admin` へ遷移 | 中 |
+| LOGIN-003 | パスワード再設定リンク失効表示 | — | `/admin/login?error=auth` を開く | 「リンクが無効か、有効期限が切れています」が表示される（`LoginCard` の `initialError`） | 中 |
+| LOGIN-004 | ログイン保持 ON | チェック ON でログイン | 管理画面を開く → `/auth/refresh` が 200・`sb-*` cookie 更新 → タブを閉じて開き直す | ログイン状態が維持される | 高 |
+| LOGIN-005 | ログイン保持 OFF | チェック OFF でログイン | ブラウザ（全タブ）を閉じて `/admin` を開く | `SessionKeepalive` が `signOut`＋reload し、再ログインを求められる。※タブを閉じただけ・リロードのみでは維持 | 中 |
+| LOGIN-006 | keepalive の無害性 | ログイン状態 | 管理画面の各ページを開く | 毎回 `GET /auth/refresh 200`。セッションが切れない限り体感の変化なし | 低 |
+
 ## パスワード再設定フロー（PWRESET）
 
 設計メモ:

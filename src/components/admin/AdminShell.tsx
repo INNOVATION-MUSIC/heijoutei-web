@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import AdminSidebar from '@/components/admin/Sidebar'
 import AdminTopBar from '@/components/admin/TopBar'
+import SessionKeepalive from '@/components/admin/SessionKeepalive'
 
 type AdminUser = {
   email: string
@@ -34,6 +35,7 @@ export default function AdminShell({
 
   return (
     <div className="flex h-screen bg-[#0d0d12] text-[#ebe5db]">
+      <SessionKeepalive />
       {/* モバイル時の暗幕（サイドバー開時のみ） */}
       {open && (
         <div
