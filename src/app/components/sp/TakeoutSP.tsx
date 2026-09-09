@@ -624,7 +624,9 @@ export function Step3FormSP(p: {
   const set = (k: keyof TakeoutForm, v: string | boolean) => p.onChange({ ...f, [k]: v });
 
   const emailMatch = f.email.length > 0 && f.email === f.emailConfirm;
-  const valid = f.name.trim() !== "" && f.kana.trim() !== "" && f.email.trim() !== "" && emailMatch && f.agreed;
+  const phoneDigits = f.phone.replace(/\D/g, "");
+  const phoneValid = phoneDigits.length >= 10;
+  const valid = f.name.trim() !== "" && f.kana.trim() !== "" && f.email.trim() !== "" && emailMatch && phoneValid && f.agreed;
 
   return (
     <SectionShell height={p.height} onMeasured={p.onMeasured}>
@@ -649,8 +651,11 @@ export function Step3FormSP(p: {
             <span style={{ fontFamily: sans, fontSize: 12, color: RED, paddingTop: 4 }}>メールアドレスが一致しません</span>
           )}
         </Field>
-        <Field label="電話番号">
+        <Field label="電話番号" required>
           <SpInput value={f.phone} onChange={(v) => set("phone", v)} placeholder="075-000-0000" type="tel" />
+          {f.phone.trim().length > 0 && !phoneValid && (
+            <span style={{ fontFamily: sans, fontSize: 12, color: RED, paddingTop: 4 }}>電話番号を正しく入力してください</span>
+          )}
         </Field>
         <Field label="連絡事項">
           <textarea

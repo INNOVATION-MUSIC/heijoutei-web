@@ -62,6 +62,7 @@ function parseRequest(data: unknown): Fail | { ok: true; value: OrderRequest } {
   if (typeof c !== "object" || c === null) return fail("お客様情報が不正です。");
   if (!c.name?.trim() || !c.kana?.trim()) return fail("お名前・フリガナを入力してください。");
   if (!c.email?.trim() || !EMAIL_RE.test(c.email)) return fail("メールアドレスが正しくありません。");
+  if ((c.phone ?? "").replace(/\D/g, "").length < 10) return fail("電話番号を正しく入力してください。");
   if ((c.name?.length ?? 0) > 100 || (c.kana?.length ?? 0) > 100 || (c.email?.length ?? 0) > 200) {
     return fail("入力が長すぎます。");
   }
