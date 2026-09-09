@@ -1000,6 +1000,7 @@ export const revalidate = 60 を各ページに設定。
 - **Server Actions**: `menus` / `courses` / `takeout-menus` / `recruitments` / `takeout-slots` / `business-calendar` / `takeout-orders` / `stores` の各 create/update/delete/duplicate/reorder で対象店舗を検証。`gifts` / `gift-shipping` / `categories` は本部限定
 - **お知らせ・メディア**: 全アカウント共通で編集可（news に店舗区分なし）
 - 店舗マスタ: 店舗スタッフは自店のみ編集可（新規作成・削除は本部のみ）
+- **営業カレンダー・受付枠管理**: 亀岡本店専用。本部と亀岡担当の店舗スタッフのみサイドバーに表示（`showKameokaTools` = HQ or `store_ids` に亀岡を含む）。他の店舗スタッフは非表示＋ページは案内文のみ
 
 ---
 

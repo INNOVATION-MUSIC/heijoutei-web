@@ -17,6 +17,7 @@ export default function AdminShell({
   unreadContacts,
   isHq = true,
   storeNames = [],
+  showKameokaTools = true,
   user,
   children,
 }: {
@@ -25,6 +26,7 @@ export default function AdminShell({
   unreadContacts: number
   isHq?: boolean
   storeNames?: string[]
+  showKameokaTools?: boolean
   user: AdminUser
   children: React.ReactNode
 }) {
@@ -47,6 +49,7 @@ export default function AdminShell({
         unreadContacts={unreadContacts}
         isHq={isHq}
         storeNames={storeNames}
+        showKameokaTools={showKameokaTools}
         open={open}
         onClose={() => setOpen(false)}
       />

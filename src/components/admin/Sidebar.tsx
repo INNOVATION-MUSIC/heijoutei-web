@@ -4,7 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
-type NavItem = { href: string; label: string; icon: string; badge?: number; adminOnly?: boolean; hqOnly?: boolean }
+type NavItem = { href: string; label: string; icon: string; badge?: number; adminOnly?: boolean; hqOnly?: boolean; kameokaOnly?: boolean }
 type NavGroup = { title: string; items: NavItem[] }
 
 // 白(currentColor)モノクロのラインアイコン。emoji を廃し見た目を統一する。
@@ -166,6 +166,7 @@ export default function AdminSidebar({
   unreadContacts = 0,
   isHq = true,
   storeNames = [],
+  showKameokaTools = true,
   open = false,
   onClose,
 }: {
@@ -174,6 +175,7 @@ export default function AdminSidebar({
   unreadContacts?: number
   isHq?: boolean
   storeNames?: string[]
+  showKameokaTools?: boolean
   open?: boolean
   onClose?: () => void
 }) {
@@ -194,14 +196,14 @@ export default function AdminSidebar({
         { href: '/admin/courses', label: 'コース', icon: 'course' },
         { href: '/admin/gifts', label: 'ギフト', icon: 'gift', hqOnly: true },
         { href: '/admin/gift-shipping', label: '送料金表', icon: 'package', hqOnly: true },
-        { href: '/admin/business-calendar', label: '営業カレンダー', icon: 'calendar' },
+        { href: '/admin/business-calendar', label: '営業カレンダー', icon: 'calendar', kameokaOnly: true },
       ],
     },
     {
       title: 'テイクアウト',
       items: [
         { href: '/admin/takeout-menus', label: 'テイクアウトメニュー', icon: 'bag' },
-        { href: '/admin/takeout-slots', label: '受付枠管理', icon: 'calendar-days' },
+        { href: '/admin/takeout-slots', label: '受付枠管理', icon: 'calendar-days', kameokaOnly: true },
         { href: '/admin/takeout-orders', label: '注文受付', icon: 'package', badge: unreadOrders },
       ],
     },
@@ -255,6 +257,7 @@ export default function AdminSidebar({
           const items = group.items
             .filter((item) => !item.adminOnly || userRole === 'admin')
             .filter((item) => !item.hqOnly || isHq)
+            .filter((item) => !item.kameokaOnly || showKameokaTools)
           if (items.length === 0) return null
           return (
           <div key={group.title} className="mb-5">

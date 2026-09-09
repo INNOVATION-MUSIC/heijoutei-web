@@ -38,13 +38,16 @@ export default async function AdminProtectedLayout({
   const isHq = scopedStoreIds === null
 
   let storeNames: string[] = []
+  // 営業カレンダー・受付枠管理は亀岡本店専用。本部か亀岡担当のみサイドバーに出す。
+  let showKameokaTools = isHq
   if (!isHq) {
     const { data: rows } = await adminSupabase
       .from('stores')
-      .select('name')
+      .select('id, name, slug')
       .in('id', scopedStoreIds)
       .order('sort_order')
     storeNames = (rows ?? []).map((r) => r.name)
+    showKameokaTools = (rows ?? []).some((r) => r.slug === 'kameoka')
   }
 
   // 未読バッジ（注文受付・お問い合わせ）。店舗スタッフは担当店舗分のみ数える。
@@ -63,6 +66,7 @@ export default async function AdminProtectedLayout({
       unreadContacts={unreadContacts ?? 0}
       isHq={isHq}
       storeNames={storeNames}
+      showKameokaTools={showKameokaTools}
       user={{
         email: user?.email ?? '',
         full_name: profile?.full_name ?? null,
