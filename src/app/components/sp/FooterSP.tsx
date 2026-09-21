@@ -215,22 +215,30 @@ export default function FooterSP({ onOpenModal }: { onOpenModal: () => void }) {
             backgroundColor: "rgba(255,255,255,0.08)",
           }}
         />
-        <Link
-          href="/terms"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            minHeight: 44,
-            fontFamily: sans,
-            fontSize: 11,
-            fontWeight: 300,
-            letterSpacing: "0.15em",
-            color: "rgba(235,229,219,0.55)",
-            textDecoration: "none",
-          }}
-        >
-          利用規約
-        </Link>
+        <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
+          {[
+            { href: "/terms", label: "利用規約" },
+            { href: "/privacy", label: "プライバシーポリシー" },
+          ].map(({ href, label }) => (
+            <Link
+              key={href}
+              href={href}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                minHeight: 44,
+                fontFamily: sans,
+                fontSize: 11,
+                fontWeight: 300,
+                letterSpacing: "0.15em",
+                color: "rgba(235,229,219,0.55)",
+                textDecoration: "none",
+              }}
+            >
+              {label}
+            </Link>
+          ))}
+        </div>
         <p
           style={{
             fontFamily: sans,

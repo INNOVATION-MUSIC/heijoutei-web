@@ -6,8 +6,9 @@ import ScaledSection from "./ScaledSection";
 import ReserveModal from "./ReserveModal";
 import StickyButton from "./StickyButton";
 import Footer from "./Footer";
-import TermsSection from "./TermsSection";
-import TermsSectionSP from "./sp/TermsSectionSP";
+import LegalSection from "./LegalSection";
+import LegalSectionSP from "./sp/LegalSectionSP";
+import type { LegalDoc } from "@/app/lib/legalDoc";
 import FooterSP from "./sp/FooterSP";
 import SpStickyHeader from "./sp/SpStickyHeader";
 import HamburgerMenuSP from "./sp/HamburgerMenuSP";
@@ -19,8 +20,8 @@ const DESIGN_SP = 390;
 const PC_EST = 5200;
 const SP_EST = 7600;
 
-/** /terms 利用規約ページ。useIsMobile で PC（1440）/ SP（390）を切り替える。 */
-export default function TermsClient() {
+/** 利用規約・プライバシーポリシーページ共通。useIsMobile で PC（1440）/ SP（390）を切り替える。 */
+export default function LegalClient({ doc }: { doc: LegalDoc }) {
   const isMobile = useIsMobile();
   const [modalOpen, setModalOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -39,7 +40,7 @@ export default function TermsClient() {
     return (
       <>
         <ScaledSection designWidth={DESIGN_SP} height={height}>
-          <TermsSectionSP height={height} onMeasured={onMeasured} />
+          <LegalSectionSP doc={doc} height={height} onMeasured={onMeasured} />
         </ScaledSection>
 
         <ScaledSection designWidth={DESIGN_SP} height={973}>
@@ -57,7 +58,7 @@ export default function TermsClient() {
   return (
     <>
       <ScaledSection designWidth={DESIGN_PC} height={height}>
-        <TermsSection height={height} onOpenModal={openModal} onMeasured={onMeasured} />
+        <LegalSection doc={doc} height={height} onOpenModal={openModal} onMeasured={onMeasured} />
       </ScaledSection>
 
       <ScaledSection designWidth={DESIGN_PC} height={600}>

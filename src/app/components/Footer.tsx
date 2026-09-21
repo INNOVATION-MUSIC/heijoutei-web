@@ -58,6 +58,9 @@ export default function Footer({ onOpenModal }: { onOpenModal: () => void }) {
         <Link href="/terms" style={{ fontFamily: sans, fontSize: 11, fontWeight: 300, letterSpacing: "0.2em", color: "rgba(235,229,219,0.55)", textDecoration: "none" }}>
           利用規約
         </Link>
+        <Link href="/privacy" style={{ fontFamily: sans, fontSize: 11, fontWeight: 300, letterSpacing: "0.2em", color: "rgba(235,229,219,0.55)", textDecoration: "none" }}>
+          プライバシーポリシー
+        </Link>
       </div>
     </footer>
   );

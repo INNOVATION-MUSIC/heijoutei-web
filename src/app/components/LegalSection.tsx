@@ -2,9 +2,10 @@
 
 import { useEffect, useRef } from "react";
 import PageHeader from "./PageHeader";
-import TermsBody from "./TermsBody";
+import type { LegalDoc } from "@/app/lib/legalDoc";
+import LegalBody from "./LegalBody";
 
-// /terms PC 版（設計幅 1440）。ヘッダー + 見出し（縦書きラベル「利用規約」+ Terms）+ 本文パネル。
+// 利用規約・プライバシーポリシー PC 版（設計幅 1440）。ヘッダー + 見出し（縦書きラベル + 英字）+ 本文パネル。
 // 本文量でセクション全高が決まるため ResizeObserver で実測して親へ通知する（SP 版と同方式）。
 // 縦位置は paddingTop（gap）で制御し marginTop / absolute は不使用。
 
@@ -13,11 +14,13 @@ const display = "'Cormorant Garamond', serif";
 const PANEL = "#171717";
 const GOLD_BAR = "rgba(217,184,107,0.8)";
 
-export default function TermsSection({
+export default function LegalSection({
+  doc,
   height,
   onOpenModal,
   onMeasured,
 }: {
+  doc: LegalDoc;
   height: number;
   onOpenModal: () => void;
   onMeasured: (h: number) => void;
@@ -40,12 +43,12 @@ export default function TermsSection({
 
         {/* 見出し（縦書きラベル + Terms・/contact 等と同じ構成） */}
         <div style={{ display: "flex", gap: 49, alignItems: "flex-start", paddingLeft: 57, paddingTop: 56 }}>
-          <h1 style={{ boxSizing: "border-box", width: 44, height: 94, margin: 0, padding: "8px 7px", border: "1px solid rgba(255,255,255,0.3)", overflow: "hidden", display: "flex", justifyContent: "center", alignItems: "center", flexShrink: 0, fontWeight: 400 }}>
+          <h1 aria-label={doc.title} style={{ boxSizing: "border-box", width: 44, height: 94, margin: 0, padding: "8px 7px", border: "1px solid rgba(255,255,255,0.3)", overflow: "hidden", display: "flex", justifyContent: "center", alignItems: "center", flexShrink: 0, fontWeight: 400 }}>
             <span style={{ writingMode: "vertical-rl" as const, fontFamily: mincho, fontSize: 12, letterSpacing: "7px", lineHeight: "1", color: "#fff", whiteSpace: "nowrap", transform: "translateY(4px)" }}>
-              利用規約
+              {doc.label}
             </span>
           </h1>
-          <p style={{ margin: 0, paddingTop: 0, fontFamily: display, fontSize: 80, letterSpacing: "-1px", color: "#ebe5db", lineHeight: "normal" }}>Terms</p>
+          <p style={{ margin: 0, paddingTop: 0, fontFamily: display, fontSize: 80, letterSpacing: "-1px", color: "#ebe5db", lineHeight: "normal" }}>{doc.en}</p>
         </div>
 
         {/* 本文パネル */}
@@ -53,7 +56,7 @@ export default function TermsSection({
           <div style={{ width: 880, background: PANEL, overflow: "hidden" }}>
             <div style={{ height: 2, background: GOLD_BAR }} />
             <div style={{ padding: "56px 64px 64px" }}>
-              <TermsBody />
+              <LegalBody doc={doc} />
             </div>
           </div>
         </div>

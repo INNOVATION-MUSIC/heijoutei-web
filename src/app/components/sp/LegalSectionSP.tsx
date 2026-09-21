@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import TermsBody from "../TermsBody";
+import type { LegalDoc } from "@/app/lib/legalDoc";
+import LegalBody from "../LegalBody";
 
-// /terms SP 版（設計幅 390）。ヘッダーは SpStickyHeader が固定表示するため先頭に 153px spacer のみ置く。
+// 利用規約・プライバシーポリシー SP 版（設計幅 390）。ヘッダーは SpStickyHeader が固定表示するため先頭に 153px spacer のみ置く。
 // 本文量で全高が決まるため ResizeObserver で実測して親へ通知する（/contact SP と同方式）。
 
 const mincho = "'Shippori Mincho', serif";
@@ -11,7 +12,7 @@ const display = "'Cormorant Garamond', serif";
 const PANEL = "#171717";
 const GOLD_BAR = "rgba(217,184,107,0.8)";
 
-export default function TermsSectionSP({ height, onMeasured }: { height: number; onMeasured: (h: number) => void }) {
+export default function LegalSectionSP({ doc, height, onMeasured }: { doc: LegalDoc; height: number; onMeasured: (h: number) => void }) {
   const contentRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = contentRef.current;
@@ -30,12 +31,12 @@ export default function TermsSectionSP({ height, onMeasured }: { height: number;
 
         {/* 見出し（縦書きラベル + Terms・/contact SP と統一） */}
         <div style={{ display: "flex", alignItems: "flex-start", paddingLeft: 19, paddingTop: 24, gap: 28 }}>
-          <h1 style={{ boxSizing: "border-box", width: 44, height: 94, margin: 0, padding: "8px 7px", border: "1px solid rgba(255,255,255,0.3)", overflow: "hidden", flexShrink: 0, display: "flex", justifyContent: "center", alignItems: "center", fontWeight: 400 }}>
+          <h1 aria-label={doc.title} style={{ boxSizing: "border-box", width: 44, height: 94, margin: 0, padding: "8px 7px", border: "1px solid rgba(255,255,255,0.3)", overflow: "hidden", flexShrink: 0, display: "flex", justifyContent: "center", alignItems: "center", fontWeight: 400 }}>
             <span style={{ writingMode: "vertical-rl" as const, whiteSpace: "nowrap", fontFamily: mincho, fontSize: 12, letterSpacing: "7px", lineHeight: "1", color: "#fff", transform: "translateY(4px)" }}>
-              利用規約
+              {doc.label}
             </span>
           </h1>
-          <p style={{ margin: 0, paddingTop: 36, fontFamily: display, fontSize: 56, letterSpacing: "-1px", color: "#ebe5db", lineHeight: "normal" }}>Terms</p>
+          <p style={{ margin: 0, paddingTop: 36, fontFamily: display, fontSize: 56, letterSpacing: "-1px", color: "#ebe5db", lineHeight: "normal" }}>{doc.en}</p>
         </div>
 
         {/* 本文パネル */}
@@ -43,7 +44,7 @@ export default function TermsSectionSP({ height, onMeasured }: { height: number;
           <div style={{ background: PANEL, overflow: "hidden" }}>
             <div style={{ height: 2, background: GOLD_BAR }} />
             <div style={{ padding: "32px 20px 40px" }}>
-              <TermsBody sp />
+              <LegalBody doc={doc} sp />
             </div>
           </div>
         </div>
