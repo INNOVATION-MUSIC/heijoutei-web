@@ -3,6 +3,7 @@
 import { ContactHeader, OutlineButton, mincho, sans } from "./ContactShared";
 import { INQUIRY_TYPES } from "@/app/lib/contactData";
 import type { ContactForm as ContactFormData } from "../ContactClient";
+import ConsentText from "../ConsentText";
 
 const FIELD_BG = "#171717";
 const FIELD_BORDER = "1px solid rgba(235,229,219,0.12)";
@@ -69,7 +70,7 @@ export default function ContactForm(p: Props) {
       <div style={{ display: "flex", justifyContent: "center", paddingTop: 47 }}>
         <label style={{ display: "flex", alignItems: "center", gap: 9, cursor: "pointer" }}>
           <input type="checkbox" checked={f.agreed} onChange={(e) => set("agreed", e.target.checked)} style={{ width: 18, height: 18, accentColor: RED, cursor: "pointer" }} />
-          <span style={{ fontFamily: sans, fontSize: 14, color: "#ebe5db" }}>プライバシーポリシーに同意する</span>
+          <span style={{ fontFamily: sans, fontSize: 14, color: "#ebe5db" }}><ConsentText /></span>
         </label>
       </div>
 

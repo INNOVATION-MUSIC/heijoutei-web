@@ -7,6 +7,7 @@ import OutlineButton from "../OutlineButton";
 import Turnstile, { turnstileEnabled } from "../Turnstile";
 import { INQUIRY_TYPES } from "@/app/lib/contactData";
 import type { ContactForm as ContactFormData } from "../ContactClient";
+import ConsentText from "../ConsentText";
 
 // /contact お問い合わせフロー SP 版（Figma「お問い合わせ_sp」node 2224:851 / 設計幅 390）。
 // PC 版 contact/* と同じ状態・データ層を使い、見た目（レイアウト）のみ SP 向けに作り直したもの。
@@ -158,7 +159,7 @@ export function ContactFormSP({
       <div style={{ display: "flex", justifyContent: "center", paddingTop: 30 }}>
         <label style={{ display: "flex", alignItems: "center", gap: 9, cursor: "pointer" }}>
           <input type="checkbox" checked={f.agreed} onChange={(e) => set("agreed", e.target.checked)} style={{ width: 18, height: 18, accentColor: RED, cursor: "pointer", flexShrink: 0 }} />
-          <span style={{ fontFamily: sans, fontSize: 14, color: "#ebe5db" }}>プライバシーポリシーに同意する</span>
+          <span style={{ fontFamily: sans, fontSize: 14, color: "#ebe5db" }}><ConsentText /></span>
         </label>
       </div>
 
