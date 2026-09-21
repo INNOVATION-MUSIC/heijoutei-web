@@ -74,12 +74,13 @@ function pickContactNotifyEmails(raw: unknown): string[] {
   return Array.isArray(list) ? list.filter((e): e is string => typeof e === "string" && e.trim() !== "") : [];
 }
 
-async function resolveStore(name: string): Promise<{ name: string; tel: string; hours: string; closedDays: string; notifyEmails: string[] } | null> {
+async function resolveStore(name: string): Promise<{ id: string | null; name: string; tel: string; hours: string; closedDays: string; notifyEmails: string[] } | null> {
   const { data } = await adminSupabase
     .from("stores")
-    .select("name, phone, business_hours, closed_days, store_mail_settings(contact_notify_emails)")
+    .select("id, name, phone, business_hours, closed_days, store_mail_settings(contact_notify_emails)")
     .eq("is_active", true);
   const rows = (data ?? []) as {
+    id: string;
     name: string;
     phone: string | null;
     business_hours: string | null;
@@ -90,6 +91,7 @@ async function resolveStore(name: string): Promise<{ name: string; tel: string; 
     const hit = rows.find((r) => r.name === name);
     return hit
       ? {
+          id: hit.id,
           name: hit.name,
           tel: hit.phone ?? "",
           hours: hit.business_hours ?? "",
@@ -101,7 +103,7 @@ async function resolveStore(name: string): Promise<{ name: string; tel: string; 
   const s = CONTACT_STORES.find((s) => s.name === name);
   if (!s) return null;
   const detail = getStoreDetail(s.id);
-  return { name: s.name, tel: s.tel, hours: detail?.hours.join("\n") ?? "", closedDays: detail?.closed ?? "", notifyEmails: [] };
+  return { id: null, name: s.name, tel: s.tel, hours: detail?.hours.join("\n") ?? "", closedDays: detail?.closed ?? "", notifyEmails: [] };
 }
 
 export async function POST(request: Request) {
@@ -147,6 +149,7 @@ export async function POST(request: Request) {
     kana: contact.kana,
     email: contact.email,
     phone: contact.phone || null,
+    store_id: store.id,
     subject: `${contact.inquiryType}（${contact.store}）`,
     message: contact.message || "",
   });
