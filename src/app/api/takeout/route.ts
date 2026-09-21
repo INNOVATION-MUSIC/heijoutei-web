@@ -89,10 +89,10 @@ function pickNotifyEmails(raw: unknown, key: "takeout_notify_emails" | "contact_
 /** 店舗を解決（DB優先・DB空時のみ静的フォールバック）。id は DB のときのみ INSERT に使える。 */
 async function resolveStore(
   slug: string
-): Promise<{ id: string | null; name: string; tel: string; hours: string; closedDays: string; notifyEmails: string[] } | null> {
+): Promise<{ id: string | null; name: string; tel: string; address: string; hours: string; closedDays: string; notifyEmails: string[] } | null> {
   const { data } = await adminSupabase
     .from("stores")
-    .select("id, name, phone, business_hours, closed_days, store_mail_settings(takeout_notify_emails)")
+    .select("id, name, phone, address, business_hours, closed_days, store_mail_settings(takeout_notify_emails)")
     .eq("slug", slug)
     .eq("is_active", true)
     .maybeSingle();
@@ -101,6 +101,7 @@ async function resolveStore(
       id: data.id,
       name: data.name,
       tel: data.phone ?? "",
+      address: data.address ?? "",
       hours: data.business_hours ?? "",
       closedDays: data.closed_days ?? "",
       notifyEmails: pickNotifyEmails(data.store_mail_settings, "takeout_notify_emails"),
@@ -109,7 +110,7 @@ async function resolveStore(
   const s = TAKEOUT_STORES.find((s) => s.id === slug);
   if (!s) return null;
   const detail = getStoreDetail(slug);
-  return { id: null, name: s.name, tel: s.tel, hours: detail?.hours.join("\n") ?? "", closedDays: detail?.closed ?? "", notifyEmails: [] };
+  return { id: null, name: s.name, tel: s.tel, address: "", hours: detail?.hours.join("\n") ?? "", closedDays: detail?.closed ?? "", notifyEmails: [] };
 }
 
 /** 店舗のテイクアウトメニュー（id → {name, price, category}）。DBに無ければ静的メニューにフォールバック（クライアント挙動と一致）。 */
@@ -200,6 +201,7 @@ export async function POST(request: Request) {
     const order: OrderPayload = {
       store: store.name,
       storeTel: store.tel,
+      storeAddress: store.address,
       storeHours: store.hours,
       storeClosedDays: store.closedDays,
       dateLabel: `${formatJpDate(req.pickupDate)} ${normTime(req.pickupTime)}`.trim(),

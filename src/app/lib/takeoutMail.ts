@@ -6,6 +6,7 @@ export type OrderItem = { name: string; price: number; qty: number };
 export type OrderPayload = {
   store: string;        // 店舗名（例: 亀岡店）
   storeTel: string;     // 店舗電話番号
+  storeAddress?: string; // 店舗住所（お客様控えの実在性・案内用）
   storeHours: string;   // 受取店舗の営業時間（行区切りは\n）
   storeClosedDays: string; // 受取店舗の定休日
   dateLabel: string;    // 受取日時（例: 6月15日(月) 13:00）
@@ -25,6 +26,11 @@ export type OrderPayload = {
   // takeout_orders.id（DB保存成功時のみ）。店舗通知メールの詳細リンクに使う。
   orderId?: string;
 };
+
+/** 受付番号（注文IDの先頭8桁）。DB保存に失敗した場合は空 */
+function orderNoOf(o: OrderPayload): string {
+  return o.orderId ? `#${o.orderId.slice(0, 8)}` : "";
+}
 
 const yen = (n: number) => `${n.toLocaleString("ja-JP")}円`;
 
@@ -53,7 +59,7 @@ function hoursText(hours: string): string {
 }
 
 function storeContactBlock(o: OrderPayload): string {
-  return `${o.store}　${o.storeTel}
+  return `${o.store}　${o.storeTel}${o.storeAddress ? `\n住所　　　${o.storeAddress}` : ""}
 営業時間　${hoursText(o.storeHours) || "店舗までお問い合わせください"}
 定休日　　${o.storeClosedDays || "-"}`;
 }
@@ -69,11 +75,11 @@ function baseHtml(title: string, bodyHtml: string): string {
 </body></html>`;
 }
 
-function summaryHtml(o: OrderPayload): string {
+function summaryHtml(o: OrderPayload, extraRows = ""): string {
   return `
   <table style="width:100%;border-collapse:collapse;font-size:14px;margin:0 0 8px;">
     <tr><td style="padding:6px 0;color:#888;width:120px;">受取店舗</td><td style="padding:6px 0;color:#333;">${escapeHtml(o.store)}</td></tr>
-    <tr><td style="padding:6px 0;color:#888;">受取日時</td><td style="padding:6px 0;color:#333;">${escapeHtml(o.dateLabel)}</td></tr>
+    <tr><td style="padding:6px 0;color:#888;">受取日時</td><td style="padding:6px 0;color:#333;">${escapeHtml(o.dateLabel)}</td></tr>${extraRows}
   </table>
   <h2 style="font-size:14px;color:#b0322d;margin:20px 0 6px;">ご注文内容</h2>
   <table style="width:100%;border-collapse:collapse;font-size:14px;border-top:1px solid #e5e1d8;">
@@ -84,14 +90,16 @@ function summaryHtml(o: OrderPayload): string {
 
 /** お客様控えメール */
 export function buildCustomerMail(o: OrderPayload): { subject: string; text: string; html: string } {
-  const subject = "【焼肉平壌亭】テイクアウトのご注文を承りました";
+  // 件名を注文ごとに一意にし店舗名を先頭に置く（同一件名の連続送信・定型的な注文確認文面による迷惑メール判定を避ける）
+  const orderNo = orderNoOf(o);
+  const subject = `【${o.store}】テイクアウトご注文の受付完了${orderNo ? `（受付番号 ${orderNo}）` : ""}`;
   const text = `${o.customer.name} 様
 
 この度はテイクアウトのご注文をいただき、誠にありがとうございます。
 以下の内容で承りました。
 
 【受取店舗】${o.store}
-【受取日時】${o.dateLabel}
+【受取日時】${o.dateLabel}${orderNo ? `\n【受付番号】${orderNo}` : ""}
 
 ［ご注文内容］
 ${itemsText(o.items)}
@@ -110,9 +118,9 @@ ${storeContactBlock(o)}
   const html = baseHtml(
     "テイクアウトのご注文を承りました",
     `<p style="font-size:14px;color:#333;line-height:1.9;margin:0 0 16px;">${escapeHtml(o.customer.name)} 様<br/>この度はテイクアウトのご注文をいただき、誠にありがとうございます。以下の内容で承りました。</p>
-     ${summaryHtml(o)}
+     ${summaryHtml(o, orderNo ? `<tr><td style="padding:6px 0;color:#888;">受付番号</td><td style="padding:6px 0;color:#333;">${escapeHtml(orderNo)}</td></tr>` : "")}
      <p style="font-size:13px;color:#555;line-height:1.9;margin:20px 0 0;">お支払いは店頭・お受け取り時にお願いいたします。<br/>ご確認・ご変更は <strong>${escapeHtml(o.store)}　${escapeHtml(o.storeTel)}</strong> までお電話ください。</p>
-     <p style="font-size:12px;color:#777;line-height:1.8;margin:8px 0 0;white-space:pre-wrap;">営業時間　${escapeHtml(o.storeHours) || "店舗までお問い合わせください"}
+     <p style="font-size:12px;color:#777;line-height:1.8;margin:8px 0 0;white-space:pre-wrap;">${o.storeAddress ? `住所　　　${escapeHtml(o.storeAddress)}\n` : ""}営業時間　${escapeHtml(o.storeHours) || "店舗までお問い合わせください"}
 定休日　　${escapeHtml(o.storeClosedDays) || "-"}</p>`
   );
   return { subject, text, html };
@@ -132,7 +140,7 @@ function adminOrderUrl(orderId?: string): string {
 export function buildStoreMail(o: OrderPayload): { subject: string; text: string; html: string } {
   const subject = `【テイクアウト注文】${o.store} ${o.dateLabel}`;
   const url = adminOrderUrl(o.orderId);
-  const orderNo = o.orderId ? `#${o.orderId.slice(0, 8)}` : "";
+  const orderNo = orderNoOf(o);
 
   const text = `テイクアウトの新規注文が入りました。
 
