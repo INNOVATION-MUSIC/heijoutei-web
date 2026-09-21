@@ -215,6 +215,22 @@ export default function FooterSP({ onOpenModal }: { onOpenModal: () => void }) {
             backgroundColor: "rgba(255,255,255,0.08)",
           }}
         />
+        <Link
+          href="/terms"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            minHeight: 44,
+            fontFamily: sans,
+            fontSize: 11,
+            fontWeight: 300,
+            letterSpacing: "0.15em",
+            color: "rgba(235,229,219,0.55)",
+            textDecoration: "none",
+          }}
+        >
+          利用規約
+        </Link>
         <p
           style={{
             fontFamily: sans,
