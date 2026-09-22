@@ -53,7 +53,7 @@ export default function Footer({ onOpenModal }: { onOpenModal: () => void }) {
       {/* コピーライト + 利用規約リンク */}
       <div className="absolute" style={{ left: 0, top: 558, width: 1440, display: "flex", justifyContent: "center", alignItems: "center", gap: 32 }}>
         <p style={{ margin: 0, fontFamily: sans, fontSize: 11, fontWeight: 300, letterSpacing: "0.2em", color: "rgba(235,229,219,0.4)" }}>
-          © 平壌亭　all rights reserved.
+          © 2026 平壌亭 All Rights Reserved.
         </p>
         <Link href="/terms" style={{ fontFamily: sans, fontSize: 11, fontWeight: 300, letterSpacing: "0.2em", color: "rgba(235,229,219,0.55)", textDecoration: "none" }}>
           利用規約

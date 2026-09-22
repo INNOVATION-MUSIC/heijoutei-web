@@ -249,7 +249,7 @@ export default function FooterSP({ onOpenModal }: { onOpenModal: () => void }) {
             margin: 0,
           }}
         >
-          © 平壌亭　all rights reserved.
+          © 2026 平壌亭 All Rights Reserved.
         </p>
       </div>
     </footer>
