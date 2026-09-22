@@ -7,7 +7,7 @@ import type { LegalDoc } from "./legalDoc";
 export const PRIVACY_DOC: LegalDoc = {
   title: "プライバシーポリシー",
   label: "個人情報",
-  en: "Privacy",
+  en: "Privacy Policy",
   enacted: "2026年9月22日",
   company: "株式会社青丘フーズ",
   preamble:
