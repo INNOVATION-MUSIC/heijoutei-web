@@ -53,7 +53,7 @@ export default function Step3Form(p: Props) {
           )}
         </Field>
         <Field label="電話番号" required>
-          <Input value={f.phone} onChange={(v) => set("phone", v)} placeholder="075-000-0000" width={242} type="tel" />
+          <Input value={f.phone} onChange={(v) => set("phone", v)} placeholder="075-1234-5678" width={242} type="tel" />
           {f.phone.trim().length > 0 && !phoneValid && (
             <span style={{ fontFamily: sans, fontSize: 12, color: RED, paddingTop: 2 }}>電話番号を正しく入力してください</span>
           )}

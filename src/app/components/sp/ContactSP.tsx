@@ -137,7 +137,7 @@ export function ContactFormSP({
           )}
         </Field>
         <Field label="電話番号">
-          <SpInput value={f.phone} onChange={(v) => set("phone", v)} placeholder="075-000-0000" type="tel" />
+          <SpInput value={f.phone} onChange={(v) => set("phone", v)} placeholder="075-1234-5678" type="tel" />
         </Field>
         <Field label="お問い合わせ種別">
           <SpSelect value={f.inquiryType} onChange={(v) => set("inquiryType", v)} options={[...INQUIRY_TYPES]} />

@@ -48,7 +48,7 @@ export default function ContactForm(p: Props) {
           )}
         </Field>
         <Field label="電話番号">
-          <Input value={f.phone} onChange={(v) => set("phone", v)} placeholder="075-000-0000" width={242} type="tel" />
+          <Input value={f.phone} onChange={(v) => set("phone", v)} placeholder="075-1234-5678" width={242} type="tel" />
         </Field>
         <Field label="お問い合わせ種別">
           <Select value={f.inquiryType} onChange={(v) => set("inquiryType", v)} options={[...INQUIRY_TYPES]} />

@@ -653,7 +653,7 @@ export function Step3FormSP(p: {
           )}
         </Field>
         <Field label="電話番号" required>
-          <SpInput value={f.phone} onChange={(v) => set("phone", v)} placeholder="075-000-0000" type="tel" />
+          <SpInput value={f.phone} onChange={(v) => set("phone", v)} placeholder="075-1234-5678" type="tel" />
           {f.phone.trim().length > 0 && !phoneValid && (
             <span style={{ fontFamily: sans, fontSize: 12, color: RED, paddingTop: 4 }}>電話番号を正しく入力してください</span>
           )}
