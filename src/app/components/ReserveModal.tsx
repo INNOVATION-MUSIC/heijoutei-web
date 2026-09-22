@@ -10,10 +10,11 @@ interface Props {
 }
 
 const STORES = [
-  { name: "亀岡店",   storeFull: "平壞亭　亀岡店",   phone: "0771-23-8410" },
-  { name: "園部店",   storeFull: "平壞亭　園部店",   phone: "0771-68-1760" },
-  { name: "福知山店", storeFull: "平壞亭　福知山店", phone: "0773-24-2322" },
+  { name: "亀岡店",   storeFull: "平壌亭　亀岡店",   phone: "0771-23-8410" },
+  { name: "園部店",   storeFull: "平壌亭　園部店",   phone: "0771-68-1760" },
+  { name: "福知山店", storeFull: "平壌亭　福知山店", phone: "0773-24-2322" },
   { name: "焼肉ゆらの", storeFull: "焼肉　ゆらの",  phone: "0773-45-8429" },
+  { name: "KOPU29",  storeFull: "KOPU29",           phone: "0771-20-1960" },
 ];
 
 const mincho = "'Shippori Mincho', serif";
