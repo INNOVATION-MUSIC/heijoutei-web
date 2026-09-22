@@ -58,7 +58,7 @@ export default function LoginCard({
     <div className="flex min-h-screen items-center justify-center bg-[#0a0a0f] p-4">
       <div className="w-full max-w-sm rounded-xl border border-[#23232e] bg-[#14141a] p-8">
         <div className="mb-6 flex flex-col items-center">
-          <Image src="/images/logo.webp" alt="焼肉平壌亭" width={168} height={88} className="object-contain" priority />
+          <Image src="/images/logo.webp" alt="平壌亭" width={168} height={88} className="object-contain" priority />
         </div>
 
         {error && <p className="mb-4 rounded-lg bg-red-900/30 px-4 py-2 text-sm text-red-400">{error}</p>}

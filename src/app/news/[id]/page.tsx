@@ -20,8 +20,8 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const { id } = await params;
   const article = await fetchNewsArticle(id);
   if (!article) return {};
-  const title = `${article.title} | お知らせ | 焼肉平壌亭`;
-  const description = excerpt(article.body, `焼肉平壌亭のお知らせ「${article.title}」をご紹介します。`);
+  const title = `${article.title} | お知らせ | 平壌亭`;
+  const description = excerpt(article.body, `平壌亭のお知らせ「${article.title}」をご紹介します。`);
   return {
     title,
     description,

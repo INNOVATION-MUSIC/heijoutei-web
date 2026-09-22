@@ -61,7 +61,7 @@ export default function SplashScreen({ onDone }: Props) {
       >
         <Image
           src="/images/logo.webp"
-          alt="焼肉平壌亭"
+          alt="平壌亭"
           fill
           className="object-contain"
           sizes="300px"

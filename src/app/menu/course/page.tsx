@@ -6,12 +6,12 @@ import type { Metadata } from "next";
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: "コースメニュー | 焼肉平壌亭",
-  description: "焼肉平壌亭のコースメニュー。ご宴会・ご接待・お祝いに最適なフルコース・飲み放題付コースをご用意しております。",
+  title: "コースメニュー | 平壌亭",
+  description: "平壌亭のコースメニュー。ご宴会・ご接待・お祝いに最適なフルコース・飲み放題付コースをご用意しております。",
   alternates: { canonical: "/menu/course" },
   openGraph: {
-    title: "コースメニュー | 焼肉平壌亭",
-    description: "焼肉平壌亭のコースメニュー。ご宴会・ご接待・お祝いに最適なフルコース・飲み放題付コースをご用意しております。",
+    title: "コースメニュー | 平壌亭",
+    description: "平壌亭のコースメニュー。ご宴会・ご接待・お祝いに最適なフルコース・飲み放題付コースをご用意しております。",
     url: "/menu/course",
   },
 };

@@ -96,7 +96,7 @@ export default function StoreSection() {
         </div>
         <p style={{ paddingLeft: 113, width: 850, fontFamily: mincho, fontSize: 15, lineHeight: "40px", letterSpacing: "1.5px", color: "rgba(235,229,219,0.85)" }}>
           各店くつろげるお席をご用意して、各種ご宴会・記念日・ご接待などのご利用にも対応させていただきます。<br />
-          亀岡・園部・福知山での焼肉はぜひ焼肉平壌亭へ焼肉宴会で楽しいひと時をお過ごしください。
+          亀岡・園部・福知山での焼肉はぜひ平壌亭へ焼肉宴会で楽しいひと時をお過ごしください。
         </p>
       </div>
 

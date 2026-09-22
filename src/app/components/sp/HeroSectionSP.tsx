@@ -43,7 +43,7 @@ export default function HeroSectionSP({ onOpenModal, onOpenLineModal }: Props) {
         >
           <Image
             src="/images/hero_meat.webp"
-            alt="焼肉平壌亭"
+            alt="平壌亭"
             fill
             className="object-cover"
             sizes="350px"

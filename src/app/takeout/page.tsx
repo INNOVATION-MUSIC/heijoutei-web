@@ -3,14 +3,14 @@ import { fetchTakeoutStores, fetchTakeoutMenuByStore, fetchTakeoutSlots } from "
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "テイクアウトご注文 | 焼肉平壌亭",
+  title: "テイクアウトご注文 | 平壌亭",
   description:
-    "焼肉平壌亭のテイクアウトをオンラインでご注文いただけます。受取日時とメニューを選んで、ご自宅で本格焼肉をお楽しみください。",
+    "平壌亭のテイクアウトをオンラインでご注文いただけます。受取日時とメニューを選んで、ご自宅で本格焼肉をお楽しみください。",
   alternates: { canonical: "/takeout" },
   openGraph: {
-    title: "テイクアウトご注文 | 焼肉平壌亭",
+    title: "テイクアウトご注文 | 平壌亭",
     description:
-      "焼肉平壌亭のテイクアウトをオンラインでご注文いただけます。受取日時とメニューを選んで、ご自宅で本格焼肉をお楽しみください。",
+      "平壌亭のテイクアウトをオンラインでご注文いただけます。受取日時とメニューを選んで、ご自宅で本格焼肉をお楽しみください。",
     url: "/takeout",
   },
 };

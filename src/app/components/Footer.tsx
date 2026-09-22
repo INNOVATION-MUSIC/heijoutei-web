@@ -14,7 +14,7 @@ export default function Footer({ onOpenModal }: { onOpenModal: () => void }) {
     <footer className="relative overflow-hidden bg-[#0a0a0a]" style={{ width: 1440, height: 600 }}>
       {/* ロゴ（クリックでトップへ） */}
       <Link href="/" aria-label="トップへ" className="absolute block" style={{ left: 175, top: 90, width: 260, height: 148 }}>
-        <Image src="/images/footer_logo.webp" alt="焼肉平壌亭" fill className="object-contain" sizes="260px" />
+        <Image src="/images/footer_logo.webp" alt="平壌亭" fill className="object-contain" sizes="260px" />
       </Link>
 
       {/* キャッチコピー（Heroと同じ文言・2026-08-26に統一） */}
@@ -53,7 +53,7 @@ export default function Footer({ onOpenModal }: { onOpenModal: () => void }) {
       {/* コピーライト + 利用規約リンク */}
       <div className="absolute" style={{ left: 0, top: 558, width: 1440, display: "flex", justifyContent: "center", alignItems: "center", gap: 32 }}>
         <p style={{ margin: 0, fontFamily: sans, fontSize: 11, fontWeight: 300, letterSpacing: "0.2em", color: "rgba(235,229,219,0.4)" }}>
-          © 焼肉平壌亭　all rights reserved.
+          © 平壌亭　all rights reserved.
         </p>
         <Link href="/terms" style={{ fontFamily: sans, fontSize: 11, fontWeight: 300, letterSpacing: "0.2em", color: "rgba(235,229,219,0.55)", textDecoration: "none" }}>
           利用規約

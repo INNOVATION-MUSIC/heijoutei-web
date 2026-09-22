@@ -98,7 +98,7 @@ function TakeoutHeadingSP() {
       {/* ヒーロー画像ストリップ（351×130・左19pxインセット） */}
       <div style={{ paddingLeft: 19 }}>
         <div style={{ position: "relative", width: 351, height: 130, overflow: "hidden", background: "#472914" }}>
-          <Image src="/images/takeout_hero.webp" alt="焼肉平壌亭 テイクアウト" fill className="object-cover" sizes="351px" preload />
+          <Image src="/images/takeout_hero.webp" alt="平壌亭 テイクアウト" fill className="object-cover" sizes="351px" preload />
         </div>
       </div>
 

@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const { id } = await params;
   const store = await fetchStoreDetail(id);
   if (!store) return {};
-  const title = `${store.name} | 焼肉平壌亭`;
+  const title = `${store.name} | 平壌亭`;
   const description = `${store.name}の住所・電話番号・営業時間・アクセス・地図をご案内します。`;
   return {
     title,

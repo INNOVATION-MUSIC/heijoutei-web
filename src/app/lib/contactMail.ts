@@ -23,7 +23,7 @@ function baseHtml(title: string, bodyHtml: string): string {
     <h1 style="font-size:18px;letter-spacing:1px;color:#1a1a1a;margin:0 0 20px;">${escapeHtml(title)}</h1>
     ${bodyHtml}
     <hr style="border:none;border-top:1px solid #e5e1d8;margin:28px 0 16px;" />
-    <p style="font-size:12px;color:#999;line-height:1.8;margin:0;">焼肉平壌亭（亀岡・園部・福知山・焼肉ゆらの）<br/>※ このメールは送信専用です。ご返信いただいてもお答えできません。</p>
+    <p style="font-size:12px;color:#999;line-height:1.8;margin:0;">平壌亭（亀岡・園部・福知山・焼肉ゆらの）<br/>※ このメールは送信専用です。ご返信いただいてもお答えできません。</p>
   </div>
 </body></html>`;
 }
@@ -65,7 +65,7 @@ ${o.message || "（なし）"}`;
 
 /** お客様控えメール（自動返信） */
 export function buildContactCustomerMail(o: ContactPayload): { subject: string; text: string; html: string } {
-  const subject = "【焼肉平壌亭】お問い合わせを承りました";
+  const subject = "【平壌亭】お問い合わせを承りました";
   const text = `${o.name} 様
 
 この度はお問い合わせをいただき、誠にありがとうございます。
@@ -80,7 +80,7 @@ ${detailsText(o)}
 
 ${storeContactBlock(o)}
 
-焼肉平壌亭
+平壌亭
 ※ このメールは送信専用です。`;
 
   const html = baseHtml(

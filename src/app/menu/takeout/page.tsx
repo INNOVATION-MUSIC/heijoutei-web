@@ -6,12 +6,12 @@ import type { Metadata } from "next";
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: "テイクアウトメニュー | 焼肉平壌亭",
-  description: "焼肉平壌亭のテイクアウトメニュー。焼肉弁当・お惣菜・お家で焼肉セット・BBQセットなど、ご自宅で本格焼肉をお楽しみいただけます。",
+  title: "テイクアウトメニュー | 平壌亭",
+  description: "平壌亭のテイクアウトメニュー。焼肉弁当・お惣菜・お家で焼肉セット・BBQセットなど、ご自宅で本格焼肉をお楽しみいただけます。",
   alternates: { canonical: "/menu/takeout" },
   openGraph: {
-    title: "テイクアウトメニュー | 焼肉平壌亭",
-    description: "焼肉平壌亭のテイクアウトメニュー。焼肉弁当・お惣菜・お家で焼肉セット・BBQセットなど、ご自宅で本格焼肉をお楽しみいただけます。",
+    title: "テイクアウトメニュー | 平壌亭",
+    description: "平壌亭のテイクアウトメニュー。焼肉弁当・お惣菜・お家で焼肉セット・BBQセットなど、ご自宅で本格焼肉をお楽しみいただけます。",
     url: "/menu/takeout",
   },
 };

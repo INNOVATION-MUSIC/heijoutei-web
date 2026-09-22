@@ -102,7 +102,7 @@ export default function HeroSection({ onOpenModal, lineLinks = [] }: { onOpenMod
 
             {/* ロゴ: width=247 → (587-247)/2=170 → x=170 に自動配置（クリックでトップへ） */}
             <Link href="/" aria-label="トップへ" style={{ display: "block", position: "relative", width: 247, height: 129 }}>
-              <Image src="/images/logo.webp" alt="焼肉平壌亭" fill className="object-contain" sizes="247px" />
+              <Image src="/images/logo.webp" alt="平壌亭" fill className="object-contain" sizes="247px" />
             </Link>
           </div>
 
@@ -140,7 +140,7 @@ export default function HeroSection({ onOpenModal, lineLinks = [] }: { onOpenMod
         {/* 右カラム: ヒーロー画像（paddingTopで40px下げ、グラデーションはimage上のoverlay） */}
         <div style={{ flex: 1, overflow: "hidden", display: "flex", flexDirection: "column", paddingTop: 40 }}>
           <div style={{ flex: 1, position: "relative" }}>
-            <Image src="/images/hero_meat.webp" alt="焼肉平壌亭" fill className="object-cover" sizes="858px" preload />
+            <Image src="/images/hero_meat.webp" alt="平壌亭" fill className="object-cover" sizes="858px" preload />
             <div className="absolute inset-0" style={{ background: "linear-gradient(to right, #0a0a0a 0%, rgba(10,10,10,0.5) 20%, transparent 50%)" }} />
             <div className="absolute inset-0" style={{ background: "linear-gradient(to top, #0a0a0a 0%, transparent 40%)" }} />
           </div>

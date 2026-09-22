@@ -76,7 +76,7 @@ function ContactHeadingSP() {
       {/* ヒーロー画像ストリップ（351×130・左21pxインセット） */}
       <div style={{ paddingLeft: 19 }}>
         <div style={{ position: "relative", width: 351, height: 130, overflow: "hidden", background: "#472914" }}>
-          <Image src="/images/contact_hero.webp" alt="焼肉平壌亭 お問い合わせ" fill className="object-cover" sizes="351px" preload />
+          <Image src="/images/contact_hero.webp" alt="平壌亭 お問い合わせ" fill className="object-cover" sizes="351px" preload />
         </div>
       </div>
 

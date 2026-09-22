@@ -24,7 +24,7 @@ export default function FooterSP({ onOpenModal }: { onOpenModal: () => void }) {
       <Link href="/" aria-label="トップへ" style={{ display: "block", position: "relative", width: 212, height: 111, flexShrink: 0 }}>
         <Image
           src="/images/footer_logo.webp"
-          alt="焼肉平壌亭"
+          alt="平壌亭"
           fill
           className="object-contain"
           sizes="212px"
@@ -249,7 +249,7 @@ export default function FooterSP({ onOpenModal }: { onOpenModal: () => void }) {
             margin: 0,
           }}
         >
-          © 焼肉平壌亭　all rights reserved.
+          © 平壌亭　all rights reserved.
         </p>
       </div>
     </footer>

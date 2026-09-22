@@ -13,10 +13,10 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const { id } = await params;
   const job = await fetchRecruitJob(id);
   if (!job) return {};
-  const title = `${job.title}（${job.store}）| 採用情報 | 焼肉平壌亭`;
+  const title = `${job.title}（${job.store}）| 採用情報 | 平壌亭`;
   const lead = (job.lead ?? "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
   const description =
-    (lead || job.summary.join(" ") || `焼肉平壌亭 ${job.store}「${job.title}」の募集要項です。`).slice(0, 110);
+    (lead || job.summary.join(" ") || `平壌亭 ${job.store}「${job.title}」の募集要項です。`).slice(0, 110);
   return {
     title,
     description,

@@ -10,7 +10,7 @@ type Mail = {
   replyTo?: string
 }
 
-// "焼肉平壌亭 <addr@example.com>" / "addr@example.com" を {name?, email} に分解
+// "平壌亭 <addr@example.com>" / "addr@example.com" を {name?, email} に分解
 function parseFrom(raw?: string): { name?: string; email: string } | null {
   if (!raw) return null
   const m = raw.match(/^\s*(.*?)\s*<([^>]+)>\s*$/)

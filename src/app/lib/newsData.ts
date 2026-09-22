@@ -100,7 +100,7 @@ export const NEWS_LIST_DATA: NewsListItem[] = [
     tags: [TAG_NEWS],
     heroImg: "/images/newsdetail_hero.webp",
     bodyImg: "/images/newsdetail_body.webp",
-    body: `日頃より焼肉 平壌亭 亀岡店をご愛顧いただき、誠にありがとうございます。
+    body: `日頃より平壌亭 亀岡店をご愛顧いただき、誠にありがとうございます。
 誠に勝手ながら、店舗メンテナンスのため、下記日程を臨時休業とさせていただきます。
 
 【臨時休業日】
@@ -133,10 +133,10 @@ export const NEWS_LIST_DATA: NewsListItem[] = [
 ];
 
 // 詳細本文が未設定の記事に使う既定文（テンプレートが成立する最小限の文面）
-export const DEFAULT_NEWS_BODY = `日頃より焼肉 平壌亭をご愛顧いただき、誠にありがとうございます。
+export const DEFAULT_NEWS_BODY = `日頃より平壌亭をご愛顧いただき、誠にありがとうございます。
 詳細につきましては、各店舗までお問い合わせくださいませ。
 
-今後とも焼肉 平壌亭をよろしくお願い申し上げます。`;
+今後とも平壌亭をよろしくお願い申し上げます。`;
 
 /** id から記事を取得（無ければ undefined） */
 export function getNewsArticle(id: string): NewsListItem | undefined {

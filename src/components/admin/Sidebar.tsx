@@ -240,7 +240,7 @@ export default function AdminSidebar({
         onClick={onClose}
         className="flex h-16 flex-shrink-0 items-center justify-center border-b border-[#23232e] px-5"
       >
-        <Image src="/images/logo.webp" alt="焼肉平壌亭" width={104} height={54} className="object-contain" priority />
+        <Image src="/images/logo.webp" alt="平壌亭" width={104} height={54} className="object-contain" priority />
       </Link>
 
       {!isHq && (
