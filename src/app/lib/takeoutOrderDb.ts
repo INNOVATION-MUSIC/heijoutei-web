@@ -130,6 +130,11 @@ export async function fetchTakeoutMenuByStore(): Promise<Record<string, TakeoutM
         if (slug && result[slug]) result[slug].items.push(item);
       }
     }
+    // 品目が1件も無いカテゴリタブは出さない（商品未登録のカテゴリを空タブとして見せない。登録され次第自動的に表示される）
+    for (const slug of Object.keys(result)) {
+      const itemCategories = new Set<string>(result[slug].items.map((i) => i.category));
+      result[slug].categories = result[slug].categories.filter((c) => itemCategories.has(c));
+    }
     // 品目が1件も無い店舗は除外（TakeoutClient 側で静的フォールバックさせる）
     for (const slug of Object.keys(result)) {
       if (result[slug].items.length === 0) delete result[slug];
