@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { getMonthSlots, saveDaySlot, saveMonthSlots, type DaySlot, type SlotTime } from '@/lib/actions/takeout-slots'
 import { defaultTimeLabels } from '@/lib/takeout-times'
+import { BREAK_TIME_LABELS } from '@/app/lib/takeoutData'
 import type { StoreRef } from '@/lib/actions/refs'
 
 const WEEK = ['日', '月', '火', '水', '木', '金', '土']
@@ -17,7 +18,11 @@ function freshDay(date: string): DaySlot {
     date,
     is_closed: false,
     default_capacity: DEFAULT_CAPACITY,
-    times: defaultTimeLabels().map((time_label) => ({ time_label, capacity: DEFAULT_CAPACITY, is_active: true })),
+    times: defaultTimeLabels().map((time_label) => ({
+      time_label,
+      capacity: DEFAULT_CAPACITY,
+      is_active: !BREAK_TIME_LABELS.includes(time_label), // 既定で休憩時間（15:00〜16:00）は受付不可
+    })),
   }
 }
 

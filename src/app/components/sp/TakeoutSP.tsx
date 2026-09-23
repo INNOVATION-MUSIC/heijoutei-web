@@ -414,7 +414,7 @@ function TimeGridSP({ dateIso, time, onSelectTime, timeSlots }: { dateIso: strin
                 <span style={{ fontFamily: mincho, fontSize: 14, color: "#ebe5db", lineHeight: 1 }}>{slot.label.replace(/ /g, "")}</span>
                 {slot.disabled && slot.reason ? (
                   <span style={{ color: slot.reason === "full" ? RED : "rgba(235,229,219,0.5)", fontSize: 9, lineHeight: 1 }}>
-                    {slot.reason === "full" ? "満席" : "受付終了"}
+                    {slot.reason === "full" ? "満席" : slot.reason === "break" ? "休憩中" : "受付終了"}
                   </span>
                 ) : (
                   <span style={{ color: GREEN, fontSize: 9, lineHeight: 1 }}>○</span>

@@ -97,6 +97,10 @@ export const TAKEOUT_TIME_SLOTS: string[] = (() => {
 // 受付締切（受取時間の何分前まで注文を受け付けるか。Step1DateTime の「予約受付締切」表記と一致させる）
 export const RESERVE_CUTOFF_MINUTES = 60;
 
+// 休憩時間（15:00〜16:00）。DB受付枠管理で個別に設定されていない日（既定運用の日）は、
+// この時間帯を受取不可として表示・検証する。管理画面で特定日の受付枠を明示設定した場合はそちらが優先される。
+export const BREAK_TIME_LABELS: string[] = ["15 : 00", "15 : 15", "15 : 30", "15 : 45"];
+
 // 「お家で焼肉セット」は他カテゴリと違い、店舗別に受取日の最短リード日数がある
 // （亀岡=当日不可・園部/福知山=前日〔1日前〕不可＝実質2日以上前の注文が必要）。
 // カテゴリ名はDB(takeout_categories.name)/静的データ共通の表示名で判定する。
@@ -142,10 +146,10 @@ export function isPastReserveCutoff(iso: string, timeLabel: string, now: Date, c
 }
 
 // ───────── 受取時間枠の表示用ビュー（選択可否・不可の理由をUIへ渡す） ─────────
-export type TimeSlotView = { label: string; disabled: boolean; reason?: "full" | "cutoff" };
+export type TimeSlotView = { label: string; disabled: boolean; reason?: "full" | "cutoff" | "break" };
 
 /**
- * 選択中の受取日に対する時間枠一覧を、満枠・受付締切を反映したビューに組み立てる。
+ * 選択中の受取日に対する時間枠一覧を、満枠・受付締切・休憩時間を反映したビューに組み立てる。
  * dateIso が未選択なら全枠を disabled で返す（従来「日付未選択で全ボタン disabled」の挙動を維持）。
  */
 export function buildTimeSlotViews(dateIso: string | null, storeSlots: DaySlotMap | undefined, now: Date): TimeSlotView[] {
@@ -156,6 +160,8 @@ export function buildTimeSlotViews(dateIso: string | null, storeSlots: DaySlotMa
   const labels = TAKEOUT_TIME_SLOTS.filter((t) => available.includes(t) || full.includes(t));
   return labels.map((label) => {
     if (full.includes(label)) return { label, disabled: true, reason: "full" };
+    // 受付枠管理でその日を個別設定していない場合のみ、既定の休憩時間として不可にする。
+    if (!slot && BREAK_TIME_LABELS.includes(label)) return { label, disabled: true, reason: "break" };
     if (isPastReserveCutoff(dateIso, label, now)) return { label, disabled: true, reason: "cutoff" };
     return { label, disabled: false };
   });
