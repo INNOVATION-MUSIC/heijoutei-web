@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { updateUserRole, deleteUser } from '@/lib/actions/users'
+import DeleteButton from './DeleteButton'
 
 export default function UserRoleSelect({ id, role, email }: { id: string; role: string; email: string }) {
   const router = useRouter()
@@ -15,13 +16,6 @@ export default function UserRoleSelect({ id, role, email }: { id: string; role: 
     setLoading(false)
     router.refresh()
   }
-  async function handleDelete() {
-    if (!confirm(`「${email}」を削除しますか？この操作は取り消せません。`)) return
-    setLoading(true)
-    const res = await deleteUser(id)
-    if (res?.error) { alert(res.error); setLoading(false); return }
-    router.refresh()
-  }
 
   return (
     <div className="flex items-center justify-end gap-3">
@@ -29,7 +23,7 @@ export default function UserRoleSelect({ id, role, email }: { id: string; role: 
         <option value="editor">編集者</option>
         <option value="admin">管理者</option>
       </select>
-      <button type="button" onClick={handleDelete} disabled={loading} className="text-xs text-red-400/80 hover:text-red-400 disabled:opacity-50">削除</button>
+      <DeleteButton confirmTitle={`「${email}」を削除しますか？`} onDelete={() => deleteUser(id)} />
     </div>
   )
 }

@@ -18,6 +18,7 @@ import {
 import { CSS } from '@dnd-kit/utilities'
 import CategoryImageCell from '@/components/admin/CategoryImageCell'
 import CategoryStoreCell from '@/components/admin/CategoryStoreCell'
+import ConfirmDeleteModal from '@/components/admin/ConfirmDeleteModal'
 import {
   createCategory,
   updateCategory,
@@ -137,6 +138,8 @@ export default function DraggableCategoryTable({
   const [newSlug, setNewSlug] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null)
+  const [deleting, setDeleting] = useState(false)
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }))
 
   function patchRow(id: string, patch: Partial<Category>) {
@@ -171,17 +174,23 @@ export default function DraggableCategoryTable({
     setBusy(false)
   }
 
-  async function handleDelete(id: string) {
-    const target = cats.find((c) => c.id === id)
-    if (!confirm(`「${target?.name}」を削除しますか？`)) return
-    const result = await deleteCategory(kind, id)
+  async function confirmDelete() {
+    if (!pendingDeleteId) return
+    setDeleting(true)
+    const result = await deleteCategory(kind, pendingDeleteId)
     if (result?.error) {
       setError(result.error)
+      setDeleting(false)
+      setPendingDeleteId(null)
       return
     }
     setError(null)
-    setCats((cs) => cs.filter((c) => c.id !== id))
+    setCats((cs) => cs.filter((c) => c.id !== pendingDeleteId))
+    setDeleting(false)
+    setPendingDeleteId(null)
   }
+
+  const pendingDeleteName = cats.find((c) => c.id === pendingDeleteId)?.name ?? ''
 
   return (
     <div className="space-y-4">
@@ -214,7 +223,7 @@ export default function DraggableCategoryTable({
                     kind={kind}
                     stores={stores}
                     onChange={(patch) => patchRow(cat.id, patch)}
-                    onDelete={() => handleDelete(cat.id)}
+                    onDelete={() => setPendingDeleteId(cat.id)}
                   />
                 ))}
               </tbody>
@@ -242,6 +251,14 @@ export default function DraggableCategoryTable({
         </button>
       </div>
       <p className="text-xs text-[#5a5a6a]">行をドラッグで並び替え。名前・スラッグは編集後フォーカスを外すと保存されます。</p>
+
+      <ConfirmDeleteModal
+        open={pendingDeleteId !== null}
+        title={`「${pendingDeleteName}」を削除しますか？`}
+        loading={deleting}
+        onCancel={() => setPendingDeleteId(null)}
+        onConfirm={confirmDelete}
+      />
     </div>
   )
 }
