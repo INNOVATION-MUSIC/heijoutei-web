@@ -11,7 +11,7 @@ import {
   formatJpDate,
   timeLabelToMinutes,
   normTime,
-  isHomeSetOrderable,
+  isLeadTimeSatisfied,
 } from "@/app/lib/takeoutData";
 import { getStoreDetail } from "@/app/lib/storeDetailData";
 
@@ -190,7 +190,7 @@ export async function POST(request: Request) {
     for (const line of req.items) {
       const m = menu.get(line.id);
       if (!m) return NextResponse.json({ error: "選択できない商品が含まれています。" }, { status: 400 });
-      if (!isHomeSetOrderable(req.storeSlug, m.category, req.pickupDate, todayDt)) {
+      if (!isLeadTimeSatisfied(req.storeSlug, m.category, req.pickupDate, todayDt)) {
         return NextResponse.json({ error: `選択された受取日では「${m.name}」を注文できません。` }, { status: 400 });
       }
       items.push({ name: m.name, price: m.price, qty: line.qty });

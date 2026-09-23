@@ -101,21 +101,21 @@ export const RESERVE_CUTOFF_MINUTES = 60;
 // この時間帯を受取不可として表示・検証する。管理画面で特定日の受付枠を明示設定した場合はそちらが優先される。
 export const BREAK_TIME_LABELS: string[] = ["15 : 00", "15 : 15", "15 : 30", "15 : 45"];
 
-// 「お家で焼肉セット」は他カテゴリと違い、店舗別に受取日の最短リード日数がある
-// （亀岡=当日不可・園部/福知山=前日〔1日前〕不可＝実質2日以上前の注文が必要）。
+// 特定カテゴリの品目は、店舗別に受取日の最短リード日数がある（0=当日可）。
 // カテゴリ名はDB(takeout_categories.name)/静的データ共通の表示名で判定する。
-export const HOME_SET_CATEGORY_NAME = "お家で焼肉セット";
-const HOME_SET_MIN_LEAD_DAYS: Record<string, number> = {
-  kameoka: 1,
-  sonobe: 2,
-  fukuchiyama: 2,
+// - 「お家で焼肉セット」: 亀岡=前日〔1日前〕まで・園部/福知山=2日前まで（実質2日以上前の注文が必要）
+// - 「すき焼肉」: 亀岡=当日可・園部/福知山/ゆらの=前日〔1日前〕まで
+export const MIN_LEAD_DAYS_BY_CATEGORY: Record<string, Record<string, number>> = {
+  "お家で焼肉セット": { kameoka: 1, sonobe: 2, fukuchiyama: 2 },
+  "すき焼肉": { kameoka: 0, sonobe: 1, fukuchiyama: 1, yurano: 1 },
 };
 
-/** 「お家で焼肉セット」が指定の店舗・受取日で注文可能かを返す。対象カテゴリでなければ常に true。 */
-export function isHomeSetOrderable(storeSlug: string, category: string, pickupDateIso: string | null, today: Date): boolean {
-  if (category !== HOME_SET_CATEGORY_NAME) return true;
+/** 指定カテゴリ・店舗・受取日が注文可能かを返す。リード日数制約の無いカテゴリは常に true。 */
+export function isLeadTimeSatisfied(storeSlug: string, category: string, pickupDateIso: string | null, today: Date): boolean {
+  const leadDaysByStore = MIN_LEAD_DAYS_BY_CATEGORY[category];
+  if (!leadDaysByStore) return true;
   if (!pickupDateIso) return false;
-  const minLead = HOME_SET_MIN_LEAD_DAYS[storeSlug] ?? 0;
+  const minLead = leadDaysByStore[storeSlug] ?? 0;
   const t = new Date(today.getFullYear(), today.getMonth(), today.getDate());
   t.setDate(t.getDate() + minLead);
   const [y, m, d] = pickupDateIso.split("-").map(Number);
