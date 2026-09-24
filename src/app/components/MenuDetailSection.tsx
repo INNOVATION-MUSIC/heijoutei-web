@@ -6,12 +6,13 @@ import { MenuHeading, StoreTabs, ItemCard, BackToMenuButton, mincho, sans, GOLD,
 
 /* ─────────── カテゴリ切替タブ（2行・現在カテゴリは金で点灯・リロードせず切替） ─────────── */
 function CategoryNav({ categories, current, onSelect }: { categories: MenuCategory[]; current: string; onSelect: (slug: string) => void }) {
-  // DBのカテゴリ一覧（lunch除外済み）。先頭8件 + 残りの2行に分ける。
-  const rows = [categories.slice(0, 8), categories.slice(8)];
+  // DBのカテゴリ一覧（lunch除外済み）。件数で2行に均等分割（固定件数で切ると2行目が幅1296pxを超えて右端が切れる）。
+  const half = Math.ceil(categories.length / 2);
+  const rows = [categories.slice(0, half), categories.slice(half)];
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 32, paddingLeft: 72, paddingRight: 72, paddingTop: 88 }}>
       {rows.map((row, ri) => (
-        <div key={ri} style={{ display: "flex", columnGap: 40, borderBottom: "1px solid rgba(234,229,219,0.15)" }}>
+        <div key={ri} style={{ display: "flex", flexWrap: "wrap", columnGap: 40, rowGap: 20, borderBottom: "1px solid rgba(234,229,219,0.15)" }}>
           {row.map((c) => {
             const active = c.slug === current;
             const common: React.CSSProperties = {
