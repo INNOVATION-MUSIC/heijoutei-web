@@ -198,6 +198,19 @@ export type CalendarDay = {
 const WEEKDAY_LABELS = ["日", "月", "火", "水", "木", "金", "土"];
 export { WEEKDAY_LABELS };
 
+// 受取日の予約期間 = 本日〜「本日+PICKUP_WINDOW_DAYS日」と PICKUP_WINDOW_END の遅い方まで。
+// PICKUP_WINDOW_END は暫定（2026-09-26・クライアント確認待ち）。確定したら値を変更 or 削除する。
+export const PICKUP_WINDOW_DAYS = 31;
+export const PICKUP_WINDOW_END = "2026-12-31";
+
+/** 予約期間の最終日（YYYY-MM-DD）。todayIso は店舗基準（JST）の本日。 */
+export function pickupWindowEndIso(todayIso: string): string {
+  const [y, m, d] = todayIso.split("-").map(Number);
+  const dt = new Date(Date.UTC(y, m - 1, d + PICKUP_WINDOW_DAYS));
+  const byDays = `${dt.getUTCFullYear()}-${String(dt.getUTCMonth() + 1).padStart(2, "0")}-${String(dt.getUTCDate()).padStart(2, "0")}`;
+  return byDays > PICKUP_WINDOW_END ? byDays : PICKUP_WINDOW_END;
+}
+
 // ───────── DB 受付枠（フロント用の最小形・client-safe） ─────────
 // 管理画面「受付枠管理」(takeout_slots / takeout_slot_times) の1日ぶんを front 用に縮約したもの。
 export type DaySlotInfo = {
@@ -212,7 +225,7 @@ export type DaySlotMap = Record<string, DaySlotInfo>;
  * 指定年月（month は 0 始まり）の 6 週ぶんのカレンダーを生成する。
  * `slots` を渡すと「DB に枠がある日は DB（休止/受付・時間枠の有無）を優先」し、
  * 枠が無い日は従来アルゴリズム（火曜定休・土日わずか）にフォールバックする。
- * 本日〜31日先の予約可能期間は DB 有無に関わらず外側のゲートとして維持する。
+ * 予約可能期間（pickupWindowEndIso）は DB 有無に関わらず外側のゲートとして維持する。
  */
 export function buildCalendar(year: number, month: number, today: Date, slots?: DaySlotMap): CalendarDay[] {
   const first = new Date(year, month, 1);
@@ -220,8 +233,9 @@ export function buildCalendar(year: number, month: number, today: Date, slots?: 
   const daysInMonth = new Date(year, month + 1, 0).getDate();
 
   const t = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-  const max = new Date(t);
-  max.setDate(max.getDate() + 31); // 本日から31日先まで予約可能
+  const tIso = `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, "0")}-${String(t.getDate()).padStart(2, "0")}`;
+  const [my, mm, md] = pickupWindowEndIso(tIso).split("-").map(Number);
+  const max = new Date(my, mm - 1, md);
 
   const cells: CalendarDay[] = [];
   // 先頭の空セル
@@ -235,7 +249,7 @@ export function buildCalendar(year: number, month: number, today: Date, slots?: 
     const slot = slots?.[iso];
     let status: DayStatus;
     if (date < t || date > max) {
-      status = "past"; // 期間外（DB枠があっても予約不可。31日先までの制限を優先）
+      status = "past"; // 期間外（DB枠があっても予約不可。予約期間の制限を優先）
     } else if (slot) {
       // DBに枠がある日はDBを優先。休止/枠なし=定休、全時間帯が満枠=予約不可、
       // 一部の時間帯のみ満枠=残りわずか、それ以外=受付可能（実際の空き状況を反映）

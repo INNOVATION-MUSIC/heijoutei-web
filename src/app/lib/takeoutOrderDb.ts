@@ -7,6 +7,7 @@ import {
   TAKEOUT_TIME_SLOTS,
   BREAK_TIME_LABELS,
   normTime,
+  pickupWindowEndIso,
   type TakeoutStore,
   type TakeoutMenuItem,
   type DaySlotMap,
@@ -152,7 +153,7 @@ export async function fetchTakeoutMenuByStore(): Promise<Record<string, TakeoutM
 }
 
 // 受付枠（takeout_slots / takeout_slot_times）を店舗slug別に取得。
-// 戻り値 = { storeSlug: { iso: DaySlotInfo } }。当月〜翌々月頭までの公開枠（31日先までの予約に必要な範囲）。
+// 戻り値 = { storeSlug: { iso: DaySlotInfo } }。当月初〜予約期間の最終日（最低でも翌月末）までの公開枠。
 // DB空・未投入時は {} を返し、buildCalendar はアルゴリズム既定にフォールバックする（注文不能にならない）。
 // 定員(capacity)は既存の takeout_orders 件数（組数）と突き合わせ、満枠の時間帯は fullTimeLabels に振り分ける。
 // takeout_orders は anon から読めない（RLS で service_role 専用）ため、この関数は adminSupabase を使う。
@@ -163,8 +164,10 @@ export async function fetchTakeoutSlots(): Promise<Record<string, DaySlotMap>> {
     const supabase = createStaticClient();
     const today = new Date();
     const start = iso(today.getFullYear(), today.getMonth(), 1);
-    const endD = new Date(today.getFullYear(), today.getMonth() + 2, 0); // 翌々月末日
-    const end = iso(endD.getFullYear(), endD.getMonth(), endD.getDate());
+    const endD = new Date(today.getFullYear(), today.getMonth() + 2, 0); // 翌月末日
+    const byMonth = iso(endD.getFullYear(), endD.getMonth(), endD.getDate());
+    const windowEnd = pickupWindowEndIso(iso(today.getFullYear(), today.getMonth(), today.getDate()));
+    const end = windowEnd > byMonth ? windowEnd : byMonth;
 
     const [{ data: slots, error }, { data: bizClosed }] = await Promise.all([
       supabase
