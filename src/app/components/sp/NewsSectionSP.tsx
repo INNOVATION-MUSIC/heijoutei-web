@@ -249,7 +249,7 @@ export default function NewsSectionSP({ items }: { items?: NewsItem[] }) {
                     key={tag.label}
                     style={{
                       display: "flex", alignItems: "center", justifyContent: "center",
-                      padding: "2px 8px", height: 18,
+                      padding: "2px 8px", height: 18, whiteSpace: "nowrap",
                       backgroundColor: tag.color,
                       borderRadius: 10,
                       fontFamily: mincho, fontSize: 10, fontWeight: 500, color: "#fff",

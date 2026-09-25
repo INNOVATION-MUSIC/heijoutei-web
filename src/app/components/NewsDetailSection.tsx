@@ -144,7 +144,7 @@ export default function NewsDetailSection({
             {article.tags.map((tag, i) => (
               <span
                 key={i}
-                style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 60, height: 20, backgroundColor: tag.color, borderRadius: 10, fontFamily: mincho, fontSize: 10, fontWeight: 500, color: "#fff", flexShrink: 0 }}
+                style={{ display: "flex", alignItems: "center", justifyContent: "center", minWidth: 60, padding: "0 8px", whiteSpace: "nowrap", flexShrink: 0, height: 20, backgroundColor: tag.color, borderRadius: 10, fontFamily: mincho, fontSize: 10, fontWeight: 500, color: "#fff" }}
               >
                 {tag.label}
               </span>
