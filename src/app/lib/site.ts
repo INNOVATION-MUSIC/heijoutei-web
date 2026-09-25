@@ -7,4 +7,4 @@ export const SITE_URL = (
 export const SITE_NAME = "平壌亭";
 
 export const SITE_DESCRIPTION =
-  "創業50年以上。受け継がれる伝統と、変わらない美味しさ。京都・亀岡、園部、福知山で愛される平壌亭の公式サイト。";
+  "創業50年以上。京都の亀岡・園部・福知山に5店舗（平壌亭・焼肉ゆらの・KOPU29）を構える焼肉店、平壌亭の公式サイト。";
