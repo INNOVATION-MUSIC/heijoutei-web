@@ -131,9 +131,9 @@ export default function NewsDetailSection({
       <PageHeader onOpenModal={onOpenModal} />
 
       {/* 見出し行: 左=タイトル+日付+タグ / 右=500×500 ヒーロー画像 */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingLeft: 259, paddingRight: 201, paddingTop: 134 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingLeft: 259, paddingRight: 201, paddingTop: 134, ...(article.hideHero ? { height: 134 + 160 } : {}) }}>
         {/* 左ブロック */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 17, maxWidth: 440 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 17, maxWidth: article.hideHero ? 980 : 440 }}>
           <h1 style={{ fontFamily: mincho, fontSize: 32, fontWeight: 400, letterSpacing: "1.5px", color: "#ebe5db", lineHeight: 1.4, margin: 0 }}>
             {article.title}
           </h1>
@@ -153,9 +153,11 @@ export default function NewsDetailSection({
         </div>
 
         {/* 右: ヒーロー画像（500×500） */}
-        <div style={{ position: "relative", width: 500, height: 500, overflow: "hidden", flexShrink: 0, background: "#472914" }}>
-          <Image src={newsHero(article)} alt={article.title} fill className="object-cover" sizes="500px" preload />
-        </div>
+        {!article.hideHero && (
+          <div style={{ position: "relative", width: 500, height: 500, overflow: "hidden", flexShrink: 0, background: "#472914" }}>
+            <Image src={newsHero(article)} alt={article.title} fill className="object-cover" sizes="500px" preload />
+          </div>
+        )}
       </div>
 
       {/* 本文（DB由来は TipTap の HTML を .rte-content で装飾描画／静的フォールバックはプレーンテキスト） */}

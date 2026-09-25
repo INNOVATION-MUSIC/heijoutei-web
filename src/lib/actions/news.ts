@@ -14,6 +14,7 @@ export type NewsPayload = {
   slug: string
   body?: string | null
   thumbnail_url?: string | null
+  hide_detail_thumbnail?: boolean
   status: NewsStatus
   published_at?: string | null // ISO（status=scheduled/published 用）
 }
@@ -64,7 +65,7 @@ export async function createNews(p: NewsPayload, tags: NewsTagInput[]) {
   if (!p.title?.trim()) return { error: 'タイトルは必須です' }
   let slug = await uniqueSlug(p.slug?.trim() || generateSlug(p.title))
   const { is_published, published_at } = resolvePublish(p)
-  const base = { title: p.title.trim(), body: p.body || null, thumbnail_url: p.thumbnail_url || null, is_published, published_at }
+  const base = { title: p.title.trim(), body: p.body || null, thumbnail_url: p.thumbnail_url || null, hide_detail_thumbnail: !!p.hide_detail_thumbnail, is_published, published_at }
   let { data, error } = await adminSupabase.from('news').insert({ ...base, slug }).select('id').single()
   // 同時実行などで一意制約に衝突した場合はタイムスタンプ付きで1回だけ再試行
   if (error?.code === '23505') {
@@ -84,7 +85,7 @@ export async function updateNews(id: string, p: NewsPayload, tags: NewsTagInput[
   const { is_published, published_at } = resolvePublish(p)
   const { error } = await adminSupabase
     .from('news')
-    .update({ title: p.title.trim(), slug, body: p.body || null, thumbnail_url: p.thumbnail_url || null, is_published, published_at })
+    .update({ title: p.title.trim(), slug, body: p.body || null, thumbnail_url: p.thumbnail_url || null, hide_detail_thumbnail: !!p.hide_detail_thumbnail, is_published, published_at })
     .eq('id', id)
   if (error) return { error: error.message }
   await replaceTags(id, tags)

@@ -44,6 +44,7 @@ export default function NewsForm({
   const [slugTouched, setSlugTouched] = useState(Boolean(initial?.slug))
   const [body, setBody] = useState(initial?.body ?? '')
   const [thumbnail, setThumbnail] = useState(initial?.thumbnail_url ?? '')
+  const [hideDetailThumb, setHideDetailThumb] = useState(initial?.hide_detail_thumbnail ?? false)
   const [status, setStatus] = useState<NewsStatus>(initialStatus)
   const [publishedAt, setPublishedAt] = useState(toLocalInput(initial?.published_at ?? null))
   const [tags, setTags] = useState<NewsTagInput[]>(initialTags)
@@ -66,6 +67,7 @@ export default function NewsForm({
       slug,
       body,
       thumbnail_url: thumbnail,
+      hide_detail_thumbnail: hideDetailThumb,
       status: finalStatus,
       published_at: finalStatus === 'draft' ? null : publishedAt ? new Date(publishedAt).toISOString() : null,
     }
@@ -135,6 +137,11 @@ export default function NewsForm({
 
         <div className="rounded-xl border border-[#23232e] bg-[#14141a] p-5">
           <ImageUploader label="サムネイル" value={thumbnail} onChange={setThumbnail} />
+          <label className="mt-4 flex items-center gap-2 text-sm text-[#ebe5db]">
+            <input type="checkbox" checked={hideDetailThumb} onChange={(e) => setHideDetailThumb(e.target.checked)} className="accent-[#d9b86b]" />
+            詳細ページでサムネイルを表示しない
+          </label>
+          <p className="mt-1 text-xs text-[#6f6f80]">一覧・トップのサムネイルは表示されたままです。ロゴ画像などヘッダーと重複する場合に使います。</p>
         </div>
 
         <div className="rounded-xl border border-[#23232e] bg-[#14141a] p-5">

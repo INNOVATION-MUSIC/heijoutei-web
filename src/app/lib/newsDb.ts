@@ -32,6 +32,7 @@ type NewsRow = {
   title: string;
   body: string | null;
   thumbnail_url: string | null;
+  hide_detail_thumbnail?: boolean | null;
   published_at: string | null;
   news_tags: { label: string; color: string; sort_order: number | null }[];
 };
@@ -52,6 +53,7 @@ function toItem(row: NewsRow): NewsListItem {
     title: row.title,
     tags,
     heroImg: row.thumbnail_url || undefined,
+    hideHero: !!row.hide_detail_thumbnail,
     body: row.body ?? undefined,
   };
 }
@@ -67,7 +69,7 @@ export async function fetchNewsList(): Promise<NewsListItem[]> {
     const supabase = createStaticClient();
     const { data, error } = await supabase
       .from("news")
-      .select("slug, title, body, thumbnail_url, published_at, news_tags(label, color, sort_order)")
+      .select("slug, title, body, thumbnail_url, hide_detail_thumbnail, published_at, news_tags(label, color, sort_order)")
       .eq("is_published", true)
       .lte("published_at", new Date().toISOString())
       .order("created_at", { ascending: false });
@@ -88,7 +90,7 @@ export async function fetchNewsArticle(id: string): Promise<NewsListItem | undef
     const supabase = createStaticClient();
     const { data, error } = await supabase
       .from("news")
-      .select("slug, title, body, thumbnail_url, published_at, news_tags(label, color, sort_order)")
+      .select("slug, title, body, thumbnail_url, hide_detail_thumbnail, published_at, news_tags(label, color, sort_order)")
       .eq("slug", id)
       .eq("is_published", true)
       .lte("published_at", new Date().toISOString()) // 予約公開（未来日時）は直リンクでも非公開

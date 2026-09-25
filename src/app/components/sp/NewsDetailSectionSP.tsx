@@ -51,11 +51,13 @@ export default function NewsDetailSectionSP({
       <div style={{ height: 153, flexShrink: 0 }} />
 
       {/* ヒーロー画像（350×300） */}
-      <div style={{ paddingLeft: 20 }}>
-        <div style={{ position: "relative", width: 350, height: 300, overflow: "hidden", background: "#472914" }}>
-          <Image src={newsHero(article)} alt={article.title} fill className="object-cover" sizes="350px" preload />
+      {!article.hideHero && (
+        <div style={{ paddingLeft: 20 }}>
+          <div style={{ position: "relative", width: 350, height: 300, overflow: "hidden", background: "#472914" }}>
+            <Image src={newsHero(article)} alt={article.title} fill className="object-cover" sizes="350px" preload />
+          </div>
         </div>
-      </div>
+      )}
 
       {/* タイトル + 日付/タグ + 本文（一括実測ブロック） */}
       <div ref={textRef} style={{ display: "flex", flexDirection: "column", paddingLeft: 20, paddingRight: 20, paddingTop: 28 }}>

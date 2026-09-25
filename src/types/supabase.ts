@@ -413,6 +413,7 @@ export type Database = {
           body: string | null
           created_at: string | null
           created_by: string | null
+          hide_detail_thumbnail: boolean
           id: string
           is_published: boolean | null
           published_at: string | null
@@ -425,6 +426,7 @@ export type Database = {
           body?: string | null
           created_at?: string | null
           created_by?: string | null
+          hide_detail_thumbnail?: boolean
           id?: string
           is_published?: boolean | null
           published_at?: string | null
@@ -437,6 +439,7 @@ export type Database = {
           body?: string | null
           created_at?: string | null
           created_by?: string | null
+          hide_detail_thumbnail?: boolean
           id?: string
           is_published?: boolean | null
           published_at?: string | null

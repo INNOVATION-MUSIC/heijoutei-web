@@ -52,6 +52,7 @@ export type NewsListItem = {
   title: string;
   tags: Tag[];
   heroImg?: string;
+  hideHero?: boolean; // 詳細ページでサムネを出さない（news.hide_detail_thumbnail・管理画面のチェックボックス）
   body?: string;
   bodyImg?: string;
 };

@@ -23,6 +23,7 @@ const DESIGN_SP = 390;
 const HEADER = 153;     // PageHeader
 const HERO_TOP = 134;   // ヘッダー下〜見出し行（500画像）上端
 const HERO_H = 500;     // ヒーロー画像 = 見出し行の高さ
+const TITLE_ROW_H = 160; // 画像なし（hideHero）の見出し行。タイトル2行+日付が収まる高さ
 const BODY_TOP = 83;    // 見出し行下〜本文上端
 const BODY_LH = 34;     // 本文 lineHeight
 const IMG_TOP = 77;     // 本文下〜本文中画像上端
@@ -33,7 +34,7 @@ const TRAILING = 160;   // ナビ下〜Footer の余白
 /** PC: 本文以外の固定縦寸（本文画像を含む） */
 function pcFixedHeight(article: NewsListItem) {
   const imgBlock = article.bodyImg ? IMG_TOP + IMG_H : 0;
-  return HEADER + HERO_TOP + HERO_H + BODY_TOP + imgBlock + NAV_BLOCK + TRAILING;
+  return HEADER + HERO_TOP + (article.hideHero ? TITLE_ROW_H : HERO_H) + BODY_TOP + imgBlock + NAV_BLOCK + TRAILING;
 }
 
 /** PC: 本文の初期推定高さ（実測前の SSR/初回描画用） */
@@ -52,7 +53,7 @@ const SP_TRAILING = 150;      // 末尾〜Footer の余白
 
 /** SP: タイトル+日付+本文ブロック以外の固定縦寸 */
 function spFixedHeight(article: NewsListItem) {
-  return SP_HEADER + SP_HERO_H + (article.bodyImg ? SP_IMG_BLOCK : 0) + SP_TRAILING;
+  return SP_HEADER + (article.hideHero ? 0 : SP_HERO_H) + (article.bodyImg ? SP_IMG_BLOCK : 0) + SP_TRAILING;
 }
 
 /** SP: タイトル+日付+本文ブロックの初期推定高さ（実測前の SSR/初回描画用） */
