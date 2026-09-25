@@ -37,7 +37,7 @@ type MenuRow = {
   image_url: string | null;
   price: number;
   sort_order: number | null;
-  takeout_categories: { name: string; sort_order: number | null } | null;
+  takeout_categories: { name: string; slug: string | null; sort_order: number | null } | null;
 };
 
 // 注文フローのメニュー（亀岡店基準＝共通品目＋亀岡bento）。現行の単一メニュー挙動を維持。
@@ -53,7 +53,7 @@ export async function fetchTakeoutMenu(): Promise<TakeoutMenuData> {
 
     const { data: menus, error } = await supabase
       .from("store_takeout_menus")
-      .select("id, name, description, image_url, price, sort_order, takeout_categories(name, sort_order), store_takeout_menu_stores!inner(store_id)")
+      .select("id, name, description, image_url, price, sort_order, takeout_categories(name, slug, sort_order), store_takeout_menu_stores!inner(store_id)")
       .eq("is_active", true)
       .eq("store_takeout_menu_stores.store_id", kameoka.id);
     if (error || !menus || menus.length === 0) return fallback;
@@ -69,6 +69,7 @@ export async function fetchTakeoutMenu(): Promise<TakeoutMenuData> {
     const items: TakeoutMenuItem[] = rows.map((r) => ({
       id: r.id,
       category: (r.takeout_categories?.name ?? "") as TakeoutMenuItem["category"],
+      categorySlug: r.takeout_categories?.slug ?? undefined,
       name: r.name,
       desc: r.description ?? "",
       price: r.price,
@@ -100,7 +101,7 @@ export async function fetchTakeoutMenuByStore(): Promise<Record<string, TakeoutM
 
     const { data: menus, error } = await supabase
       .from("store_takeout_menus")
-      .select("id, name, description, image_url, price, sort_order, takeout_categories(name, sort_order), store_takeout_menu_stores(store_id)")
+      .select("id, name, description, image_url, price, sort_order, takeout_categories(name, slug, sort_order), store_takeout_menu_stores(store_id)")
       .eq("is_active", true);
     if (error || !menus || menus.length === 0) return {};
 
@@ -121,6 +122,7 @@ export async function fetchTakeoutMenuByStore(): Promise<Record<string, TakeoutM
       const item: TakeoutMenuItem = {
         id: r.id,
         category: (r.takeout_categories?.name ?? "") as TakeoutMenuItem["category"],
+        categorySlug: r.takeout_categories?.slug ?? undefined,
         name: r.name,
         desc: r.description ?? "",
         price: r.price,

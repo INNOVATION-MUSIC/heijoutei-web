@@ -109,8 +109,8 @@ export default function TakeoutClient({
   // 選択中受取日の受取時間枠ビュー（DB枠の満枠・受付締切〔当日60分前〕を反映して disabled/reason を付与）
   const timeSlotViews = useMemo(() => buildTimeSlotViews(dateIso, storeSlots, new Date()), [dateIso, storeSlots]);
 
-  // 一部カテゴリ（お家で焼肉セット・すき焼肉）は店舗別に受取日の最短リード日数があるため、カテゴリ単位で注文可否を判定する
-  const isItemOrderable = (item: TakeoutMenuItem) => isLeadTimeSatisfied(store.id, item.category, dateIso, today);
+  // 一部カテゴリ（お家で焼肉セット・すき焼き/しゃぶしゃぶ）は店舗別に受取日の最短リード日数があるため、カテゴリ単位で注文可否を判定する
+  const isItemOrderable = (item: TakeoutMenuItem) => isLeadTimeSatisfied(store.id, item.categorySlug, dateIso, today);
 
   // カート計算
   const cartLines = useMemo(

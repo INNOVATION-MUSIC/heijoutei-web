@@ -30,6 +30,7 @@ export type TakeoutCategory = (typeof TAKEOUT_CATEGORIES)[number];
 export type TakeoutMenuItem = {
   id: string;
   category: TakeoutCategory;
+  categorySlug?: string; // takeout_categories.slug（カテゴリ名は管理画面で変わり得るため、制約の判定はこちらで行う）
   name: string;
   desc: string;
   price: number;
@@ -60,9 +61,9 @@ export const TAKEOUT_MENU: TakeoutMenuItem[] = [
   { id: "side-kimchi", category: "お惣菜", name: "自家製キムチ", desc: "じっくり漬け込んだ\n旨辛の自家製キムチ", price: 580, img: IMG.salad },
 
   // お家で焼肉セット
-  { id: "home-karubi", category: "お家で焼肉セット", name: "国産牛カルビセット", desc: "ご家庭で楽しむ\n国産牛カルビ（2人前）", price: 3800, img: IMG.karubi },
-  { id: "home-tan", category: "お家で焼肉セット", name: "上タン塩セット", desc: "厚切り上タンを\nたっぷり（2人前）", price: 4200, img: IMG.tanshio },
-  { id: "home-family", category: "お家で焼肉セット", name: "焼肉ファミリーセット", desc: "カルビ・ロース・タンの\n人気3種（4人前）", price: 5800, img: IMG.yakiniku },
+  { id: "home-karubi", category: "お家で焼肉セット", categorySlug: "set", name: "国産牛カルビセット", desc: "ご家庭で楽しむ\n国産牛カルビ（2人前）", price: 3800, img: IMG.karubi },
+  { id: "home-tan", category: "お家で焼肉セット", categorySlug: "set", name: "上タン塩セット", desc: "厚切り上タンを\nたっぷり（2人前）", price: 4200, img: IMG.tanshio },
+  { id: "home-family", category: "お家で焼肉セット", categorySlug: "set", name: "焼肉ファミリーセット", desc: "カルビ・ロース・タンの\n人気3種（4人前）", price: 5800, img: IMG.yakiniku },
 
   // BBQセット
   { id: "bbq-standard", category: "BBQセット", name: "BBQスタンダードセット", desc: "野菜付き・3〜4人前の\nお手軽BBQセット", price: 6800, img: IMG.yakiniku },
@@ -102,17 +103,17 @@ export const RESERVE_CUTOFF_MINUTES = 60;
 export const BREAK_TIME_LABELS: string[] = ["15 : 00", "15 : 15", "15 : 30", "15 : 45"];
 
 // 特定カテゴリの品目は、店舗別に受取日の最短リード日数がある（0=当日可）。
-// カテゴリ名はDB(takeout_categories.name)/静的データ共通の表示名で判定する。
-// - 「お家で焼肉セット」: 亀岡=前日〔1日前〕まで・園部/福知山=2日前まで（実質2日以上前の注文が必要）
-// - 「すき焼肉」: 亀岡=当日可・園部/福知山/ゆらの=前日〔1日前〕まで
+// キーは takeout_categories.slug。カテゴリ名は管理画面で改名されるため名前では判定しない（名前判定で制約が外れた経緯あり）。
+// - set（お家で焼肉セット）: 亀岡=前日〔1日前〕まで・園部/福知山=2日前まで
+// - sukiyakiniku（すき焼き・しゃぶしゃぶ）: 亀岡/福知山=当日可・園部/ゆらの=前日〔1日前〕まで
 export const MIN_LEAD_DAYS_BY_CATEGORY: Record<string, Record<string, number>> = {
-  "お家で焼肉セット": { kameoka: 1, sonobe: 2, fukuchiyama: 2 },
-  "すき焼肉": { kameoka: 0, sonobe: 1, fukuchiyama: 1, yurano: 1 },
+  set: { kameoka: 1, sonobe: 2, fukuchiyama: 2 },
+  sukiyakiniku: { kameoka: 0, sonobe: 1, fukuchiyama: 0, yurano: 1 },
 };
 
-/** 指定カテゴリ・店舗・受取日が注文可能かを返す。リード日数制約の無いカテゴリは常に true。 */
-export function isLeadTimeSatisfied(storeSlug: string, category: string, pickupDateIso: string | null, today: Date): boolean {
-  const leadDaysByStore = MIN_LEAD_DAYS_BY_CATEGORY[category];
+/** 指定カテゴリ(slug)・店舗・受取日が注文可能かを返す。リード日数制約の無いカテゴリは常に true。 */
+export function isLeadTimeSatisfied(storeSlug: string, categorySlug: string | undefined, pickupDateIso: string | null, today: Date): boolean {
+  const leadDaysByStore = categorySlug ? MIN_LEAD_DAYS_BY_CATEGORY[categorySlug] : undefined;
   if (!leadDaysByStore) return true;
   if (!pickupDateIso) return false;
   const minLead = leadDaysByStore[storeSlug] ?? 0;
