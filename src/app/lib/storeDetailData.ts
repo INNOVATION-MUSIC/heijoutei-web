@@ -79,7 +79,7 @@ export const STORE_DETAILS: StoreDetail[] = [
     address: "京都府福知山堀今岡６番地ゆらのガーデン内",
     phone: "0773-45-8429",
     access: "JR福知山駅より徒歩10分/駐車場有",
-    hours: ["11:30〜14:30(LO14:00) / 17:00〜22:00(LO21:30)"],
+    hours: ["11:30〜15:00(LO14:30) / 17:00〜22:00(LO21:30)"],
     closed: "火曜",
     lineName: "ゆらの",
     lineUrl: LINE_STORE_LINKS.yurano,
