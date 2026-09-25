@@ -74,7 +74,7 @@ export default function AboutSection({ onOpenModal }: { onOpenModal: () => void 
       {/* 座敷写真（左）+ テキスト2（右） */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: 243, paddingRight: 162 }}>
         <div style={{ position: "relative", width: 600, height: 715, overflow: "hidden", background: "#472914", flexShrink: 0 }}>
-          <Image src="/images/about_zashiki.webp" alt="店内のテーブル席" fill className="object-cover" sizes="600px" />
+          <video src="/images/about_movie.mp4" poster="/images/about_movie_poster.webp" autoPlay loop muted playsInline aria-label="店内のテーブル席" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
         </div>
         <p style={{ fontFamily: mincho, fontSize: 18, fontWeight: 400, letterSpacing: "6px", lineHeight: "50px", color: "#ebe5db", margin: 0, textAlign: "left" }}>
           創業50年受け継がれる秘伝のタレ<br /><br />

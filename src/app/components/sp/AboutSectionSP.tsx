@@ -87,7 +87,7 @@ export default function AboutSectionSP() {
       {/* 座敷写真（279×318・左端ブリード） */}
       <div style={{ paddingTop: 73 }}>
         <div style={{ position: "relative", width: 279, height: 318, overflow: "hidden", background: "#472914" }}>
-          <Image src="/images/about_zashiki.webp" alt="店内のテーブル席" fill className="object-cover" sizes="279px" />
+          <video src="/images/about_movie.mp4" poster="/images/about_movie_poster.webp" autoPlay loop muted playsInline aria-label="店内のテーブル席" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
         </div>
       </div>
 
