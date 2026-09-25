@@ -37,10 +37,10 @@ function NewsCardSP({ item, delay }: { item: NewsListItem; delay: number }) {
       <div style={{ position: "relative", width: CARD_WIDTH, height: 220, overflow: "hidden", background: "#4d2914" }}>
         <Image src={item.img} alt={item.title} fill className="object-cover" sizes="350px" />
       </div>
-      {/* メタ: 日付 + タグ（NEW は一覧では非表示） */}
+      {/* メタ: 日付 + タグ（NEW は公開から2週間だけ自動付与） */}
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
         <span style={{ fontFamily: sans, fontSize: 12, fontWeight: 300, letterSpacing: "0.083em", color: "#948f85" }}>{item.date}</span>
-        {item.tags.filter((t) => t.label !== "NEW").map((tag, ti) => (
+        {item.tags.map((tag, ti) => (
           <span key={ti} style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "0 8px", height: 20, backgroundColor: tag.color, borderRadius: 10, fontFamily: mincho, fontSize: 10, fontWeight: 500, color: "#fff" }}>
             {tag.label}
           </span>

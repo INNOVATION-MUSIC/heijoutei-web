@@ -42,7 +42,7 @@ function NewsCard({ item, delay }: { item: NewsListItem; delay: number }) {
       <div style={{ display: "flex", flexDirection: "column", gap: 11 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <span style={{ fontFamily: sans, fontSize: 12, fontWeight: 300, letterSpacing: "0.083em", color: "#948f85" }}>{item.date}</span>
-          {item.tags.filter((t) => t.label !== "NEW").map((tag, ti) => (
+          {item.tags.map((tag, ti) => (
             <span key={ti} style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 60, height: 20, backgroundColor: tag.color, borderRadius: 10, fontFamily: mincho, fontSize: 10, fontWeight: 500, color: "#fff" }}>
               {tag.label}
             </span>
