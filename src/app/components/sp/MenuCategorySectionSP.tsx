@@ -2,9 +2,9 @@
 
 import Image from "next/image";
 import { useEffect, useRef } from "react";
-import { MENU_CATEGORIES, MENU_STORES, type MenuCategory, type MenuPromo } from "@/app/lib/menuData";
+import { MENU_CATEGORIES, MENU_STORES, type MenuCategory, type MenuPromo, type PromoAvailability } from "@/app/lib/menuData";
 import { withStore, type StoreTab } from "../MenuShared";
-import { PROMOS } from "../MenuCategorySection";
+import { promosForStore } from "../MenuCategorySection";
 import { MenuHeadingSP, StoreTabsSP, mincho, sans, display, GOLD } from "./MenuSharedSP";
 
 /* ─────────── カテゴリカード（SP・165幅・写真165×165 + 名称中央） ─────────── */
@@ -47,6 +47,7 @@ function PromoBannerSP({ promo }: { promo: MenuPromo }) {
 type Props = {
   categories?: MenuCategory[];
   stores?: StoreTab[];
+  promoAvailability?: PromoAvailability;
   storeId: string;
   onSelectStore: (id: string) => void;
   height: number;
@@ -58,7 +59,7 @@ type Props = {
  * 縦並び: ヒーロー → Menu 見出し → 店舗タブ → 12カテゴリ2列カード → ランチ/テイクアウト/コース3バナー。
  * バナー説明の折返しで高さ可変のため、コンテンツ全体を ResizeObserver で実測し全高に反映する。
  */
-export default function MenuCategorySectionSP({ categories, stores, storeId, onSelectStore, height, onMeasured }: Props) {
+export default function MenuCategorySectionSP({ categories, stores, promoAvailability, storeId, onSelectStore, height, onMeasured }: Props) {
   const cats = categories ?? MENU_CATEGORIES;
   const defaultStore = stores && stores.length > 0 ? stores[0].id : MENU_STORES[0].id;
   // 対象店舗が指定されたカテゴリは、その店舗タブでのみ表示（未指定=全店）
@@ -92,7 +93,7 @@ export default function MenuCategorySectionSP({ categories, stores, storeId, onS
 
         {/* プロモバナー（ランチ/テイクアウト/コース） */}
         <div style={{ display: "flex", flexDirection: "column", gap: 40, paddingLeft: 20, paddingRight: 20, paddingTop: 60, paddingBottom: 80 }}>
-          {PROMOS.map((p) => (
+          {promosForStore(promoAvailability, storeId).map((p) => (
             <PromoBannerSP key={p.en} promo={p} />
           ))}
         </div>

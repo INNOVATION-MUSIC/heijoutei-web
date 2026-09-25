@@ -8,7 +8,7 @@ import StickyButton from "./StickyButton";
 import Footer from "./Footer";
 import MenuCategorySection from "./MenuCategorySection";
 import { useStoreParam, type StoreTab } from "./MenuShared";
-import { MENU_CATEGORIES, type MenuCategory } from "@/app/lib/menuData";
+import { MENU_CATEGORIES, type MenuCategory, type PromoAvailability } from "@/app/lib/menuData";
 
 // SP
 import MenuCategorySectionSP from "./sp/MenuCategorySectionSP";
@@ -38,7 +38,7 @@ function spEstimateContent(catCount: number) {
  * SP はバナー説明の折返しで高さ可変のため実測してセクション全高を確定する。
  * 予約モーダル・ハンバーガーは ScaledSection 外で一元管理。
  */
-export default function MenuCategoryClient({ categories, stores }: { categories?: MenuCategory[]; stores?: StoreTab[] }) {
+export default function MenuCategoryClient({ categories, stores, promoAvailability }: { categories?: MenuCategory[]; stores?: StoreTab[]; promoAvailability?: PromoAvailability }) {
   const cats = categories ?? MENU_CATEGORIES;
   const isMobile = useIsMobile();
   const [modalOpen, setModalOpen] = useState(false);
@@ -68,6 +68,7 @@ export default function MenuCategoryClient({ categories, stores }: { categories?
           <MenuCategorySectionSP
             categories={categories}
             stores={visibleStores}
+            promoAvailability={promoAvailability}
             storeId={storeId}
             onSelectStore={setStore}
             height={height}
@@ -95,6 +96,7 @@ export default function MenuCategoryClient({ categories, stores }: { categories?
           onOpenModal={openModal}
           categories={categories}
           stores={visibleStores}
+          promoAvailability={promoAvailability}
           height={pcHeight}
           onMeasured={(h) => setMeasuredPc((p) => (p === h ? p : h))}
         />

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { MENU_CATEGORIES, MENU_STORES, type MenuCategory, type MenuPromo } from "@/app/lib/menuData";
+import { MENU_CATEGORIES, MENU_STORES, type MenuCategory, type MenuPromo, type PromoAvailability } from "@/app/lib/menuData";
 import { SECTION_LINKS } from "@/app/lib/navLinks";
 import { MenuHeading, StoreTabs, useStoreParam, withStore, mincho, sans, display, PANEL, GOLD, type StoreTab } from "./MenuShared";
 
@@ -10,6 +10,7 @@ import { MenuHeading, StoreTabs, useStoreParam, withStore, mincho, sans, display
 // SP 版（MenuCategorySectionSP）と共有するため export する。
 export const PROMOS: MenuPromo[] = [
   {
+    key: "lunch",
     en: "Lunch",
     title: "ランチメニュー",
     desc: "ランチタイムから、気軽に本格焼肉をお楽しみいただけます。ご友人同士でのランチはもちろん、お仕事の合間のお食事やご家族でのお集まり、学生グループでのご利用まで、幅広いシーンでご好評いただいております。",
@@ -17,6 +18,7 @@ export const PROMOS: MenuPromo[] = [
     href: SECTION_LINKS.lunch,
   },
   {
+    key: "takeout",
     en: "Take Out",
     title: "テイクアウトメニュー",
     desc: "ご自宅で手軽に本格焼肉をお楽しみいただけます。お弁当やオードブルなど、ご家族でのお食事やお集まりに合わせてお選びいただけます。お電話・オンラインでのご予約も承っております。",
@@ -24,6 +26,7 @@ export const PROMOS: MenuPromo[] = [
     href: "/menu/takeout",
   },
   {
+    key: "course",
     en: "Course",
     title: "コースメニュー",
     desc: "ご宴会やご接待、ご家族のお祝いに最適なコースをご用意しております。厳選したお肉と一品料理を心ゆくまでご堪能ください。ご予算やご人数に合わせてご相談も承ります。",
@@ -31,6 +34,13 @@ export const PROMOS: MenuPromo[] = [
     href: SECTION_LINKS.course,
   },
 ];
+
+/** 選択店舗が提供していないメニュー（例: 園部のランチ）のバナーを除く。提供状況が不明なら全件表示。 */
+export function promosForStore(availability: PromoAvailability | undefined, storeId: string): MenuPromo[] {
+  if (!availability) return PROMOS;
+  const keys = availability[storeId] ?? [];
+  return PROMOS.filter((p) => keys.includes(p.key));
+}
 
 /* ─────────── カテゴリカード（420×200・クリックで /menu/[slug]） ─────────── */
 function CategoryCard({ category, storeId, defaultStore }: { category: MenuCategory; storeId: string; defaultStore: string }) {
@@ -113,12 +123,14 @@ export default function MenuCategorySection({
   onOpenModal,
   categories,
   stores,
+  promoAvailability,
   height,
   onMeasured,
 }: {
   onOpenModal: () => void;
   categories?: MenuCategory[];
   stores?: StoreTab[];
+  promoAvailability?: PromoAvailability;
   height: number;
   onMeasured?: (h: number) => void;
 }) {
@@ -154,7 +166,7 @@ export default function MenuCategorySection({
 
         {/* プロモバナー（ランチ/テイクアウト/コース） */}
         <div style={{ display: "flex", flexDirection: "column", gap: 68, paddingLeft: 50, paddingRight: 50, paddingTop: 76, paddingBottom: 100 }}>
-          {PROMOS.map((p) => (
+          {promosForStore(promoAvailability, storeId).map((p) => (
             <PromoBanner key={p.en} promo={p} />
           ))}
         </div>

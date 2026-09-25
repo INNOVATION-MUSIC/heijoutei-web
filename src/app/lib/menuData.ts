@@ -221,7 +221,12 @@ export function getMenuItems(category: MenuCategory, storeId: string): MenuItem[
 }
 
 // カテゴリページ下部の3バナー（ランチ/テイクアウト/コース）。
+export type PromoKey = "lunch" | "takeout" | "course";
+// 店舗slug → その店舗が提供しているプロモ（ランチ/テイクアウト/コース）。未取得時は undefined（全バナー表示）
+export type PromoAvailability = Record<string, PromoKey[]>;
+
 export type MenuPromo = {
+  key: PromoKey;
   en: string;
   title: string;
   desc: string;
