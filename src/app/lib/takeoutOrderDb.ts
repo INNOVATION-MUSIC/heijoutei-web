@@ -12,6 +12,9 @@ import {
   type DaySlotMap,
 } from "./takeoutData";
 
+// 営業カレンダー（business_calendars.status）のうち、テイクアウトも受取不可にする休業ステータス。
+const BUSINESS_CLOSED_STATUSES = ["closed", "special_closed"];
+
 // /takeout 注文フロー用の店舗一覧（DB stores → TakeoutStore）。DB空時は静的フォールバック。
 export async function fetchTakeoutStores(): Promise<TakeoutStore[]> {
   try {
@@ -163,12 +166,31 @@ export async function fetchTakeoutSlots(): Promise<Record<string, DaySlotMap>> {
     const endD = new Date(today.getFullYear(), today.getMonth() + 2, 0); // 翌々月末日
     const end = iso(endD.getFullYear(), endD.getMonth(), endD.getDate());
 
-    const { data: slots, error } = await supabase
-      .from("takeout_slots")
-      .select("id, store_id, available_date, is_closed, stores(slug)")
-      .gte("available_date", start)
-      .lte("available_date", end);
-    if (error || !slots || slots.length === 0) return {};
+    const [{ data: slots, error }, { data: bizClosed }] = await Promise.all([
+      supabase
+        .from("takeout_slots")
+        .select("id, store_id, available_date, is_closed, stores(slug)")
+        .gte("available_date", start)
+        .lte("available_date", end),
+      supabase
+        .from("business_calendars")
+        .select("date, stores(slug)")
+        .in("status", BUSINESS_CLOSED_STATUSES)
+        .gte("date", start)
+        .lte("date", end),
+    ]);
+
+    // 営業カレンダーの休業日（定休・臨時休業）は受付枠の設定より優先して受取不可にする。
+    const applyBusinessClosed = (result: Record<string, DaySlotMap>) => {
+      for (const b of bizClosed ?? []) {
+        const slug = (b as unknown as { stores?: { slug?: string } }).stores?.slug;
+        if (!slug) continue;
+        (result[slug] ??= {})[b.date] = { isClosed: true, timeLabels: [], fullTimeLabels: [] };
+      }
+      return result;
+    };
+
+    if (error || !slots || slots.length === 0) return applyBusinessClosed({});
 
     const slotIds = slots.map((s) => s.id);
     const { data: times } = await supabase
@@ -221,7 +243,7 @@ export async function fetchTakeoutSlots(): Promise<Record<string, DaySlotMap>> {
         fullTimeLabels,
       };
     }
-    return result;
+    return applyBusinessClosed(result);
   } catch {
     return {};
   }
@@ -245,6 +267,15 @@ export async function resolveAvailableTimes(storeId: string | null, pickupDate: 
   };
 
   if (!storeId) return defaultTimes();
+
+  const { data: bizClosed } = await adminSupabase
+    .from("business_calendars")
+    .select("id")
+    .eq("store_id", storeId)
+    .eq("date", pickupDate)
+    .in("status", BUSINESS_CLOSED_STATUSES)
+    .maybeSingle();
+  if (bizClosed) return new Set();
 
   const { data: slot } = await adminSupabase
     .from("takeout_slots")
