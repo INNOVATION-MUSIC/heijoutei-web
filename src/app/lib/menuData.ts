@@ -9,6 +9,7 @@ export type MenuItem = {
   name: string;
   desc?: string;
   price: number; // 税込価格（円）
+  pricePrefix?: string; // 価格の前に添える単位表記（例: "1人前"）
   photo: string; // /images/xxx.webp
   // 追加メニュー（品目カード内に入れ子表示）。未指定/空=なし。
   addons?: MenuAddon[];

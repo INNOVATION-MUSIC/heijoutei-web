@@ -141,6 +141,7 @@ export function ItemCardSP({ item, imageWidth = 150, imageHeight = 150, nameClam
   const hasAddons = addons.length > 0;
   const priceRow = (
     <div style={{ display: "flex", alignItems: "baseline", justifyContent: "flex-end", gap: 4 }}>
+      {item.pricePrefix && <span style={{ fontFamily: mincho, fontSize: 12, fontWeight: 600, letterSpacing: "1px", color: "#ebe5db" }}>{item.pricePrefix}</span>}
       <span style={{ fontFamily: mincho, fontSize: 20, fontWeight: 600, letterSpacing: "1px", color: "#ebe5db" }}>{item.price.toLocaleString()}</span>
       <span style={{ fontFamily: mincho, fontSize: 12, fontWeight: 600, letterSpacing: "1px", color: "#ebe5db" }}>円</span>
     </div>

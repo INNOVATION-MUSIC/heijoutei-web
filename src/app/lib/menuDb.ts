@@ -24,15 +24,24 @@ type CategoryRow = {
   store_menus: StoreMenuRow[];
 };
 
+// 管理画面の価格欄は自由入力のため、「1人前 6050」のように末尾の数値の前に書かれた文字を単位表記として分離する
+function parsePriceLabel(label: string | null): { price: number; prefix?: string } {
+  const m = (label ?? "").trim().match(/^(.*?)\s*[¥￥]?\s*([\d,]+)\s*円?$/);
+  if (!m) return { price: 0 };
+  return { price: Number(m[2].replace(/,/g, "")) || 0, prefix: m[1].trim() || undefined };
+}
+
 function toItem(r: MenuItemRow): MenuItem {
   // 追加メニュー: 品名がある行のみ。価格は数値化（空/不正は 0）。
   const addons = (r.addons ?? [])
     .filter((a) => a && typeof a.name === "string" && a.name.trim())
     .map((a) => ({ name: (a.name as string).trim(), price: Number(a.price ?? 0) || 0 }));
+  const { price, prefix } = parsePriceLabel(r.price_label);
   return {
     name: r.name,
     desc: r.description ?? undefined,
-    price: Number(r.price_label ?? 0),
+    price,
+    pricePrefix: prefix,
     photo: r.image_url ?? "",
     addons: addons.length ? addons : undefined,
   };
