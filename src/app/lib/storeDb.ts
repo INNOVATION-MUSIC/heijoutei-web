@@ -101,6 +101,22 @@ export async function fetchStoreLineLinks(): Promise<StoreLineLink[]> {
   }
 }
 
+// トップ StoreInfo 用: 店舗 slug → 管理画面で登録したメイン写真（hero_image_url）
+export type StoreImageMap = Partial<Record<string, string>>;
+
+export async function fetchStoreImages(): Promise<StoreImageMap> {
+  try {
+    const supabase = createStaticClient();
+    const { data } = await supabase.from("stores").select("slug, hero_image_url").eq("is_active", true);
+    if (!data) return {};
+    return Object.fromEntries(
+      data.filter((r) => r.hero_image_url).map((r) => [r.slug, r.hero_image_url as string]),
+    );
+  } catch {
+    return {};
+  }
+}
+
 export async function fetchStoreParams(): Promise<{ id: string }[]> {
   try {
     const supabase = createStaticClient();
