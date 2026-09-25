@@ -107,7 +107,7 @@ export default function TakeoutClient({
   const weeks = calendar.length / 7;
 
   // 選択中受取日の受取時間枠ビュー（DB枠の満枠・受付締切〔当日60分前〕を反映して disabled/reason を付与）
-  const timeSlotViews = useMemo(() => buildTimeSlotViews(dateIso, storeSlots, new Date()), [dateIso, storeSlots]);
+  const timeSlotViews = useMemo(() => buildTimeSlotViews(dateIso, storeSlots, new Date(), store.id), [dateIso, storeSlots, store.id]);
 
   // 一部カテゴリ（お家で焼肉セット・すき焼き/しゃぶしゃぶ）は店舗別に受取日の最短リード日数があるため、カテゴリ単位で注文可否を判定する
   const isItemOrderable = (item: TakeoutMenuItem) => isLeadTimeSatisfied(store.id, item.categorySlug, dateIso, today);
@@ -133,7 +133,7 @@ export default function TakeoutClient({
   // 受取日の選択（新しい日の時間枠に選択中の時間が「選択可能」として残っていれば維持、満枠/締切なら解除）
   const onSelectDate = (iso: string) => {
     setDateIso(iso);
-    const views = buildTimeSlotViews(iso, storeSlots, new Date());
+    const views = buildTimeSlotViews(iso, storeSlots, new Date(), store.id);
     setTime((prev) => (prev && views.some((v) => v.label === prev && !v.disabled) ? prev : null));
   };
 

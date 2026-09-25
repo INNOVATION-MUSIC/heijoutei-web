@@ -84,16 +84,29 @@ export const TAKEOUT_MENU: TakeoutMenuItem[] = [
   { id: "platter-premium", category: "焼肉盛合わせ", name: "特選盛合わせ", desc: "特選部位を贅沢に\n盛り合わせ（4〜5人前）", price: 8800, img: IMG.steak },
 ];
 
-// ───────── 受取時間枠（13:30〜21:45 / 15分刻み） ─────────
+// ───────── 受取時間枠（11:30〜21:45 / 15分刻み。店舗ごとの開始時刻は TAKEOUT_START_BY_STORE） ─────────
 export const TAKEOUT_TIME_SLOTS: string[] = (() => {
   const slots: string[] = [];
-  for (let m = 13 * 60 + 30; m <= 21 * 60 + 45; m += 15) {
+  for (let m = 11 * 60 + 30; m <= 21 * 60 + 45; m += 15) {
     const h = Math.floor(m / 60);
     const min = m % 60;
     slots.push(`${String(h).padStart(2, "0")} : ${String(min).padStart(2, "0")}`);
   }
   return slots;
 })();
+
+// 受取開始時刻（店舗slug別）。未指定の店舗は TAKEOUT_DEFAULT_START から。
+export const TAKEOUT_DEFAULT_START = "13 : 30";
+export const TAKEOUT_START_BY_STORE: Record<string, string> = {
+  kameoka: "11 : 30",
+  yurano: "11 : 30",
+};
+
+/** 店舗の既定の受取時間枠（開始時刻〜21:45）。受付枠管理で個別設定していない日に使う。 */
+export function defaultTimeSlotsFor(storeSlug: string | undefined): string[] {
+  const start = timeLabelToMinutes((storeSlug && TAKEOUT_START_BY_STORE[storeSlug]) || TAKEOUT_DEFAULT_START);
+  return TAKEOUT_TIME_SLOTS.filter((t) => timeLabelToMinutes(t) >= start);
+}
 
 // 受付締切（受取時間の何分前まで注文を受け付けるか。Step1DateTime の「予約受付締切」表記と一致させる）
 export const RESERVE_CUTOFF_MINUTES = 60;
@@ -169,10 +182,11 @@ export type TimeSlotView = { label: string; disabled: boolean; reason?: "full" |
  * 選択中の受取日に対する時間枠一覧を、満枠・受付締切・休憩時間を反映したビューに組み立てる。
  * dateIso が未選択なら全枠を disabled で返す（従来「日付未選択で全ボタン disabled」の挙動を維持）。
  */
-export function buildTimeSlotViews(dateIso: string | null, storeSlots: DaySlotMap | undefined, now: Date): TimeSlotView[] {
-  if (!dateIso) return TAKEOUT_TIME_SLOTS.map((label) => ({ label, disabled: true }));
+export function buildTimeSlotViews(dateIso: string | null, storeSlots: DaySlotMap | undefined, now: Date, storeSlug?: string): TimeSlotView[] {
+  const defaults = defaultTimeSlotsFor(storeSlug);
+  if (!dateIso) return defaults.map((label) => ({ label, disabled: true }));
   const slot = storeSlots?.[dateIso];
-  const available = slot ? slot.timeLabels : TAKEOUT_TIME_SLOTS;
+  const available = slot ? slot.timeLabels : defaults;
   const full = slot ? slot.fullTimeLabels : [];
   const labels = TAKEOUT_TIME_SLOTS.filter((t) => available.includes(t) || full.includes(t));
   return labels.map((label) => {

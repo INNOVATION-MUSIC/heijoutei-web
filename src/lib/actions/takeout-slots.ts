@@ -2,8 +2,7 @@
 
 import { adminSupabase } from '@/lib/supabase/admin'
 import { isAuthed, assertStoreAccess } from '@/lib/auth-guard'
-import { defaultTimeLabels } from '@/lib/takeout-times'
-import { BREAK_TIME_LABELS } from '@/app/lib/takeoutData'
+import { defaultTimeLabels, isDefaultActive } from '@/lib/takeout-times'
 import { revalidatePath } from 'next/cache'
 
 export type SlotTime = { time_label: string; capacity: number; is_active: boolean }
@@ -133,13 +132,14 @@ export async function saveMonthSlots(
   if (slotIds.length) await adminSupabase.from('takeout_slot_times').delete().in('slot_id', slotIds)
 
   if (mode === 'open') {
+    const { data: store } = await adminSupabase.from('stores').select('slug').eq('id', storeId).maybeSingle()
     const labels = defaultTimeLabels()
     const timeRows = slots.flatMap((s) =>
       labels.map((time_label, idx) => ({
         slot_id: s.id,
         time_label,
         capacity,
-        is_active: !BREAK_TIME_LABELS.includes(time_label), // 既定で休憩時間（15:00〜16:00）は受付不可
+        is_active: isDefaultActive(time_label, store?.slug), // 既定で休憩時間（15:00〜16:00）・受取開始前は受付不可
         sort_order: idx,
       }))
     )

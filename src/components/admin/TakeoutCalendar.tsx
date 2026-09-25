@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { getMonthSlots, saveDaySlot, saveMonthSlots, type DaySlot, type SlotTime } from '@/lib/actions/takeout-slots'
-import { defaultTimeLabels } from '@/lib/takeout-times'
-import { BREAK_TIME_LABELS } from '@/app/lib/takeoutData'
+import { defaultTimeLabels, isDefaultActive } from '@/lib/takeout-times'
 import type { StoreRef } from '@/lib/actions/refs'
 
 const WEEK = ['日', '月', '火', '水', '木', '金', '土']
@@ -13,7 +12,7 @@ function iso(y: number, m: number, d: number) {
   return `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`
 }
 
-function freshDay(date: string): DaySlot {
+function freshDay(date: string, storeSlug: string | undefined): DaySlot {
   return {
     date,
     is_closed: false,
@@ -21,7 +20,7 @@ function freshDay(date: string): DaySlot {
     times: defaultTimeLabels().map((time_label) => ({
       time_label,
       capacity: DEFAULT_CAPACITY,
-      is_active: !BREAK_TIME_LABELS.includes(time_label), // 既定で休憩時間（15:00〜16:00）は受付不可
+      is_active: isDefaultActive(time_label, storeSlug), // 既定で休憩時間（15:00〜16:00）・受取開始前は受付不可
     })),
   }
 }
@@ -86,7 +85,7 @@ export default function TakeoutCalendar({ stores }: { stores: StoreRef[] }) {
   function selectDay(date: string) {
     setSelected(date)
     const saved = monthData[date]
-    setEditing(saved ? normalizeDay(saved) : freshDay(date))
+    setEditing(saved ? normalizeDay(saved) : freshDay(date, stores.find((s) => s.id === storeId)?.slug))
   }
 
   function prevMonth() {

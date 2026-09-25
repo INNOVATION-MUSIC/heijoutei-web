@@ -167,7 +167,7 @@ export async function POST(request: Request) {
     }
 
     // 3) 受取時間（定休日・休止・満枠・対象外の時刻を拒否）
-    const allowedTimes = await resolveAvailableTimes(store.id, req.pickupDate);
+    const allowedTimes = await resolveAvailableTimes(store.id, req.pickupDate, req.storeSlug);
     if (allowedTimes.size === 0) {
       return NextResponse.json({ error: "選択された受取日は受付できません。別の日をお選びください。" }, { status: 400 });
     }
