@@ -138,7 +138,7 @@ export default function NewsDetailSection({
             {article.title}
           </h1>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <span style={{ fontFamily: sans, fontSize: 14, fontWeight: 300, letterSpacing: "1.5px", color: "rgba(217,184,107,0.6)", whiteSpace: "nowrap" }}>
+            <span style={{ fontFamily: mincho, fontSize: 14, fontWeight: 400, letterSpacing: "1.5px", color: "rgba(217,184,107,0.6)", whiteSpace: "nowrap" }}>
               {article.date}
             </span>
             {article.tags.map((tag, i) => (

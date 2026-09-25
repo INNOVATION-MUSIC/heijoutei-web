@@ -5,7 +5,6 @@ import Image from "next/image";
 import { newsBody, newsHero, type NewsListItem } from "@/app/lib/newsData";
 
 const mincho = "'Shippori Mincho', serif";
-const sans = "'Noto Sans JP', sans-serif";
 
 /** 本文が（TipTap 由来の）HTML か、静的フォールバックのプレーンテキストかを判定 */
 function isHtmlBody(body: string): boolean {
@@ -68,7 +67,7 @@ export default function NewsDetailSectionSP({
 
         {/* 日付 + タグ */}
         <div style={{ display: "flex", alignItems: "center", gap: 10, paddingTop: 20 }}>
-          <span style={{ fontFamily: sans, fontSize: 13, fontWeight: 300, letterSpacing: "1.5px", color: "rgba(217,184,107,0.6)", whiteSpace: "nowrap" }}>
+          <span style={{ fontFamily: mincho, fontSize: 13, fontWeight: 400, letterSpacing: "1.5px", color: "rgba(217,184,107,0.6)", whiteSpace: "nowrap" }}>
             {article.date}
           </span>
           {article.tags.map((tag, i) => (
