@@ -182,11 +182,18 @@ export default function StoreSection({ images }: { images?: StoreImageMap }) {
             />
           </div>
           <div style={{ width: 650, display: "flex", flexShrink: 0 }}>
-            <div style={{ width: 280, height: 280, background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-              <div style={{ width: 212, height: 212, position: "relative", flexShrink: 0 }}>
-                <Image src="/images/store_kopu29.webp" alt="KOPU29" fill className="object-contain" sizes="212px" />
+            {/* 管理画面で店舗写真（hero_image_url）が登録されていれば写真、無ければ白背景にロゴ */}
+            {images?.heijohtei ? (
+              <div style={{ width: 280, height: 280, position: "relative", overflow: "hidden", background: "#1c110a", flexShrink: 0 }}>
+                <Image src={images.heijohtei} alt="KOPU29" fill className="object-cover" sizes="280px" />
               </div>
-            </div>
+            ) : (
+              <div style={{ width: 280, height: 280, background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <div style={{ width: 212, height: 212, position: "relative", flexShrink: 0 }}>
+                  <Image src="/images/store_kopu29.webp" alt="KOPU29" fill className="object-contain" sizes="212px" />
+                </div>
+              </div>
+            )}
             <InfoPanel
               enLabel={"KOPUNIKU"}
               name="KOPU29"

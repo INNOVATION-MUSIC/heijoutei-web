@@ -150,11 +150,18 @@ export default function StoreSectionSP({ images }: { images?: StoreImageMap }) {
 
         {/* KOPU29 */}
         <div style={{ height: 120, background: "#171717", display: "flex", overflow: "hidden" }}>
-          <div style={{ width: 130, height: 120, background: "#fff", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <div style={{ width: 96, height: 96, position: "relative", flexShrink: 0 }}>
-              <Image src="/images/store_kopu29.webp" alt="KOPU29" fill className="object-contain" sizes="96px" />
+          {/* 管理画面で店舗写真（hero_image_url）が登録されていれば写真、無ければ白背景にロゴ */}
+          {images?.heijohtei ? (
+            <div style={{ width: 130, height: 120, overflow: "hidden", background: "#1c110a", flexShrink: 0, position: "relative" }}>
+              <Image src={images.heijohtei} alt="KOPU29" fill className="object-cover" sizes="130px" />
             </div>
-          </div>
+          ) : (
+            <div style={{ width: 130, height: 120, background: "#fff", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <div style={{ width: 96, height: 96, position: "relative", flexShrink: 0 }}>
+                <Image src="/images/store_kopu29.webp" alt="KOPU29" fill className="object-contain" sizes="96px" />
+              </div>
+            </div>
+          )}
           <div style={{ padding: "17px 0 0 20px", flex: 1 }}>
             <p style={{ fontFamily: sans, fontSize: 10, fontWeight: 300, letterSpacing: "3px", color: "rgba(217,184,107,0.6)", marginBottom: 6 }}>
               KOPUNIKU
