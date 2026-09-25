@@ -84,7 +84,7 @@ export default function StoreSectionSP({ images }: { images?: StoreImageMap }) {
           <div style={{ width: 32, height: 1, backgroundColor: "rgba(217,184,107,0.45)", marginBottom: 12 }} />
           <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 14 }}>
             <p style={{ fontFamily: mincho, fontSize: 26, fontWeight: 800, letterSpacing: "2px", color: "#fff" }}>
-              平壞亭　亀岡店
+              平壌亭　亀岡店
             </p>
             <a
               href="https://maps.google.com/?q=京都府亀岡市篠町浄法寺中村３５-５"
@@ -122,8 +122,8 @@ export default function StoreSectionSP({ images }: { images?: StoreImageMap }) {
       {/* ━━━ 小カード共通 ━━━ */}
       <div style={{ display: "flex", flexDirection: "column", gap: 20, paddingLeft: 20, paddingRight: 20, flexShrink: 0 }}>
         {[
-          { mapImg: images?.sonobe ?? "/images/store_sonobe_map.webp",     subEn: "HEIJOHTEI　SONOBE",     name: "平壞亭　園部店",   tel: "0771-68-1760" },
-          { mapImg: images?.fukuchiyama ?? "/images/store_fukuchiyama_map.webp", subEn: "HEIJOHTEI　FUKUCHIYAMA", name: "平壞亭　福知山店", tel: "0773-24-2322" },
+          { mapImg: images?.sonobe ?? "/images/store_sonobe_map.webp",     subEn: "HEIJOHTEI　SONOBE",     name: "平壌亭　園部店",   tel: "0771-68-1760" },
+          { mapImg: images?.fukuchiyama ?? "/images/store_fukuchiyama_map.webp", subEn: "HEIJOHTEI　FUKUCHIYAMA", name: "平壌亭　福知山店", tel: "0773-24-2322" },
           { mapImg: images?.yurano ?? "/images/store_yurano_map.webp",     subEn: "YAKINIKU YURANO",         name: "焼肉　ゆらの",    tel: "0773-45-8429" },
         ].map((s) => (
           <div key={s.name} style={{ height: 120, background: "#171717", display: "flex", overflow: "hidden" }}>
