@@ -233,7 +233,7 @@ export default function NewsSectionSP({ items }: { items?: NewsItem[] }) {
                       display: "flex", alignItems: "center", justifyContent: "center",
                       width: 44, height: 18,
                       backgroundColor: tag.color,
-                      fontFamily: mincho, fontSize: 10, fontWeight: 500, color: "#fff",
+                      fontFamily: mincho, fontSize: 10, fontWeight: 700, color: "#fff",
                     }}
                   >
                     {tag.label}
@@ -252,7 +252,7 @@ export default function NewsSectionSP({ items }: { items?: NewsItem[] }) {
                       padding: "2px 8px", height: 18, whiteSpace: "nowrap",
                       backgroundColor: tag.color,
                       borderRadius: 10,
-                      fontFamily: mincho, fontSize: 10, fontWeight: 500, color: "#fff",
+                      fontFamily: mincho, fontSize: 10, fontWeight: 700, color: "#fff",
                     }}
                   >
                     {tag.label}

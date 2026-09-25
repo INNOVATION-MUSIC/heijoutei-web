@@ -73,7 +73,7 @@ export default function NewsDetailSectionSP({
           {article.tags.map((tag, i) => (
             <span
               key={i}
-              style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "0 8px", whiteSpace: "nowrap", height: 20, backgroundColor: tag.color, borderRadius: 10, fontFamily: mincho, fontSize: 10, fontWeight: 500, color: "#fff", flexShrink: 0 }}
+              style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "0 8px", whiteSpace: "nowrap", height: 20, backgroundColor: tag.color, borderRadius: 10, fontFamily: mincho, fontSize: 10, fontWeight: 700, color: "#fff", flexShrink: 0 }}
             >
               {tag.label}
             </span>

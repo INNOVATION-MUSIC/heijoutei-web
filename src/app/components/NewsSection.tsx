@@ -153,13 +153,13 @@ export default function NewsSection({ items }: { items?: NewsItem[] }) {
               <div style={{ display: "flex", flexDirection: "column", gap: 11 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   {item.tags.filter(t => t.label === "NEW").map((tag, ti) => (
-                    <span key={ti} style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 60, height: 20, backgroundColor: tag.color, fontFamily: mincho, fontSize: 10, fontWeight: 500, color: "#fff" }}>
+                    <span key={ti} style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 60, height: 20, backgroundColor: tag.color, fontFamily: mincho, fontSize: 10, fontWeight: 700, color: "#fff" }}>
                       {tag.label}
                     </span>
                   ))}
                   <span style={{ fontFamily: sans, fontSize: 12, fontWeight: 300, letterSpacing: "0.083em", color: "#948f85" }}>{item.date}</span>
                   {item.tags.filter(t => t.label !== "NEW").map((tag, ti) => (
-                    <span key={ti} style={{ display: "flex", alignItems: "center", justifyContent: "center", minWidth: 60, padding: "0 8px", whiteSpace: "nowrap", flexShrink: 0, height: 20, backgroundColor: tag.color, borderRadius: 10, fontFamily: mincho, fontSize: 10, fontWeight: 500, color: "#fff" }}>
+                    <span key={ti} style={{ display: "flex", alignItems: "center", justifyContent: "center", minWidth: 60, padding: "0 8px", whiteSpace: "nowrap", flexShrink: 0, height: 20, backgroundColor: tag.color, borderRadius: 10, fontFamily: mincho, fontSize: 10, fontWeight: 700, color: "#fff" }}>
                       {tag.label}
                     </span>
                   ))}

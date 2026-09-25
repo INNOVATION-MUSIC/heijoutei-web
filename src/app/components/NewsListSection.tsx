@@ -43,7 +43,7 @@ function NewsCard({ item, delay }: { item: NewsListItem; delay: number }) {
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <span style={{ fontFamily: sans, fontSize: 12, fontWeight: 300, letterSpacing: "0.083em", color: "#948f85" }}>{item.date}</span>
           {item.tags.map((tag, ti) => (
-            <span key={ti} style={{ display: "flex", alignItems: "center", justifyContent: "center", minWidth: 60, padding: "0 8px", whiteSpace: "nowrap", flexShrink: 0, height: 20, backgroundColor: tag.color, borderRadius: 10, fontFamily: mincho, fontSize: 10, fontWeight: 500, color: "#fff" }}>
+            <span key={ti} style={{ display: "flex", alignItems: "center", justifyContent: "center", minWidth: 60, padding: "0 8px", whiteSpace: "nowrap", flexShrink: 0, height: 20, backgroundColor: tag.color, borderRadius: 10, fontFamily: mincho, fontSize: 10, fontWeight: 700, color: "#fff" }}>
               {tag.label}
             </span>
           ))}
