@@ -441,6 +441,7 @@ export function Step2MenuSP(p: {
   cartLines: CartLine[];
   subtotal: number;
   cartCount: number;
+  minQtyShortage: string | null;
   onBack: () => void;
   onNext: () => void;
   onMeasured?: (h: number) => void;
@@ -490,7 +491,10 @@ export function Step2MenuSP(p: {
 
       {/* ボタン */}
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16, paddingTop: 30 }}>
-        <RedButton label="購入者情報入力へ進む" onClick={p.onNext} disabled={p.cartCount === 0} width={250} />
+        {p.minQtyShortage && (
+          <p style={{ margin: 0, paddingLeft: 20, paddingRight: 20, fontFamily: sans, fontSize: 12, color: "#d9b86b", lineHeight: "19px", textAlign: "center" }}>{p.minQtyShortage}</p>
+        )}
+        <RedButton label="購入者情報入力へ進む" onClick={p.onNext} disabled={p.cartCount === 0 || !!p.minQtyShortage} width={250} />
         <OutlineButton label="日時選択へ戻る" onClick={p.onBack} width={210} />
       </div>
 

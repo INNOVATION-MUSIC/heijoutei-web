@@ -12,6 +12,7 @@ import {
   timeLabelToMinutes,
   normTime,
   isLeadTimeSatisfied,
+  minQtyOf,
 } from "@/app/lib/takeoutData";
 import { getStoreDetail } from "@/app/lib/storeDetailData";
 
@@ -192,6 +193,9 @@ export async function POST(request: Request) {
       if (!m) return NextResponse.json({ error: "選択できない商品が含まれています。" }, { status: 400 });
       if (!isLeadTimeSatisfied(req.storeSlug, m.category, req.pickupDate, todayDt)) {
         return NextResponse.json({ error: `選択された受取日では「${m.name}」を注文できません。` }, { status: 400 });
+      }
+      if (line.qty < minQtyOf(m.name)) {
+        return NextResponse.json({ error: `「${m.name}」は${minQtyOf(m.name)}点からご注文いただけます。` }, { status: 400 });
       }
       items.push({ name: m.name, price: m.price, qty: line.qty });
       total += m.price * line.qty;

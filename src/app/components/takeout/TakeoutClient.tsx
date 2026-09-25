@@ -19,7 +19,7 @@ import FooterSP from "../sp/FooterSP";
 import SpStickyHeader from "../sp/SpStickyHeader";
 import HamburgerMenuSP from "../sp/HamburgerMenuSP";
 
-import { TAKEOUT_CATEGORIES, TAKEOUT_MENU, TAKEOUT_STORES, buildCalendar, buildTimeSlotViews, isLeadTimeSatisfied, type TakeoutStore, type TakeoutMenuItem, type DaySlotMap } from "@/app/lib/takeoutData";
+import { TAKEOUT_CATEGORIES, TAKEOUT_MENU, TAKEOUT_STORES, buildCalendar, buildTimeSlotViews, findMinQtyShortage, isLeadTimeSatisfied, type TakeoutStore, type TakeoutMenuItem, type DaySlotMap } from "@/app/lib/takeoutData";
 import type { TakeoutMenuData } from "@/app/lib/takeoutOrderDb";
 
 const DESIGN_PC = 1440;
@@ -120,6 +120,7 @@ export default function TakeoutClient({
   );
   const subtotal = useMemo(() => cartLines.reduce((s, l) => s + l.item.price * l.qty, 0), [cartLines]);
   const cartCount = useMemo(() => cartLines.reduce((s, l) => s + l.qty, 0), [cartLines]);
+  const minQtyShortage = useMemo(() => findMinQtyShortage(cartLines), [cartLines]);
 
   const setQty = (id: string, qty: number) =>
     setCart((c) => {
@@ -251,6 +252,7 @@ export default function TakeoutClient({
               cartLines={cartLines}
               subtotal={subtotal}
               cartCount={cartCount}
+              minQtyShortage={minQtyShortage}
               onBack={() => goStep(1)}
               onNext={() => goStep(3)}
             />
@@ -347,6 +349,7 @@ export default function TakeoutClient({
             cartLines={cartLines}
             subtotal={subtotal}
             cartCount={cartCount}
+            minQtyShortage={minQtyShortage}
             onBack={() => goStep(1)}
             onNext={() => goStep(3)}
             onMeasured={(h) => setStep2Measured((prev) => (prev === h ? prev : h))}

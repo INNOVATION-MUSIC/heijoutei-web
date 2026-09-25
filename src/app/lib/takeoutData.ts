@@ -123,6 +123,22 @@ export function isLeadTimeSatisfied(storeSlug: string, category: string, pickupD
   return target >= t;
 }
 
+// 1人前単位の価格だが2人前からしか販売しない商品。キーは管理画面の商品名と完全一致（改名時はここも更新）
+export const MIN_QTY_BY_ITEM_NAME: Record<string, number> = {
+  "こだわりBBQセット 1人前（200g）": 2,
+  "ボリュームBBQセット 1人前（250g）": 2,
+};
+
+export function minQtyOf(itemName: string): number {
+  return MIN_QTY_BY_ITEM_NAME[itemName] ?? 1;
+}
+
+/** カート内で最低注文数に届いていない最初の商品の案内文を返す（問題なければ null） */
+export function findMinQtyShortage(lines: { item: { name: string }; qty: number }[]): string | null {
+  const short = lines.find((l) => l.qty > 0 && l.qty < minQtyOf(l.item.name));
+  return short ? `「${short.item.name}」は${minQtyOf(short.item.name)}点からご注文いただけます。` : null;
+}
+
 /** "11 : 30" / "11:30" の空白差を吸収して比較用に正規化する（"11:30"） */
 export function normTime(s: string): string {
   return s.replace(/\s/g, "");

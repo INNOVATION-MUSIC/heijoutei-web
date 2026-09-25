@@ -24,6 +24,7 @@ type Props = {
   cartLines: CartLine[];
   subtotal: number;
   cartCount: number;
+  minQtyShortage: string | null;
   onBack: () => void;
   onNext: () => void;
   onMeasured?: (h: number) => void;
@@ -110,8 +111,11 @@ export default function Step2Menu(p: Props) {
         {/* 右: ご注文内容 */}
         <div style={{ width: 420, display: "flex", flexDirection: "column", gap: 30 }}>
           <CartPanel lines={p.cartLines} subtotal={p.subtotal} />
-          <div style={{ display: "flex", justifyContent: "center" }}>
-            <RedButton label="購入者情報入力へ進む" onClick={p.onNext} disabled={p.cartCount === 0} width={250} />
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
+            {p.minQtyShortage && (
+              <p style={{ margin: 0, fontFamily: sans, fontSize: 13, color: "#d9b86b", lineHeight: "20px", textAlign: "center" }}>{p.minQtyShortage}</p>
+            )}
+            <RedButton label="購入者情報入力へ進む" onClick={p.onNext} disabled={p.cartCount === 0 || !!p.minQtyShortage} width={250} />
           </div>
           <div style={{ display: "flex", justifyContent: "center" }}>
             <OutlineButton label="日時選択へ戻る" onClick={p.onBack} width={172} />
