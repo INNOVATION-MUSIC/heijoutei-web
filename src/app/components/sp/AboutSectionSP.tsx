@@ -104,7 +104,7 @@ export default function AboutSectionSP() {
       {/* 店舗内観写真（279×318・右端配置） */}
       <div style={{ display: "flex", justifyContent: "flex-end", paddingTop: 74 }}>
         <div style={{ position: "relative", width: 279, height: 318, overflow: "hidden", background: "#472914" }}>
-          <Image src="/images/about_interior.webp" alt="店舗内観" fill className="object-cover" sizes="279px" />
+          <Image src="/images/about_window.webp" alt="窓際の席と料理" fill className="object-cover" sizes="279px" />
         </div>
       </div>
 

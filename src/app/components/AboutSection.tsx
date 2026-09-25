@@ -98,7 +98,7 @@ export default function AboutSection({ onOpenModal }: { onOpenModal: () => void 
           妥協することなく追求しています。
         </p>
         <div style={{ position: "relative", width: 531, height: 715, overflow: "hidden", background: "#472914", flexShrink: 0 }}>
-          <Image src="/images/about_interior.webp" alt="店舗内観" fill className="object-cover" sizes="531px" />
+          <Image src="/images/about_window.webp" alt="窓際の席と料理" fill className="object-cover" sizes="531px" />
         </div>
       </div>
 
