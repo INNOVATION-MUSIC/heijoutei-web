@@ -418,6 +418,7 @@ export type Database = {
           is_published: boolean | null
           published_at: string | null
           slug: string
+          thumbnail_contain: boolean
           thumbnail_url: string | null
           title: string
           updated_at: string | null
@@ -431,6 +432,7 @@ export type Database = {
           is_published?: boolean | null
           published_at?: string | null
           slug: string
+          thumbnail_contain?: boolean
           thumbnail_url?: string | null
           title: string
           updated_at?: string | null
@@ -444,6 +446,7 @@ export type Database = {
           is_published?: boolean | null
           published_at?: string | null
           slug?: string
+          thumbnail_contain?: boolean
           thumbnail_url?: string | null
           title?: string
           updated_at?: string | null

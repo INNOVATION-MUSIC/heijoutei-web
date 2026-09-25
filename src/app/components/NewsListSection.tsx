@@ -36,8 +36,8 @@ function NewsCard({ item, delay }: { item: NewsListItem; delay: number }) {
 
   return (
     <a ref={ref} href={`/news/${item.id}`} style={{ width: CARD_WIDTH, display: "flex", flexDirection: "column", gap: 21, textDecoration: "none" }}>
-      <div style={{ position: "relative", width: CARD_WIDTH, height: 340, overflow: "hidden", background: "#4d2914" }}>
-        <Image src={item.img} alt={item.title} fill className="object-cover" sizes="340px" />
+      <div style={{ position: "relative", width: CARD_WIDTH, height: 340, overflow: "hidden", background: item.thumbContain ? "#000" : "#4d2914" }}>
+        <Image src={item.img} alt={item.title} fill className={item.thumbContain ? "object-contain" : "object-cover"} sizes="340px" />
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 11 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>

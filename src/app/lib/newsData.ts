@@ -32,7 +32,7 @@ export const NEWS_DATA = [
   },
 ];
 
-export type NewsItem = (typeof NEWS_DATA)[number];
+export type NewsItem = (typeof NEWS_DATA)[number] & { thumbContain?: boolean };
 
 // タグの色（PCトップ NewsSection と統一・newタグは一覧では使わない）
 export type Tag = { label: string; color: string };
@@ -53,6 +53,7 @@ export type NewsListItem = {
   tags: Tag[];
   heroImg?: string;
   hideHero?: boolean; // 詳細ページでサムネを出さない（news.hide_detail_thumbnail・管理画面のチェックボックス）
+  thumbContain?: boolean; // サムネを切らずに全体表示・余白は黒（news.thumbnail_contain・管理画面のチェックボックス）
   body?: string;
   bodyImg?: string;
 };

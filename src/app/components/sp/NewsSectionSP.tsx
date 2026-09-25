@@ -18,7 +18,7 @@ const easeInOut = (t: number) =>
   t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
 
 export default function NewsSectionSP({ items }: { items?: NewsItem[] }) {
-  const NEWS = items && items.length > 0 ? items : NEWS_DATA;
+  const NEWS: NewsItem[] = items && items.length > 0 ? items : NEWS_DATA;
   // ループ幅は件数から算出（DB 連携で件数が変わっても崩れないように）
   const CARD_SET_WIDTH = CARD_STEP * NEWS.length;
   // カードが表示枠（390 - 左padding40 = 350）に収まる件数のときはループ複製しない。
@@ -218,11 +218,11 @@ export default function NewsSectionSP({ items }: { items?: NewsItem[] }) {
                   width: CARD_WIDTH,
                   height: 260,
                   overflow: "hidden",
-                  background: "#4d2914",
+                  background: item.thumbContain ? "#000" : "#4d2914",
                   position: "relative",
                 }}
               >
-                <Image src={item.img} alt={item.title} fill className="object-cover" sizes="260px" />
+                <Image src={item.img} alt={item.title} fill className={item.thumbContain ? "object-contain" : "object-cover"} sizes="260px" />
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 12, flexWrap: "wrap" as const }}>
                 {/* NEWタグは日付の左 */}

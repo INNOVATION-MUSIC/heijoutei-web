@@ -154,8 +154,8 @@ export default function NewsDetailSection({
 
         {/* 右: ヒーロー画像（500×500） */}
         {!article.hideHero && (
-          <div style={{ position: "relative", width: 500, height: 500, overflow: "hidden", flexShrink: 0, background: "#472914" }}>
-            <Image src={newsHero(article)} alt={article.title} fill className="object-cover" sizes="500px" preload />
+          <div style={{ position: "relative", width: 500, height: 500, overflow: "hidden", flexShrink: 0, background: article.thumbContain ? "#000" : "#472914" }}>
+            <Image src={newsHero(article)} alt={article.title} fill className={article.thumbContain ? "object-contain" : "object-cover"} sizes="500px" preload />
           </div>
         )}
       </div>

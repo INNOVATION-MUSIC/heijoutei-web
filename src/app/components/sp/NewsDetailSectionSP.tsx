@@ -52,8 +52,8 @@ export default function NewsDetailSectionSP({
       {/* ヒーロー画像（350×300） */}
       {!article.hideHero && (
         <div style={{ paddingLeft: 20 }}>
-          <div style={{ position: "relative", width: 350, height: 300, overflow: "hidden", background: "#472914" }}>
-            <Image src={newsHero(article)} alt={article.title} fill className="object-cover" sizes="350px" preload />
+          <div style={{ position: "relative", width: 350, height: 300, overflow: "hidden", background: article.thumbContain ? "#000" : "#472914" }}>
+            <Image src={newsHero(article)} alt={article.title} fill className={article.thumbContain ? "object-contain" : "object-cover"} sizes="350px" preload />
           </div>
         </div>
       )}

@@ -45,6 +45,7 @@ export default function NewsForm({
   const [body, setBody] = useState(initial?.body ?? '')
   const [thumbnail, setThumbnail] = useState(initial?.thumbnail_url ?? '')
   const [hideDetailThumb, setHideDetailThumb] = useState(initial?.hide_detail_thumbnail ?? false)
+  const [thumbContain, setThumbContain] = useState(initial?.thumbnail_contain ?? false)
   const [status, setStatus] = useState<NewsStatus>(initialStatus)
   const [publishedAt, setPublishedAt] = useState(toLocalInput(initial?.published_at ?? null))
   const [tags, setTags] = useState<NewsTagInput[]>(initialTags)
@@ -68,6 +69,7 @@ export default function NewsForm({
       body,
       thumbnail_url: thumbnail,
       hide_detail_thumbnail: hideDetailThumb,
+      thumbnail_contain: thumbContain,
       status: finalStatus,
       published_at: finalStatus === 'draft' ? null : publishedAt ? new Date(publishedAt).toISOString() : null,
     }
@@ -142,6 +144,11 @@ export default function NewsForm({
             詳細ページでサムネイルを表示しない
           </label>
           <p className="mt-1 text-xs text-[#6f6f80]">一覧・トップのサムネイルは表示されたままです。ロゴ画像などヘッダーと重複する場合に使います。</p>
+          <label className="mt-4 flex items-center gap-2 text-sm text-[#ebe5db]">
+            <input type="checkbox" checked={thumbContain} onChange={(e) => setThumbContain(e.target.checked)} className="accent-[#d9b86b]" />
+            サムネイルを切らずに全体を表示する
+          </label>
+          <p className="mt-1 text-xs text-[#6f6f80]">チラシなど文字の入った画像向け。枠に収まるよう縮小し、余白は黒になります（トップ・一覧・詳細）。</p>
         </div>
 
         <div className="rounded-xl border border-[#23232e] bg-[#14141a] p-5">

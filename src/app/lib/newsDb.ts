@@ -33,6 +33,7 @@ type NewsRow = {
   body: string | null;
   thumbnail_url: string | null;
   hide_detail_thumbnail?: boolean | null;
+  thumbnail_contain?: boolean | null;
   published_at: string | null;
   news_tags: { label: string; color: string; sort_order: number | null }[];
 };
@@ -54,6 +55,7 @@ function toItem(row: NewsRow): NewsListItem {
     tags,
     heroImg: row.thumbnail_url || undefined,
     hideHero: !!row.hide_detail_thumbnail,
+    thumbContain: !!row.thumbnail_contain,
     body: row.body ?? undefined,
   };
 }
@@ -69,7 +71,7 @@ export async function fetchNewsList(): Promise<NewsListItem[]> {
     const supabase = createStaticClient();
     const { data, error } = await supabase
       .from("news")
-      .select("slug, title, body, thumbnail_url, hide_detail_thumbnail, published_at, news_tags(label, color, sort_order)")
+      .select("slug, title, body, thumbnail_url, hide_detail_thumbnail, thumbnail_contain, published_at, news_tags(label, color, sort_order)")
       .eq("is_published", true)
       .lte("published_at", new Date().toISOString())
       .order("created_at", { ascending: false });
@@ -90,7 +92,7 @@ export async function fetchNewsArticle(id: string): Promise<NewsListItem | undef
     const supabase = createStaticClient();
     const { data, error } = await supabase
       .from("news")
-      .select("slug, title, body, thumbnail_url, hide_detail_thumbnail, published_at, news_tags(label, color, sort_order)")
+      .select("slug, title, body, thumbnail_url, hide_detail_thumbnail, thumbnail_contain, published_at, news_tags(label, color, sort_order)")
       .eq("slug", id)
       .eq("is_published", true)
       .lte("published_at", new Date().toISOString()) // 予約公開（未来日時）は直リンクでも非公開
@@ -108,7 +110,7 @@ export async function fetchTopNews(limit = 5): Promise<NewsItem[]> {
     // fetchNewsList は DB 障害時のみ静的にフォールバックし、公開 0 件なら空を返す。
     // ここで空→静的復活はさせない（下書き記事をトップに出さないため）。
     const list = await fetchNewsList();
-    return list.slice(0, limit).map(({ id, img, date, title, tags }) => ({ id, img, date, title, tags }));
+    return list.slice(0, limit).map(({ id, img, date, title, tags, thumbContain }) => ({ id, img, date, title, tags, thumbContain }));
   } catch {
     return NEWS_DATA;
   }

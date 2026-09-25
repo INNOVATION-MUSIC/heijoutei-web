@@ -34,8 +34,8 @@ function NewsCardSP({ item, delay }: { item: NewsListItem; delay: number }) {
   return (
     <a ref={ref} href={`/news/${item.id}`} style={{ width: CARD_WIDTH, display: "flex", flexDirection: "column", gap: 12, textDecoration: "none" }}>
       {/* 写真（350×220） */}
-      <div style={{ position: "relative", width: CARD_WIDTH, height: 220, overflow: "hidden", background: "#4d2914" }}>
-        <Image src={item.img} alt={item.title} fill className="object-cover" sizes="350px" />
+      <div style={{ position: "relative", width: CARD_WIDTH, height: 220, overflow: "hidden", background: item.thumbContain ? "#000" : "#4d2914" }}>
+        <Image src={item.img} alt={item.title} fill className={item.thumbContain ? "object-contain" : "object-cover"} sizes="350px" />
       </div>
       {/* メタ: 日付 + タグ（NEW は公開から2週間だけ自動付与） */}
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>

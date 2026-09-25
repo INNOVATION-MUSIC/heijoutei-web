@@ -57,7 +57,7 @@ const easeInOut = (t: number) => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
 const VIEWPORT_WIDTH = 1370; // カード表示枠の幅（下のコンテナ width と一致）
 
 export default function NewsSection({ items }: { items?: NewsItem[] }) {
-  const NEWS = items && items.length > 0 ? items : NEWS_DATA;
+  const NEWS: NewsItem[] = items && items.length > 0 ? items : NEWS_DATA;
   // ループ幅は件数から算出（DB 連携で件数が変わっても崩れないように）
   const CARD_SET_WIDTH = CARD_STEP * NEWS.length;
   // カードが表示枠に収まる件数のときは無限ループ（2セット複製）しない。
@@ -147,8 +147,8 @@ export default function NewsSection({ items }: { items?: NewsItem[] }) {
         <div ref={trackRef} style={{ display: "flex", gap: GAP, width: "max-content" }}>
           {(loop ? [...NEWS, ...NEWS] : NEWS).map((item, index) => (
             <a key={index} href={item.id ? `/news/${item.id}` : SECTION_LINKS.news} style={{ width: CARD_WIDTH, flexShrink: 0, display: "flex", flexDirection: "column", gap: 21, textDecoration: "none" }}>
-              <div style={{ position: "relative", width: CARD_WIDTH, height: 340, overflow: "hidden", background: "#4d2914" }}>
-                <Image src={item.img} alt={item.title} fill className="object-cover" sizes="340px" />
+              <div style={{ position: "relative", width: CARD_WIDTH, height: 340, overflow: "hidden", background: item.thumbContain ? "#000" : "#4d2914" }}>
+                <Image src={item.img} alt={item.title} fill className={item.thumbContain ? "object-contain" : "object-cover"} sizes="340px" />
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 11 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
