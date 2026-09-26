@@ -58,7 +58,7 @@ export default function AboutSection({ onOpenModal }: { onOpenModal: () => void 
       {/* テキスト1（左）+ 肉カット写真（右） */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingLeft: 117, paddingTop: 176 }}>
         <p style={{ fontFamily: mincho, fontSize: 18, fontWeight: 400, letterSpacing: "6px", lineHeight: "50px", color: "#ebe5db", margin: 0 }}>
-          平壌亭は創業50年以来、<br />
+          平壌亭は創業50年以上、<br />
           「美味い」を追求し続けています。<br /><br />
           厳選された和牛<br /><br />
           長年培った経験を持つ熟練の目利きが、<br />

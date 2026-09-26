@@ -62,7 +62,7 @@ export default function AboutSectionSP() {
 
       {/* ストーリー文1 */}
       <p style={{ paddingLeft: 37, paddingTop: 54, fontFamily: mincho, fontSize: 14, fontWeight: 400, letterSpacing: "3px", lineHeight: "38px", color: "#ebe5db", margin: 0 }}>
-        平壌亭は創業50年以来、<br />
+        平壌亭は創業50年以上、<br />
         「美味い」を追求し続けています。
       </p>
 

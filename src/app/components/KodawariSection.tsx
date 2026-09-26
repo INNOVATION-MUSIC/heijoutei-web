@@ -50,7 +50,7 @@ export default function KodawariSection() {
           fontFamily: mincho, fontSize: 15, fontWeight: 400,
           letterSpacing: "0.4em", lineHeight: "44px", color: "#ebe5db", whiteSpace: "pre-line",
         }}>
-          {`平壌亭は創業50年以来、
+          {`平壌亭は創業50年以上、
 「美味い」を追求し続けています。
 
 厳選された和牛
