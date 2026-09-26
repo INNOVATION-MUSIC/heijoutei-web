@@ -2,7 +2,7 @@ import Image from "next/image";
 import SpButton from "./SpButton";
 import { SECTION_LINKS } from "@/app/lib/navLinks";
 import { type StoreImageMap, type StoreNameMap } from "@/app/lib/storeDb";
-import { spacedStoreName, fitStoreNameFontSize } from "@/app/lib/storeName";
+import { layoutStoreName } from "@/app/lib/storeName";
 
 const mincho = "'Shippori Mincho', serif";
 const display = "'Cormorant Garamond', serif";
@@ -19,9 +19,26 @@ function PhoneIcon({ size = 20 }: { size?: number }) {
   );
 }
 
+// 小カードの店名: 長い店名は2行にし、そのカードだけ高さを伸ばす（セクション下部の余白内に収まる）
+function smallStoreName(name: string) {
+  const layout = layoutStoreName(name, "　", 190, 18, 2, 15);
+  return { ...layout, cardHeight: layout.lines.length > 1 ? 145 : 120 };
+}
+
+function SmallStoreName({ lines, fontSize }: { lines: string[]; fontSize: number }) {
+  return (
+    <p style={{ fontFamily: mincho, fontSize, fontWeight: 800, letterSpacing: "2px", color: "#fff", marginBottom: 8, whiteSpace: "nowrap", lineHeight: lines.length > 1 ? 1.35 : undefined }}>
+      {lines.map((line, i) => (
+        <span key={i} style={{ display: "block" }}>{line}</span>
+      ))}
+    </p>
+  );
+}
+
 export default function StoreSectionSP({ images, names }: { images?: StoreImageMap; names?: StoreNameMap }) {
-  const kameokaName = spacedStoreName(names?.kameoka ?? "平壌亭 亀岡店", "　");
-  const kopuName = spacedStoreName(names?.heijohtei ?? "KOPU29", "　");
+  const kameoka = layoutStoreName(names?.kameoka ?? "平壌亭 亀岡店", "　", 230, 26, 2, 20);
+  const kopu = smallStoreName(names?.heijohtei ?? "KOPU29");
+  const kopuAlt = names?.heijohtei ?? "KOPU29";
   return (
     <section
       style={{
@@ -86,8 +103,10 @@ export default function StoreSectionSP({ images, names }: { images?: StoreImageM
           </p>
           <div style={{ width: 32, height: 1, backgroundColor: "rgba(217,184,107,0.45)", marginBottom: 12 }} />
           <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 14 }}>
-            <p style={{ fontFamily: mincho, fontSize: fitStoreNameFontSize(kameokaName, 230, 26, 2), fontWeight: 800, letterSpacing: "2px", color: "#fff", whiteSpace: "nowrap" }}>
-              {kameokaName}
+            <p style={{ fontFamily: mincho, fontSize: kameoka.fontSize, fontWeight: 800, letterSpacing: "2px", color: "#fff", whiteSpace: "nowrap", lineHeight: kameoka.lines.length > 1 ? 1.35 : undefined }}>
+              {kameoka.lines.map((line, i) => (
+                <span key={i} style={{ display: "block" }}>{line}</span>
+              ))}
             </p>
             <a
               href="https://maps.google.com/?q=京都府亀岡市篠町浄法寺中村３５-５"
@@ -125,22 +144,20 @@ export default function StoreSectionSP({ images, names }: { images?: StoreImageM
       {/* ━━━ 小カード共通 ━━━ */}
       <div style={{ display: "flex", flexDirection: "column", gap: 20, paddingLeft: 20, paddingRight: 20, flexShrink: 0 }}>
         {[
-          { mapImg: images?.sonobe ?? "/images/store_sonobe_map.webp",     subEn: "HEIJOHTEI　SONOBE",     name: spacedStoreName(names?.sonobe ?? "平壌亭 園部店", "　"),   tel: "0771-68-1760" },
-          { mapImg: images?.fukuchiyama ?? "/images/store_fukuchiyama_map.webp", subEn: "HEIJOHTEI　FUKUCHIYAMA", name: spacedStoreName(names?.fukuchiyama ?? "平壌亭 福知山店", "　"), tel: "0773-24-2322" },
-          { mapImg: images?.yurano ?? "/images/store_yurano_map.webp",     subEn: "YAKINIKU YURANO",         name: spacedStoreName(names?.yurano ?? "焼肉 ゆらの", "　"),    tel: "0773-45-8429" },
+          { mapImg: images?.sonobe ?? "/images/store_sonobe_map.webp",     subEn: "HEIJOHTEI　SONOBE",     name: smallStoreName(names?.sonobe ?? "平壌亭 園部店"), alt: names?.sonobe ?? "平壌亭 園部店",   tel: "0771-68-1760" },
+          { mapImg: images?.fukuchiyama ?? "/images/store_fukuchiyama_map.webp", subEn: "HEIJOHTEI　FUKUCHIYAMA", name: smallStoreName(names?.fukuchiyama ?? "平壌亭 福知山店"), alt: names?.fukuchiyama ?? "平壌亭 福知山店", tel: "0773-24-2322" },
+          { mapImg: images?.yurano ?? "/images/store_yurano_map.webp",     subEn: "YAKINIKU YURANO",         name: smallStoreName(names?.yurano ?? "焼肉 ゆらの"), alt: names?.yurano ?? "焼肉ゆらの",    tel: "0773-45-8429" },
         ].map((s) => (
-          <div key={s.name} style={{ height: 120, background: "#171717", display: "flex", overflow: "hidden" }}>
-            <div style={{ width: 130, height: 120, overflow: "hidden", background: "#1c110a", flexShrink: 0, position: "relative" }}>
-              <Image src={s.mapImg} alt={s.name} fill className="object-cover" sizes="130px" />
+          <div key={s.tel} style={{ height: s.name.cardHeight, background: "#171717", display: "flex", overflow: "hidden" }}>
+            <div style={{ width: 130, height: s.name.cardHeight, overflow: "hidden", background: "#1c110a", flexShrink: 0, position: "relative" }}>
+              <Image src={s.mapImg} alt={s.alt} fill className="object-cover" sizes="130px" />
             </div>
             <div style={{ padding: "17px 0 0 20px", flex: 1 }}>
               <p style={{ fontFamily: sans, fontSize: 10, fontWeight: 300, letterSpacing: "3px", color: "rgba(217,184,107,0.6)", marginBottom: 6 }}>
                 {s.subEn}
               </p>
               <div style={{ width: 32, height: 1, backgroundColor: "rgba(217,184,107,0.45)", marginBottom: 8 }} />
-              <p style={{ fontFamily: mincho, fontSize: fitStoreNameFontSize(s.name, 190, 18, 2), fontWeight: 800, letterSpacing: "2px", color: "#fff", marginBottom: 8, whiteSpace: "nowrap" }}>
-                {s.name}
-              </p>
+              <SmallStoreName lines={s.name.lines} fontSize={s.name.fontSize} />
               <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                 <PhoneIcon size={20} />
                 <a href={`tel:${s.tel}`} style={{ fontFamily: sans, fontSize: 18, fontWeight: 700, color: "#d9b86b", textDecoration: "none", letterSpacing: "0.5px" }}>
@@ -152,16 +169,16 @@ export default function StoreSectionSP({ images, names }: { images?: StoreImageM
         ))}
 
         {/* KOPU29 */}
-        <div style={{ height: 120, background: "#171717", display: "flex", overflow: "hidden" }}>
+        <div style={{ height: kopu.cardHeight, background: "#171717", display: "flex", overflow: "hidden" }}>
           {/* 管理画面で店舗写真（hero_image_url）が登録されていれば写真、無ければ白背景にロゴ */}
           {images?.heijohtei ? (
-            <div style={{ width: 130, height: 120, overflow: "hidden", background: "#1c110a", flexShrink: 0, position: "relative" }}>
-              <Image src={images.heijohtei} alt={kopuName} fill className="object-cover" sizes="130px" />
+            <div style={{ width: 130, height: kopu.cardHeight, overflow: "hidden", background: "#1c110a", flexShrink: 0, position: "relative" }}>
+              <Image src={images.heijohtei} alt={kopuAlt} fill className="object-cover" sizes="130px" />
             </div>
           ) : (
-            <div style={{ width: 130, height: 120, background: "#fff", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <div style={{ width: 130, height: kopu.cardHeight, background: "#fff", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
               <div style={{ width: 96, height: 96, position: "relative", flexShrink: 0 }}>
-                <Image src="/images/store_kopu29.webp" alt={kopuName} fill className="object-contain" sizes="96px" />
+                <Image src="/images/store_kopu29.webp" alt={kopuAlt} fill className="object-contain" sizes="96px" />
               </div>
             </div>
           )}
@@ -170,9 +187,7 @@ export default function StoreSectionSP({ images, names }: { images?: StoreImageM
               KOPUNIKU
             </p>
             <div style={{ width: 32, height: 1, backgroundColor: "rgba(217,184,107,0.45)", marginBottom: 8 }} />
-            <p style={{ fontFamily: mincho, fontSize: fitStoreNameFontSize(kopuName, 190, 18, 2), fontWeight: 800, letterSpacing: "2px", color: "#fff", marginBottom: 8, whiteSpace: "nowrap" }}>
-              {kopuName}
-            </p>
+            <SmallStoreName lines={kopu.lines} fontSize={kopu.fontSize} />
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
               <PhoneIcon size={20} />
               <a href="tel:0771-20-1960" style={{ fontFamily: sans, fontSize: 18, fontWeight: 700, color: "#d9b86b", textDecoration: "none", letterSpacing: "0.5px" }}>
