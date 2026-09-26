@@ -109,3 +109,8 @@ body {
   from { opacity: 1; transform: translateX(0); }
   to   { opacity: 0; transform: translateX(100%); }
 }
+
+/* 公開フォームのプレースホルダーは明朝（入力値は Noto Sans JP のまま） */
+.placeholder-mincho::placeholder {
+  font-family: 'Shippori Mincho', serif;
+}

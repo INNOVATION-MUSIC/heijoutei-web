@@ -63,6 +63,7 @@ export default function Step3Form(p: Props) {
             value={f.note}
             onChange={(e) => set("note", e.target.value)}
             placeholder="ご自由にご入力ください。"
+            className="placeholder-mincho"
             style={{ width: 880, height: 168, background: FIELD_BG, border: FIELD_BORDER, borderRadius: 4, padding: "16px", fontFamily: sans, fontSize: 14, color: "#ebe5db", resize: "none", outline: "none", lineHeight: "24px" }}
           />
         </Field>
@@ -106,6 +107,7 @@ function Input({ value, onChange, placeholder, width = 880, type = "text" }: { v
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
+      className="placeholder-mincho"
       style={{ width, height: 52, background: FIELD_BG, border: FIELD_BORDER, borderRadius: 4, padding: "0 16px", fontFamily: sans, fontSize: 14, color: "#ebe5db", outline: "none" }}
     />
   );

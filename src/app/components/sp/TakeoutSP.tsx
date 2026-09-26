@@ -667,6 +667,7 @@ export function Step3FormSP(p: {
             value={f.note}
             onChange={(e) => set("note", e.target.value)}
             placeholder="ご自由にご入力ください。"
+            className="placeholder-mincho"
             style={{ boxSizing: "border-box", width: "100%", height: 140, background: FIELD_BG, border: FIELD_BORDER, borderRadius: 4, padding: 16, fontFamily: sans, fontSize: 16, color: "#ebe5db", resize: "none", outline: "none", lineHeight: "24px" }}
           />
         </Field>
@@ -856,6 +857,7 @@ function SpInput({ value, onChange, placeholder, type = "text" }: { value: strin
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
+      className="placeholder-mincho"
       style={{ boxSizing: "border-box", width: "100%", height: 48, background: FIELD_BG, border: FIELD_BORDER, borderRadius: 4, padding: "0 16px", fontFamily: sans, fontSize: 16, color: "#ebe5db", outline: "none" }}
     />
   );
