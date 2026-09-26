@@ -10,15 +10,14 @@ type Mail = {
   replyTo?: string
 }
 
-const PRODUCTION_SITE_URL = 'https://heijyotei.com'
+import { IS_PRODUCTION_SITE } from './site'
 
 // 本番以外（ローカル・確認環境）は店舗・お客様に届かないよう MAIL_REDIRECT_TO だけへ送る。
 // 設定忘れでも先方に届かないよう、本番以外で未設定なら送信しない。
 function resolveRedirect(): { to: string } | { skip: true } | null {
   const redirect = process.env.MAIL_REDIRECT_TO?.trim()
   if (redirect) return { to: redirect }
-  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? PRODUCTION_SITE_URL).replace(/\/$/, '')
-  const isProduction = process.env.NODE_ENV === 'production' && siteUrl === PRODUCTION_SITE_URL
+  const isProduction = process.env.NODE_ENV === 'production' && IS_PRODUCTION_SITE
   return isProduction ? null : { skip: true }
 }
 

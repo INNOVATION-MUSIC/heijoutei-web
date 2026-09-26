@@ -12,6 +12,20 @@
   },
   "observability": {
     "enabled": true
+  },
+  // 確認環境（`--env staging` でデプロイ）。本番の設定（上記トップレベル）には影響しない。
+  // NEXT_PUBLIC_SITE_URL=https://staging.heijyotei.com と確認用 Supabase の NEXT_PUBLIC_* はビルド時に渡すこと。
+  "env": {
+    "staging": {
+      "name": "heijoutei-web-staging",
+      "routes": [{ "pattern": "staging.heijyotei.com", "custom_domain": true }],
+      "vars": {
+        "MAIL_REDIRECT_TO": "motoki.s@innovation-music.com"
+      },
+      "observability": {
+        "enabled": true
+      }
+    }
   }
   // ISR（revalidate=60）をインスタンス跨ぎで永続化する場合は R2 を追加し、
   // open-next.config.ts の incrementalCache に r2IncrementalCache を設定する。
