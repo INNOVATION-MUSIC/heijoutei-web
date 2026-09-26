@@ -74,6 +74,17 @@ html {
   height: auto;
 }
 
+/* PC お知らせ詳細: 本文枠は左259px・幅1101px（右余白80px）で左右非対称のため、
+   本文中の画像はページ(1440)中央に寄せる。最大幅は左右余白259pxになる922px、
+   中央は本文枠の中央(259+550.5)からページ中央(720)へ89.5px左 */
+.news-body-pc img {
+  display: block;
+  max-width: 922px;
+  margin-left: auto;
+  margin-right: auto;
+  transform: translateX(-89.5px);
+}
+
 body {
   background-color: #0a0a0a;
   color: #ebe5db;

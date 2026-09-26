@@ -164,7 +164,7 @@ export default function NewsDetailSection({
       <div style={{ paddingLeft: 259, paddingTop: 83 }}>
         <div
           ref={bodyRef}
-          className={bodyIsHtml ? "rte-content" : undefined}
+          className={bodyIsHtml ? "rte-content news-body-pc" : undefined}
           style={{
             width: 1101,
             fontFamily: mincho,
