@@ -14,12 +14,12 @@ export default function LunchSection() {
         <Image src="/images/lunch_top.webp" alt="ランチ" fill className="object-cover" sizes="700px" />
       </div>
       {/* サブ写真 1 */}
-      <div className="absolute overflow-hidden bg-[#241a14]" style={{ left: 739, top: 550, width: 384, height: 276 }}>
-        <Image src="/images/lunch_sub1.webp" alt="" fill className="object-cover" sizes="384px" />
+      <div className="absolute overflow-hidden bg-[#241a14]" style={{ left: 739, top: 550, width: 266, height: 276 }}>
+        <Image src="/images/lunch_sub1.webp" alt="" fill className="object-cover" sizes="266px" />
       </div>
       {/* サブ写真 2 */}
-      <div className="absolute overflow-hidden bg-[#241a14]" style={{ left: 1143, top: 550, width: 297, height: 276 }}>
-        <Image src="/images/lunch_bibimbap.webp" alt="石焼ビビンバランチ" fill className="object-cover" style={{ objectPosition: "85% center" }} sizes="297px" />
+      <div className="absolute overflow-hidden bg-[#241a14]" style={{ left: 1025, top: 550, width: 415, height: 276 }}>
+        <Image src="/images/lunch_bibimbap.webp" alt="石焼ビビンバランチ" fill className="object-cover" sizes="415px" />
       </div>
 
       {/* ラベル */}
