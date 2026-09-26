@@ -13,6 +13,16 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // 旧サイト（page5.html 等）のURLが検索結果・Googleマップに残っているためトップへ転送
+  async redirects() {
+    return [
+      {
+        source: "/:file([^/]+\\.html)",
+        destination: "/",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
