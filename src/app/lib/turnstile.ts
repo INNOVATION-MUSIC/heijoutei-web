@@ -1,8 +1,12 @@
 // Cloudflare Turnstile のサーバー側トークン検証。
-// TURNSTILE_SECRET_KEY 未設定時は true（検証スキップ＝鍵導入前もフォームを止めない）。
+// TURNSTILE_SECRET_KEY 未設定時: 開発は true（検証スキップ）、本番は false（Secret 登録漏れでフォームを無防備にしない）。
 export async function verifyTurnstile(token: string | undefined, ip?: string | null): Promise<boolean> {
   const secret = process.env.TURNSTILE_SECRET_KEY;
-  if (!secret) return true; // 未設定＝無効化（鍵を入れた時点で有効になる）
+  if (!secret) {
+    if (process.env.NODE_ENV !== "production") return true;
+    console.error("[turnstile] TURNSTILE_SECRET_KEY is not set in production; rejecting request");
+    return false;
+  }
   if (!token) return false;
 
   try {

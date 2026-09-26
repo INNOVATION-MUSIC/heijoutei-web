@@ -73,7 +73,7 @@ Next.js 16 を Cloudflare Workers で動かすため `@opennextjs/cloudflare` �
 | `ORDER_NOTIFY_TO` | 注文通知の宛先 | ○ | 既存 |
 | `CONTACT_NOTIFY_TO` | 問い合わせ通知の宛先 | 任意 | 無ければ `ORDER_NOTIFY_TO` に集約 |
 | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Turnstile ウィジェット | 任意 | **新規。下記 3。未設定ならCAPTCHA無効** |
-| `TURNSTILE_SECRET_KEY` | Turnstile サーバー検証 | 任意 | **新規。Secret。未設定なら検証スキップ** |
+| `TURNSTILE_SECRET_KEY` | Turnstile サーバー検証 | **本番必須** | **Secret。未設定だと本番はフォーム送信を全て拒否（開発のみ検証スキップ）** |
 
 > 旧 `SMTP_HOST/PORT/SECURE/USER/PASS` は **不要**（nodemailer/SMTP は Cloudflare Workers で動かないため廃止）。ローカルで使う場合のみ残してよいが、本番では `BREVO_API_KEY` を使う。
 

@@ -141,7 +141,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "リクエストの解析に失敗しました。" }, { status: 400 });
   }
 
-  // Turnstile 検証（鍵未設定なら素通り）
+  // Turnstile 検証（鍵未設定は開発のみ素通り・本番は拒否）
   const token = (body as { turnstileToken?: string })?.turnstileToken;
   const ip = request.headers.get("cf-connecting-ip") ?? request.headers.get("x-forwarded-for");
   if (!(await verifyTurnstile(token, ip))) {

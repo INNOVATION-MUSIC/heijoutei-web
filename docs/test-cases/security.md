@@ -13,7 +13,7 @@
 設計メモ:
 - 管理操作の認可は **`getUser()`（Auth サーバで署名/期限/失効を検証）** に統一。クッキー存在チェックは廃止。
 - フロントの anon キーは **読み取り専用**。公開フォーム（問い合わせ/注文）は `/api/*`（service_role）が INSERT。
-- Turnstile/Brevo は **鍵未設定時は無効（graceful）**＝鍵を入れた時点で有効化。
+- Turnstile/Brevo は **鍵未設定時は無効（graceful）**＝鍵を入れた時点で有効化。ただし Turnstile のサーバー検証は **本番（NODE_ENV=production）で `TURNSTILE_SECRET_KEY` 未設定なら拒否**（2026-09-26〜・SEC-021）。
 
 ---
 
@@ -46,7 +46,8 @@
 
 | ID | テスト項目 | 前提条件 | 操作手順 | 期待結果 | 優先度 | 検証状況 |
 |----|-----------|----------|----------|----------|--------|----------|
-| SEC-020 | 鍵未設定時は無効（graceful） | 鍵未設定 | `/contact`・`/takeout` から送信 | ウィジェット非表示・検証スキップ・送信成立（200） | 高 | ✅ 実証 |
+| SEC-020 | 鍵未設定時は無効（graceful・開発のみ） | 鍵未設定・`npm run dev` | `/contact`・`/takeout` から送信 | ウィジェット非表示・検証スキップ・送信成立（200） | 高 | ✅ 実証 |
+| SEC-021 | 本番で Secret 未設定なら拒否 | `TURNSTILE_SECRET_KEY` 未設定・`NODE_ENV=production`（`npm run build` + `npm start`） | `/contact`・`/takeout` から送信 | 400「認証に失敗しました」・DB保存/メール送信なし・サーバーログに `[turnstile] TURNSTILE_SECRET_KEY is not set in production` | 高 | 未 |
 | SEC-021 | 鍵設定時に無効トークン拒否 | `TURNSTILE_SECRET_KEY` 設定 | トークン無し/無効で `/api/*` に POST | 400「認証に失敗しました…」 | 高 | ✅ siteverify ロジック実証（常に失敗鍵→false） |
 | SEC-022 | 鍵設定時に有効トークン通過 | 有効鍵+正規操作 | ウィジェット通過後に送信 | 検証成功し受付成立 | 高 | ✅ siteverify ロジック実証（常に成功鍵→true） |
 | SEC-023 | ウィジェット未通過は送信不可 | 鍵設定 | 確認画面でウィジェット未操作 | 送信ボタンが `disabled` | 中 | コード確認済（`turnstileReady` ゲート） |
