@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { viewportWidth } from "@/app/lib/viewportWidth";
 
 const DESIGN_WIDTH = 390;
 const sans = "'Noto Sans JP', sans-serif";
@@ -32,7 +33,7 @@ export default function SpStickyHeader({ onOpenMenu }: Props) {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const updateScale = () => setScale(window.innerWidth / DESIGN_WIDTH);
+    const updateScale = () => setScale(viewportWidth() / DESIGN_WIDTH);
     updateScale();
     window.addEventListener("resize", updateScale);
     return () => window.removeEventListener("resize", updateScale);

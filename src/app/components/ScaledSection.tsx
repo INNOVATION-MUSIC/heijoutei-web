@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { viewportWidth } from "@/app/lib/viewportWidth";
 
 export default function ScaledSection({
   designWidth,
@@ -16,7 +17,7 @@ export default function ScaledSection({
 
   useEffect(() => {
     const update = () => {
-      setScale(window.innerWidth / designWidth);
+      setScale(viewportWidth() / designWidth);
     };
     update();
     window.addEventListener("resize", update);

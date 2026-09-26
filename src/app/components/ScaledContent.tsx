@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { viewportWidth } from "@/app/lib/viewportWidth";
 
 interface Props {
   designWidth: number;
@@ -15,7 +16,7 @@ export default function ScaledContent({ designWidth, children }: Props) {
 
   useEffect(() => {
     const update = () => {
-      const vw = window.innerWidth;
+      const vw = viewportWidth();
       const newScale = vw / designWidth;
       setScale(newScale);
       if (innerRef.current) {

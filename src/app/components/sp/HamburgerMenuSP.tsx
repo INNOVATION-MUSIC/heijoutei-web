@@ -6,6 +6,7 @@ const mincho = "'Shippori Mincho', serif";
 const sans = "'Noto Sans JP', sans-serif";
 
 import { NAV_LINKS, SECTION_LINKS } from "@/app/lib/navLinks";
+import { viewportWidth } from "@/app/lib/viewportWidth";
 
 // ハンバーガーメニュー用: Figmaの縦書き順に並べた表示順
 const NAV_ITEMS = [
@@ -30,7 +31,7 @@ export default function HamburgerMenuSP({ open, onClose, onOpenModal }: Props) {
   const [isClosing, setIsClosing] = useState(false);
 
   useEffect(() => {
-    const update = () => setScale(window.innerWidth / 390);
+    const update = () => setScale(viewportWidth() / 390);
     update();
     window.addEventListener("resize", update);
     return () => window.removeEventListener("resize", update);
