@@ -74,7 +74,7 @@ export default function ResponsivePage({ topNews, businessMonths, topCourses, li
         <ScaledSection designWidth={DESIGN_SP} height={1105}>
           <MenuSectionSP />
         </ScaledSection>
-        <ScaledSection designWidth={DESIGN_SP} height={1204}>
+        <ScaledSection designWidth={DESIGN_SP} height={1279}>
           <LunchSectionSP />
         </ScaledSection>
         <ScaledSection designWidth={DESIGN_SP} height={2411}>

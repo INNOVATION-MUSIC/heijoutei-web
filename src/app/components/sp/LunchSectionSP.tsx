@@ -12,7 +12,7 @@ export default function LunchSectionSP() {
         position: "relative",
         overflow: "hidden",
         width: 390,
-        height: 1204,
+        height: 1279,
         background: "#0a0a0a",
         display: "flex",
         flexDirection: "column",
@@ -44,9 +44,9 @@ export default function LunchSectionSP() {
       {/* gap: 167 - (33+85) = 49px */}
       <div style={{ height: 49, flexShrink: 0 }} />
 
-      {/* メイン写真: w=358, h=194 */}
-      <div style={{ width: 358, height: 194, overflow: "hidden", background: "#2e1c12", flexShrink: 0, position: "relative" }}>
-        <Image src="/images/lunch_top.webp" alt="ランチ" fill className="object-cover" sizes="358px" />
+      {/* メイン写真: 画面幅いっぱい・写真全体を表示（元デザインは w=358, h=194） */}
+      <div style={{ width: 390, height: 269, overflow: "hidden", background: "#2e1c12", flexShrink: 0, position: "relative" }}>
+        <Image src="/images/lunch_top.webp" alt="ランチ" fill className="object-cover" sizes="390px" />
       </div>
 
       {/* gap: 384 - (167+194) = 23px */}
