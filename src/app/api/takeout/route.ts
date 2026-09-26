@@ -12,6 +12,7 @@ import {
   timeLabelToMinutes,
   normTime,
   isLeadTimeSatisfied,
+  acceptsSameDay,
   minQtyOf,
   pickupWindowEndIso,
 } from "@/app/lib/takeoutData";
@@ -164,6 +165,9 @@ export async function POST(request: Request) {
     const maxStr = pickupWindowEndIso(todayStr);
     if (req.pickupDate < todayStr || req.pickupDate > maxStr) {
       return NextResponse.json({ error: "受取日は予約受付期間内で選択してください。" }, { status: 400 });
+    }
+    if (req.pickupDate === todayStr && !acceptsSameDay(req.storeSlug)) {
+      return NextResponse.json({ error: "この店舗は当日のお受け取りを受け付けておりません。翌日以降をお選びください。" }, { status: 400 });
     }
 
     // 3) 受取時間（定休日・休止・満枠・対象外の時刻を拒否）

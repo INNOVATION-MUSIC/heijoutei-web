@@ -111,9 +111,28 @@ export function defaultTimeSlotsFor(storeSlug: string | undefined): string[] {
 // 受付締切（受取時間の何分前まで注文を受け付けるか。Step1DateTime の「予約受付締切」表記と一致させる）
 export const RESERVE_CUTOFF_MINUTES = 60;
 
-// 休憩時間（15:00〜16:00）。DB受付枠管理で個別に設定されていない日（既定運用の日）は、
+// 休憩時間（既定 15:00〜16:00・店舗別の上書きは BREAK_TIME_LABELS_BY_STORE）。DB受付枠管理で個別に設定されていない日（既定運用の日）は、
 // この時間帯を受取不可として表示・検証する。管理画面で特定日の受付枠を明示設定した場合はそちらが優先される。
 export const BREAK_TIME_LABELS: string[] = ["15 : 00", "15 : 15", "15 : 30", "15 : 45"];
+export const BREAK_TIME_LABELS_BY_STORE: Record<string, string[]> = {
+  yurano: ["15 : 00", "15 : 15", "15 : 30", "15 : 45", "16 : 00", "16 : 15", "16 : 30", "16 : 45"],
+};
+
+export function breakTimeLabelsFor(storeSlug: string | undefined): string[] {
+  return (storeSlug && BREAK_TIME_LABELS_BY_STORE[storeSlug]) || BREAK_TIME_LABELS;
+}
+
+// 当日受取を受け付けない店舗（受取日は翌日以降のみ）
+export const NO_SAME_DAY_STORES: string[] = ["yurano"];
+
+export function acceptsSameDay(storeSlug: string | undefined): boolean {
+  return !(storeSlug && NO_SAME_DAY_STORES.includes(storeSlug));
+}
+
+/** 受付画面の「予約受付締切」の表記 */
+export function reserveDeadlineLabel(storeSlug: string | undefined): string {
+  return acceptsSameDay(storeSlug) ? "1時間前まで" : "前日まで（当日受付なし）";
+}
 
 // 特定カテゴリの品目は、店舗別に受取日の最短リード日数がある（0=当日可）。
 // キーは takeout_categories.slug。カテゴリ名は管理画面で改名されるため名前では判定しない（名前判定で制約が外れた経緯あり）。
@@ -192,7 +211,7 @@ export function buildTimeSlotViews(dateIso: string | null, storeSlots: DaySlotMa
   return labels.map((label) => {
     if (full.includes(label)) return { label, disabled: true, reason: "full" };
     // 受付枠管理でその日を個別設定していない場合のみ、既定の休憩時間として不可にする。
-    if (!slot && BREAK_TIME_LABELS.includes(label)) return { label, disabled: true, reason: "break" };
+    if (!slot && breakTimeLabelsFor(storeSlug).includes(label)) return { label, disabled: true, reason: "break" };
     if (isPastReserveCutoff(dateIso, label, now)) return { label, disabled: true, reason: "cutoff" };
     return { label, disabled: false };
   });
@@ -243,7 +262,7 @@ export type DaySlotMap = Record<string, DaySlotInfo>;
  * 枠が無い日は従来アルゴリズム（火曜定休・土日わずか）にフォールバックする。
  * 予約可能期間（pickupWindowEndIso）は DB 有無に関わらず外側のゲートとして維持する。
  */
-export function buildCalendar(year: number, month: number, today: Date, slots?: DaySlotMap): CalendarDay[] {
+export function buildCalendar(year: number, month: number, today: Date, slots?: DaySlotMap, storeSlug?: string): CalendarDay[] {
   const first = new Date(year, month, 1);
   const startWeekday = first.getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -264,7 +283,7 @@ export function buildCalendar(year: number, month: number, today: Date, slots?: 
     const iso = `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
     const slot = slots?.[iso];
     let status: DayStatus;
-    if (date < t || date > max) {
+    if (date < t || date > max || (iso === tIso && !acceptsSameDay(storeSlug))) {
       status = "past"; // 期間外（DB枠があっても予約不可。予約期間の制限を優先）
     } else if (slot) {
       // DBに枠がある日はDBを優先。休止/枠なし=定休、全時間帯が満枠=予約不可、

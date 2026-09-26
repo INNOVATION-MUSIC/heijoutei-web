@@ -8,6 +8,7 @@ import Turnstile, { turnstileEnabled } from "../Turnstile";
 import {
   WEEKDAY_LABELS,
   formatJpDate,
+  reserveDeadlineLabel,
   type CalendarDay,
   type TakeoutStore,
   type TakeoutMenuItem,
@@ -42,8 +43,8 @@ const NOTICE = [
 ];
 
 // 予約に関する注意事項（締切）
-const RESERVE_NOTES: [string, string][] = [
-  ["予約受付締切", "1時間前まで"],
+const reserveNotes = (storeSlug: string): [string, string][] => [
+  ["予約受付締切", reserveDeadlineLabel(storeSlug)],
   ["キャンセル締切", "4時間前まで"],
 ];
 
@@ -203,7 +204,7 @@ export function Step1DateTimeSP(p: {
           {/* 予約に関する注意事項 */}
           <div style={{ display: "flex", flexDirection: "column", gap: 8, borderTop: "1px solid rgba(234,229,219,0.15)", paddingTop: 16 }}>
             <p style={{ margin: 0, fontFamily: mincho, fontSize: 13, letterSpacing: "0.06em", color: "#ebe5db" }}>予約に関する注意事項</p>
-            {RESERVE_NOTES.map(([label, val], i) => (
+            {reserveNotes(p.store.id).map(([label, val], i) => (
               <div key={i} style={{ display: "flex", alignItems: "baseline", gap: 12 }}>
                 <span style={{ width: 96, flexShrink: 0, fontFamily: mincho, fontSize: 12, letterSpacing: "0.04em", color: "rgba(235,229,219,0.55)" }}>{label}</span>
                 <span style={{ fontFamily: mincho, fontSize: 15, letterSpacing: "0.04em", color: "#d9b86b" }}>{val}</span>

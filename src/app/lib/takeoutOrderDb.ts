@@ -5,7 +5,7 @@ import {
   TAKEOUT_CATEGORIES,
   TAKEOUT_MENU,
   defaultTimeSlotsFor,
-  BREAK_TIME_LABELS,
+  breakTimeLabelsFor,
   normTime,
   pickupWindowEndIso,
   type TakeoutStore,
@@ -260,12 +260,12 @@ export async function fetchTakeoutSlots(): Promise<Record<string, DaySlotMap>> {
  * capacity に達している時間帯は除外する。api/takeout/route.ts の最終検証(POST)から呼ばれる。
  */
 export async function resolveAvailableTimes(storeId: string | null, pickupDate: string, storeSlug?: string): Promise<Set<string>> {
-  const breakTimesNorm = new Set(BREAK_TIME_LABELS.map(normTime));
+  const breakTimesNorm = new Set(breakTimeLabelsFor(storeSlug).map(normTime));
   const defaultTimes = (): Set<string> => {
     const [y, m, d] = pickupDate.split("-").map(Number);
     const weekday = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
     if (weekday === 2) return new Set(); // 火曜定休（既定）
-    // 受付枠管理でその日を個別設定していない場合のみ、既定の休憩時間（15:00〜16:00）を除外する。
+    // 受付枠管理でその日を個別設定していない場合のみ、既定の休憩時間（店舗別）を除外する。
     return new Set(defaultTimeSlotsFor(storeSlug).map(normTime).filter((t) => !breakTimesNorm.has(t)));
   };
 

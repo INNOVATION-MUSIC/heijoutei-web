@@ -103,7 +103,7 @@ export default function TakeoutClient({
 
   // 選択中店舗のDB受付枠（未投入なら undefined → buildCalendar はアルゴリズム既定）
   const storeSlots = SLOTS[store.id];
-  const calendar = useMemo(() => buildCalendar(view.year, view.month, today, storeSlots), [view, today, storeSlots]);
+  const calendar = useMemo(() => buildCalendar(view.year, view.month, today, storeSlots, store.id), [view, today, storeSlots, store.id]);
   const weeks = calendar.length / 7;
 
   // 選択中受取日の受取時間枠ビュー（DB枠の満枠・受付締切〔当日60分前〕を反映して disabled/reason を付与）
