@@ -10,6 +10,22 @@ type Mail = {
   replyTo?: string
 }
 
+const PRODUCTION_SITE_URL = 'https://heijyotei.com'
+
+// 本番以外（ローカル・確認環境）は店舗・お客様に届かないよう MAIL_REDIRECT_TO だけへ送る。
+// 設定忘れでも先方に届かないよう、本番以外で未設定なら送信しない。
+function resolveRedirect(): { to: string } | { skip: true } | null {
+  const redirect = process.env.MAIL_REDIRECT_TO?.trim()
+  if (redirect) return { to: redirect }
+  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? PRODUCTION_SITE_URL).replace(/\/$/, '')
+  const isProduction = process.env.NODE_ENV === 'production' && siteUrl === PRODUCTION_SITE_URL
+  return isProduction ? null : { skip: true }
+}
+
+function escapeHtml(s: string): string {
+  return s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!)
+}
+
 // "平壌亭 <addr@example.com>" / "addr@example.com" を {name?, email} に分解
 function parseFrom(raw?: string): { name?: string; email: string } | null {
   if (!raw) return null
@@ -25,8 +41,22 @@ export async function sendEmail(mail: Mail): Promise<boolean> {
   if (!apiKey || !from) return false // 未設定＝送信スキップ（受付自体は成立させる）
 
   // 複数宛先に対応（重複除去・空要素除去）。1件も無ければ送信スキップ。
-  const recipients = [...new Set((Array.isArray(mail.to) ? mail.to : [mail.to]).map((e) => e.trim()).filter(Boolean))]
+  let recipients = [...new Set((Array.isArray(mail.to) ? mail.to : [mail.to]).map((e) => e.trim()).filter(Boolean))]
   if (recipients.length === 0) return false
+
+  let { subject, text, html } = mail
+  const redirect = resolveRedirect()
+  if (redirect && 'skip' in redirect) {
+    console.warn('[email] MAIL_REDIRECT_TO 未設定のため本番以外では送信しません:', recipients.join(', '))
+    return false
+  }
+  if (redirect) {
+    const original = recipients.join(', ')
+    recipients = [redirect.to]
+    subject = `[確認環境] ${subject}`
+    text = `【確認環境】本来の宛先: ${original}\n\n${text}`
+    html = `<p style="padding:8px;background:#fff3cd;color:#664d03;font-size:13px">【確認環境】本来の宛先: ${escapeHtml(original)}</p>${html}`
+  }
 
   try {
     const res = await fetch('https://api.brevo.com/v3/smtp/email', {
@@ -40,9 +70,9 @@ export async function sendEmail(mail: Mail): Promise<boolean> {
         sender: from.name ? { name: from.name, email: from.email } : { email: from.email },
         to: recipients.map((email) => ({ email })),
         ...(mail.replyTo ? { replyTo: { email: mail.replyTo } } : {}),
-        subject: mail.subject,
-        textContent: mail.text,
-        htmlContent: mail.html,
+        subject,
+        textContent: text,
+        htmlContent: html,
       }),
     })
     if (!res.ok) {
