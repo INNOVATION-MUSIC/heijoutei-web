@@ -3,6 +3,7 @@ import SpButton from "./SpButton";
 import { SECTION_LINKS } from "@/app/lib/navLinks";
 import { type StoreImageMap, type StoreNameMap } from "@/app/lib/storeDb";
 import { layoutStoreName } from "@/app/lib/storeName";
+import SisterStoreTag from "../SisterStoreTag";
 
 const mincho = "'Shippori Mincho', serif";
 const display = "'Cormorant Garamond', serif";
@@ -146,16 +147,19 @@ export default function StoreSectionSP({ images, names }: { images?: StoreImageM
         {[
           { mapImg: images?.sonobe ?? "/images/store_sonobe_map.webp",     subEn: "HEIJOHTEI　SONOBE",     name: smallStoreName(names?.sonobe ?? "平壌亭 園部店"), alt: names?.sonobe ?? "平壌亭 園部店",   tel: "0771-68-1760" },
           { mapImg: images?.fukuchiyama ?? "/images/store_fukuchiyama_map.webp", subEn: "HEIJOHTEI　FUKUCHIYAMA", name: smallStoreName(names?.fukuchiyama ?? "平壌亭 福知山店"), alt: names?.fukuchiyama ?? "平壌亭 福知山店", tel: "0773-24-2322" },
-          { mapImg: images?.yurano ?? "/images/store_yurano_map.webp",     subEn: "YAKINIKU YURANO",         name: smallStoreName(names?.yurano ?? "焼肉 ゆらの"), alt: names?.yurano ?? "焼肉ゆらの",    tel: "0773-45-8429" },
+          { mapImg: images?.yurano ?? "/images/store_yurano_map.webp",     subEn: "YAKINIKU YURANO",         name: smallStoreName(names?.yurano ?? "焼肉 ゆらの"), alt: names?.yurano ?? "焼肉ゆらの",    tel: "0773-45-8429", sister: true },
         ].map((s) => (
           <div key={s.tel} style={{ height: s.name.cardHeight, background: "#171717", display: "flex", overflow: "hidden" }}>
             <div style={{ width: 130, height: s.name.cardHeight, overflow: "hidden", background: "#1c110a", flexShrink: 0, position: "relative" }}>
               <Image src={s.mapImg} alt={s.alt} fill className="object-cover" sizes="130px" />
             </div>
             <div style={{ padding: "17px 0 0 20px", flex: 1 }}>
-              <p style={{ fontFamily: sans, fontSize: 10, fontWeight: 300, letterSpacing: "3px", color: "rgba(217,184,107,0.6)", marginBottom: 6 }}>
-                {s.subEn}
-              </p>
+              <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
+                <p style={{ fontFamily: sans, fontSize: 10, fontWeight: 300, letterSpacing: "3px", color: "rgba(217,184,107,0.6)", whiteSpace: "sister" in s && s.sister ? "nowrap" : undefined }}>
+                  {s.subEn}
+                </p>
+                {"sister" in s && s.sister && <SisterStoreTag compact />}
+              </div>
               <div style={{ width: 32, height: 1, backgroundColor: "rgba(217,184,107,0.45)", marginBottom: 8 }} />
               <SmallStoreName lines={s.name.lines} fontSize={s.name.fontSize} />
               <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -183,9 +187,12 @@ export default function StoreSectionSP({ images, names }: { images?: StoreImageM
             </div>
           )}
           <div style={{ padding: "17px 0 0 20px", flex: 1 }}>
-            <p style={{ fontFamily: sans, fontSize: 10, fontWeight: 300, letterSpacing: "3px", color: "rgba(217,184,107,0.6)", marginBottom: 6 }}>
-              KOPUNIKU
-            </p>
+            <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
+              <p style={{ fontFamily: sans, fontSize: 10, fontWeight: 300, letterSpacing: "3px", color: "rgba(217,184,107,0.6)" }}>
+                KOPUNIKU
+              </p>
+              <SisterStoreTag compact />
+            </div>
             <div style={{ width: 32, height: 1, backgroundColor: "rgba(217,184,107,0.45)", marginBottom: 8 }} />
             <SmallStoreName lines={kopu.lines} fontSize={kopu.fontSize} />
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>

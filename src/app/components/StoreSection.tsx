@@ -5,6 +5,7 @@ import { SECTION_LINKS } from "@/app/lib/navLinks";
 import { type StoreImageMap, type StoreNameMap } from "@/app/lib/storeDb";
 import { spacedStoreName, fitStoreNameFontSize } from "@/app/lib/storeName";
 import OutlineButton from "./OutlineButton";
+import SisterStoreTag from "./SisterStoreTag";
 
 const mincho = "'Shippori Mincho', serif";
 const display = "'Cormorant Garamond', serif";
@@ -49,9 +50,10 @@ interface InfoPanelProps {
   paddingLeft: number;
   paddingTop: number;
   nameMaxWidth: number;
+  sister?: boolean;
 }
 
-function InfoPanel({ enLabel, name, address, phone, access, hours, closed, paddingLeft, paddingTop, nameMaxWidth }: InfoPanelProps) {
+function InfoPanel({ enLabel, name, address, phone, access, hours, closed, paddingLeft, paddingTop, nameMaxWidth, sister }: InfoPanelProps) {
   const displayName = spacedStoreName(name, "  ");
   const detailText = {
     fontFamily: sans,
@@ -66,7 +68,10 @@ function InfoPanel({ enLabel, name, address, phone, access, hours, closed, paddi
     <div style={{ flex: 1, background: "#171717", paddingLeft, paddingTop, display: "flex", flexDirection: "column" }}>
       {/* ラベル・区切り線・店名 */}
       <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-        <p style={{ fontFamily: sans, fontWeight: 300, fontSize: 10, letterSpacing: "3px", color: "rgba(217,184,107,0.6)", lineHeight: "normal", whiteSpace: "pre" }}>{enLabel}</p>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <p style={{ fontFamily: sans, fontWeight: 300, fontSize: 10, letterSpacing: "3px", color: "rgba(217,184,107,0.6)", lineHeight: "normal", whiteSpace: "pre" }}>{enLabel}</p>
+          {sister && <SisterStoreTag />}
+        </div>
         <div style={{ width: 32, height: 1, background: "rgba(217,184,107,0.45)" }} />
         <p style={{ fontFamily: mincho, fontWeight: 800, fontSize: fitStoreNameFontSize(displayName, nameMaxWidth, 26, 2), letterSpacing: "2px", color: "#fff", lineHeight: "normal", whiteSpace: "pre" }}>{displayName}</p>
       </div>
@@ -177,6 +182,7 @@ export default function StoreSection({ images, names }: { images?: StoreImageMap
             </div>
             <InfoPanel
               enLabel="YAKINIKU YURANO"
+              sister
               name={names?.yurano ?? "焼肉ゆらの"}
               address="京都府福知山堀今岡６番地ゆらのガーデン内"
               phone="0773-45-8429"
@@ -203,6 +209,7 @@ export default function StoreSection({ images, names }: { images?: StoreImageMap
             )}
             <InfoPanel
               enLabel={"KOPUNIKU"}
+              sister
               name={names?.heijohtei ?? "KOPU29"}
               address="京都府亀岡市篠町浄法寺中村34-6"
               phone="0771-20-1960"
