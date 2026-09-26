@@ -212,17 +212,19 @@ export type CalendarDay = {
 const WEEKDAY_LABELS = ["日", "月", "火", "水", "木", "金", "土"];
 export { WEEKDAY_LABELS };
 
-// 受取日の予約期間 = 本日〜「本日+PICKUP_WINDOW_DAYS日」と PICKUP_WINDOW_END の遅い方まで。
-// PICKUP_WINDOW_END は暫定（2026-09-26・クライアント確認待ち）。確定したら値を変更 or 削除する。
-export const PICKUP_WINDOW_DAYS = 31;
+// 受取日の予約期間 = 本日〜「本日+PICKUP_WINDOW_MONTHS か月」と PICKUP_WINDOW_END の遅い方まで（2026-09-26 クライアント確定: 最大3か月）。
+// PICKUP_WINDOW_END は切替直後に12月末まで選べていた状態を維持するための下限（2026-10 以降は3か月側が常に後になり無効）。
+export const PICKUP_WINDOW_MONTHS = 3;
 export const PICKUP_WINDOW_END = "2026-12-31";
 
 /** 予約期間の最終日（YYYY-MM-DD）。todayIso は店舗基準（JST）の本日。 */
 export function pickupWindowEndIso(todayIso: string): string {
   const [y, m, d] = todayIso.split("-").map(Number);
-  const dt = new Date(Date.UTC(y, m - 1, d + PICKUP_WINDOW_DAYS));
-  const byDays = `${dt.getUTCFullYear()}-${String(dt.getUTCMonth() + 1).padStart(2, "0")}-${String(dt.getUTCDate()).padStart(2, "0")}`;
-  return byDays > PICKUP_WINDOW_END ? byDays : PICKUP_WINDOW_END;
+  // 月末超えは翌月に繰り越さず月末に丸める（11/30 → 2/28）
+  const lastDay = new Date(Date.UTC(y, m - 1 + PICKUP_WINDOW_MONTHS + 1, 0)).getUTCDate();
+  const dt = new Date(Date.UTC(y, m - 1 + PICKUP_WINDOW_MONTHS, Math.min(d, lastDay)));
+  const byMonths = `${dt.getUTCFullYear()}-${String(dt.getUTCMonth() + 1).padStart(2, "0")}-${String(dt.getUTCDate()).padStart(2, "0")}`;
+  return byMonths > PICKUP_WINDOW_END ? byMonths : PICKUP_WINDOW_END;
 }
 
 // ───────── DB 受付枠（フロント用の最小形・client-safe） ─────────
