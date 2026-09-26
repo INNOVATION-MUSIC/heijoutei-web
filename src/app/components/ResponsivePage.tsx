@@ -12,7 +12,7 @@ import NewsSection from "./NewsSection";
 import { type NewsItem } from "@/app/lib/newsData";
 import { type BusinessMonth } from "@/app/lib/businessCalendarDb";
 import { type TopCourse } from "@/app/lib/courseDb";
-import { type StoreLineLink, type StoreImageMap } from "@/app/lib/storeDb";
+import { type StoreLineLink, type StoreImageMap, type StoreNameMap } from "@/app/lib/storeDb";
 import KodawariSection from "./KodawariSection";
 import MenuSection from "./MenuSection";
 import LunchSection from "./LunchSection";
@@ -41,7 +41,7 @@ import SpStickyHeader from "./sp/SpStickyHeader";
 const DESIGN_PC = 1440;
 const DESIGN_SP = 390;
 
-export default function ResponsivePage({ topNews, businessMonths, topCourses, lineLinks, storeImages }: { topNews?: NewsItem[]; businessMonths?: BusinessMonth[]; topCourses?: TopCourse[]; lineLinks?: StoreLineLink[]; storeImages?: StoreImageMap }) {
+export default function ResponsivePage({ topNews, businessMonths, topCourses, lineLinks, storeImages, storeNames }: { topNews?: NewsItem[]; businessMonths?: BusinessMonth[]; topCourses?: TopCourse[]; lineLinks?: StoreLineLink[]; storeImages?: StoreImageMap; storeNames?: StoreNameMap }) {
   const isMobile = useIsMobile();
   const [modalOpen, setModalOpen] = useState(false);
   const [lineModalOpen, setLineModalOpen] = useState(false);
@@ -86,7 +86,7 @@ export default function ResponsivePage({ topNews, businessMonths, topCourses, li
           </ScaledSection>
         )}
         <ScaledSection designWidth={DESIGN_SP} height={1899}>
-          <StoreSectionSP images={storeImages} />
+          <StoreSectionSP images={storeImages} names={storeNames} />
         </ScaledSection>
         <ScaledSection designWidth={DESIGN_SP} height={1090}>
           <CalendarSectionSP months={businessMonths} />
@@ -137,7 +137,7 @@ export default function ResponsivePage({ topNews, businessMonths, topCourses, li
         </ScaledSection>
       )}
       <ScaledSection designWidth={DESIGN_PC} height={1620}>
-        <StoreSection images={storeImages} />
+        <StoreSection images={storeImages} names={storeNames} />
       </ScaledSection>
       <ScaledSection designWidth={DESIGN_PC} height={1000}>
         <CalendarSection months={businessMonths} />

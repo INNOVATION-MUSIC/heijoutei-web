@@ -4,7 +4,7 @@ import StickyButton from "./components/StickyButton";
 import { fetchTopNews } from "./lib/newsDb";
 import { fetchBusinessCalendar } from "./lib/businessCalendarDb";
 import { fetchTopCourses } from "./lib/courseDb";
-import { fetchStoreLineLinks, fetchStoreImages } from "./lib/storeDb";
+import { fetchStoreLineLinks, fetchStoreImages, fetchStoreNames } from "./lib/storeDb";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -23,16 +23,17 @@ export const metadata: Metadata = {
 export const revalidate = 60;
 
 export default async function Home() {
-  const [topNews, businessMonths, topCourses, lineLinks, storeImages] = await Promise.all([
+  const [topNews, businessMonths, topCourses, lineLinks, storeImages, storeNames] = await Promise.all([
     fetchTopNews(),
     fetchBusinessCalendar(),
     fetchTopCourses(),
     fetchStoreLineLinks(),
     fetchStoreImages(),
+    fetchStoreNames(),
   ]);
   return (
     <ClientSplash>
-      <ResponsivePage topNews={topNews} businessMonths={businessMonths} topCourses={topCourses} lineLinks={lineLinks} storeImages={storeImages} />
+      <ResponsivePage topNews={topNews} businessMonths={businessMonths} topCourses={topCourses} lineLinks={lineLinks} storeImages={storeImages} storeNames={storeNames} />
       <StickyButton />
     </ClientSplash>
   );

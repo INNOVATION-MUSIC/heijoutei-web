@@ -117,6 +117,22 @@ export async function fetchStoreImages(): Promise<StoreImageMap> {
   }
 }
 
+// トップ StoreInfo 用: 店舗 slug → 管理画面の店名（stores.name）
+export type StoreNameMap = Partial<Record<string, string>>;
+
+export async function fetchStoreNames(): Promise<StoreNameMap> {
+  try {
+    const supabase = createStaticClient();
+    const { data } = await supabase.from("stores").select("slug, name").eq("is_active", true);
+    if (!data) return {};
+    return Object.fromEntries(
+      data.filter((r) => r.name?.trim()).map((r) => [r.slug, (r.name as string).trim()]),
+    );
+  } catch {
+    return {};
+  }
+}
+
 export async function fetchStoreParams(): Promise<{ id: string }[]> {
   try {
     const supabase = createStaticClient();

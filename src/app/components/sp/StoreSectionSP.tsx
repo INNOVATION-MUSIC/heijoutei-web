@@ -1,7 +1,8 @@
 import Image from "next/image";
 import SpButton from "./SpButton";
 import { SECTION_LINKS } from "@/app/lib/navLinks";
-import { type StoreImageMap } from "@/app/lib/storeDb";
+import { type StoreImageMap, type StoreNameMap } from "@/app/lib/storeDb";
+import { spacedStoreName, fitStoreNameFontSize } from "@/app/lib/storeName";
 
 const mincho = "'Shippori Mincho', serif";
 const display = "'Cormorant Garamond', serif";
@@ -18,7 +19,9 @@ function PhoneIcon({ size = 20 }: { size?: number }) {
   );
 }
 
-export default function StoreSectionSP({ images }: { images?: StoreImageMap }) {
+export default function StoreSectionSP({ images, names }: { images?: StoreImageMap; names?: StoreNameMap }) {
+  const kameokaName = spacedStoreName(names?.kameoka ?? "平壌亭 亀岡店", "　");
+  const kopuName = spacedStoreName(names?.heijohtei ?? "KOPU29", "　");
   return (
     <section
       style={{
@@ -83,8 +86,8 @@ export default function StoreSectionSP({ images }: { images?: StoreImageMap }) {
           </p>
           <div style={{ width: 32, height: 1, backgroundColor: "rgba(217,184,107,0.45)", marginBottom: 12 }} />
           <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 14 }}>
-            <p style={{ fontFamily: mincho, fontSize: 26, fontWeight: 800, letterSpacing: "2px", color: "#fff" }}>
-              平壌亭　亀岡店
+            <p style={{ fontFamily: mincho, fontSize: fitStoreNameFontSize(kameokaName, 230, 26, 2), fontWeight: 800, letterSpacing: "2px", color: "#fff", whiteSpace: "nowrap" }}>
+              {kameokaName}
             </p>
             <a
               href="https://maps.google.com/?q=京都府亀岡市篠町浄法寺中村３５-５"
@@ -122,9 +125,9 @@ export default function StoreSectionSP({ images }: { images?: StoreImageMap }) {
       {/* ━━━ 小カード共通 ━━━ */}
       <div style={{ display: "flex", flexDirection: "column", gap: 20, paddingLeft: 20, paddingRight: 20, flexShrink: 0 }}>
         {[
-          { mapImg: images?.sonobe ?? "/images/store_sonobe_map.webp",     subEn: "HEIJOHTEI　SONOBE",     name: "平壌亭　園部店",   tel: "0771-68-1760" },
-          { mapImg: images?.fukuchiyama ?? "/images/store_fukuchiyama_map.webp", subEn: "HEIJOHTEI　FUKUCHIYAMA", name: "平壌亭　福知山店", tel: "0773-24-2322" },
-          { mapImg: images?.yurano ?? "/images/store_yurano_map.webp",     subEn: "YAKINIKU YURANO",         name: "焼肉　ゆらの",    tel: "0773-45-8429" },
+          { mapImg: images?.sonobe ?? "/images/store_sonobe_map.webp",     subEn: "HEIJOHTEI　SONOBE",     name: spacedStoreName(names?.sonobe ?? "平壌亭 園部店", "　"),   tel: "0771-68-1760" },
+          { mapImg: images?.fukuchiyama ?? "/images/store_fukuchiyama_map.webp", subEn: "HEIJOHTEI　FUKUCHIYAMA", name: spacedStoreName(names?.fukuchiyama ?? "平壌亭 福知山店", "　"), tel: "0773-24-2322" },
+          { mapImg: images?.yurano ?? "/images/store_yurano_map.webp",     subEn: "YAKINIKU YURANO",         name: spacedStoreName(names?.yurano ?? "焼肉 ゆらの", "　"),    tel: "0773-45-8429" },
         ].map((s) => (
           <div key={s.name} style={{ height: 120, background: "#171717", display: "flex", overflow: "hidden" }}>
             <div style={{ width: 130, height: 120, overflow: "hidden", background: "#1c110a", flexShrink: 0, position: "relative" }}>
@@ -135,7 +138,7 @@ export default function StoreSectionSP({ images }: { images?: StoreImageMap }) {
                 {s.subEn}
               </p>
               <div style={{ width: 32, height: 1, backgroundColor: "rgba(217,184,107,0.45)", marginBottom: 8 }} />
-              <p style={{ fontFamily: mincho, fontSize: 18, fontWeight: 800, letterSpacing: "2px", color: "#fff", marginBottom: 8 }}>
+              <p style={{ fontFamily: mincho, fontSize: fitStoreNameFontSize(s.name, 190, 18, 2), fontWeight: 800, letterSpacing: "2px", color: "#fff", marginBottom: 8, whiteSpace: "nowrap" }}>
                 {s.name}
               </p>
               <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -153,12 +156,12 @@ export default function StoreSectionSP({ images }: { images?: StoreImageMap }) {
           {/* 管理画面で店舗写真（hero_image_url）が登録されていれば写真、無ければ白背景にロゴ */}
           {images?.heijohtei ? (
             <div style={{ width: 130, height: 120, overflow: "hidden", background: "#1c110a", flexShrink: 0, position: "relative" }}>
-              <Image src={images.heijohtei} alt="KOPU29" fill className="object-cover" sizes="130px" />
+              <Image src={images.heijohtei} alt={kopuName} fill className="object-cover" sizes="130px" />
             </div>
           ) : (
             <div style={{ width: 130, height: 120, background: "#fff", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
               <div style={{ width: 96, height: 96, position: "relative", flexShrink: 0 }}>
-                <Image src="/images/store_kopu29.webp" alt="KOPU29" fill className="object-contain" sizes="96px" />
+                <Image src="/images/store_kopu29.webp" alt={kopuName} fill className="object-contain" sizes="96px" />
               </div>
             </div>
           )}
@@ -167,8 +170,8 @@ export default function StoreSectionSP({ images }: { images?: StoreImageMap }) {
               KOPUNIKU
             </p>
             <div style={{ width: 32, height: 1, backgroundColor: "rgba(217,184,107,0.45)", marginBottom: 8 }} />
-            <p style={{ fontFamily: mincho, fontSize: 18, fontWeight: 800, letterSpacing: "2px", color: "#fff", marginBottom: 8 }}>
-              KOPU29
+            <p style={{ fontFamily: mincho, fontSize: fitStoreNameFontSize(kopuName, 190, 18, 2), fontWeight: 800, letterSpacing: "2px", color: "#fff", marginBottom: 8, whiteSpace: "nowrap" }}>
+              {kopuName}
             </p>
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
               <PhoneIcon size={20} />

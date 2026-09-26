@@ -2,7 +2,8 @@
 import { type ReactNode } from "react";
 import Image from "next/image";
 import { SECTION_LINKS } from "@/app/lib/navLinks";
-import { type StoreImageMap } from "@/app/lib/storeDb";
+import { type StoreImageMap, type StoreNameMap } from "@/app/lib/storeDb";
+import { spacedStoreName, fitStoreNameFontSize } from "@/app/lib/storeName";
 import OutlineButton from "./OutlineButton";
 
 const mincho = "'Shippori Mincho', serif";
@@ -47,9 +48,11 @@ interface InfoPanelProps {
   closed: string;
   paddingLeft: number;
   paddingTop: number;
+  nameMaxWidth: number;
 }
 
-function InfoPanel({ enLabel, name, address, phone, access, hours, closed, paddingLeft, paddingTop }: InfoPanelProps) {
+function InfoPanel({ enLabel, name, address, phone, access, hours, closed, paddingLeft, paddingTop, nameMaxWidth }: InfoPanelProps) {
+  const displayName = spacedStoreName(name, "  ");
   const detailText = {
     fontFamily: sans,
     fontWeight: 300,
@@ -65,7 +68,7 @@ function InfoPanel({ enLabel, name, address, phone, access, hours, closed, paddi
       <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
         <p style={{ fontFamily: sans, fontWeight: 300, fontSize: 10, letterSpacing: "3px", color: "rgba(217,184,107,0.6)", lineHeight: "normal", whiteSpace: "pre" }}>{enLabel}</p>
         <div style={{ width: 32, height: 1, background: "rgba(217,184,107,0.45)" }} />
-        <p style={{ fontFamily: mincho, fontWeight: 800, fontSize: 26, letterSpacing: "2px", color: "#fff", lineHeight: "normal", whiteSpace: "pre" }}>{name}</p>
+        <p style={{ fontFamily: mincho, fontWeight: 800, fontSize: fitStoreNameFontSize(displayName, nameMaxWidth, 26, 2), letterSpacing: "2px", color: "#fff", lineHeight: "normal", whiteSpace: "pre" }}>{displayName}</p>
       </div>
       {/* 詳細情報 */}
       <div style={{ display: "flex", flexDirection: "column", gap: 6, paddingTop: 18 }}>
@@ -82,7 +85,7 @@ function InfoPanel({ enLabel, name, address, phone, access, hours, closed, paddi
   );
 }
 
-export default function StoreSection({ images }: { images?: StoreImageMap }) {
+export default function StoreSection({ images, names }: { images?: StoreImageMap; names?: StoreNameMap }) {
   return (
     <section style={{ width: 1440, background: "#0d0a0a", display: "flex", flexDirection: "column", paddingTop: 41 }}>
 
@@ -111,7 +114,7 @@ export default function StoreSection({ images }: { images?: StoreImageMap }) {
           </div>
           <InfoPanel
             enLabel={"HEIJOHTEI  KAMEOKA"}
-            name={"平壌亭  亀岡店"}
+            name={names?.kameoka ?? "平壌亭 亀岡店"}
             address="京都府亀岡市篠町浄法寺中村３５-５"
             phone="0771-23-8410"
             access="30台駐車場完備/8名様よりマイクロバス送迎あり"
@@ -124,6 +127,7 @@ export default function StoreSection({ images }: { images?: StoreImageMap }) {
             closed="定休日 火曜"
             paddingLeft={56}
             paddingTop={44}
+            nameMaxWidth={520}
           />
         </div>
 
@@ -135,7 +139,7 @@ export default function StoreSection({ images }: { images?: StoreImageMap }) {
             </div>
             <InfoPanel
               enLabel={"HEIJOHTEI  SONOBE"}
-              name={"平壌亭  園部店"}
+              name={names?.sonobe ?? "平壌亭 園部店"}
               address="京都府南丹市園部町上木崎町坪ノ内26-5"
               phone="0771-68-1760"
               access="20台駐車場完備/8名様よりマイクロバス送迎あり"
@@ -143,6 +147,7 @@ export default function StoreSection({ images }: { images?: StoreImageMap }) {
               closed="定休日 火曜"
               paddingLeft={40}
               paddingTop={29}
+              nameMaxWidth={320}
             />
           </div>
           <div style={{ width: 650, display: "flex", flexShrink: 0 }}>
@@ -151,7 +156,7 @@ export default function StoreSection({ images }: { images?: StoreImageMap }) {
             </div>
             <InfoPanel
               enLabel={"HEIJOHTEI  FUKUCHIYAMA"}
-              name={"平壌亭  福知山店"}
+              name={names?.fukuchiyama ?? "平壌亭 福知山店"}
               address="京都府福知山市字堀2303の２"
               phone="0773-24-2322"
               access="15台駐車場完備/8名様よりマイクロバス送迎あり"
@@ -159,6 +164,7 @@ export default function StoreSection({ images }: { images?: StoreImageMap }) {
               closed="定休日 火曜"
               paddingLeft={40}
               paddingTop={29}
+              nameMaxWidth={320}
             />
           </div>
         </div>
@@ -171,7 +177,7 @@ export default function StoreSection({ images }: { images?: StoreImageMap }) {
             </div>
             <InfoPanel
               enLabel="YAKINIKU YURANO"
-              name="焼肉ゆらの"
+              name={names?.yurano ?? "焼肉ゆらの"}
               address="京都府福知山堀今岡６番地ゆらのガーデン内"
               phone="0773-45-8429"
               access="JR福知山駅より徒歩10分/駐車場有"
@@ -179,24 +185,25 @@ export default function StoreSection({ images }: { images?: StoreImageMap }) {
               closed="定休日 火曜"
               paddingLeft={40}
               paddingTop={29}
+              nameMaxWidth={320}
             />
           </div>
           <div style={{ width: 650, display: "flex", flexShrink: 0 }}>
             {/* 管理画面で店舗写真（hero_image_url）が登録されていれば写真、無ければ白背景にロゴ */}
             {images?.heijohtei ? (
               <div style={{ width: 280, height: 280, position: "relative", overflow: "hidden", background: "#1c110a", flexShrink: 0 }}>
-                <Image src={images.heijohtei} alt="KOPU29" fill className="object-cover" sizes="280px" />
+                <Image src={images.heijohtei} alt={names?.heijohtei ?? "KOPU29"} fill className="object-cover" sizes="280px" />
               </div>
             ) : (
               <div style={{ width: 280, height: 280, background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                 <div style={{ width: 212, height: 212, position: "relative", flexShrink: 0 }}>
-                  <Image src="/images/store_kopu29.webp" alt="KOPU29" fill className="object-contain" sizes="212px" />
+                  <Image src="/images/store_kopu29.webp" alt={names?.heijohtei ?? "KOPU29"} fill className="object-contain" sizes="212px" />
                 </div>
               </div>
             )}
             <InfoPanel
               enLabel={"KOPUNIKU"}
-              name="KOPU29"
+              name={names?.heijohtei ?? "KOPU29"}
               address="京都府亀岡市篠町浄法寺中村34-6"
               phone="0771-20-1960"
               access="JR嵯峨野線「亀岡」駅から徒歩15分"
@@ -204,6 +211,7 @@ export default function StoreSection({ images }: { images?: StoreImageMap }) {
               closed="定休日 火曜"
               paddingLeft={40}
               paddingTop={29}
+              nameMaxWidth={320}
             />
           </div>
         </div>
