@@ -46,7 +46,7 @@ export default function LunchSectionSP() {
 
       {/* メイン写真: w=358, h=194 */}
       <div style={{ width: 358, height: 194, overflow: "hidden", background: "#2e1c12", flexShrink: 0, position: "relative" }}>
-        <Image src="/images/lunch_main.webp" alt="ランチ" fill className="object-cover" sizes="358px" />
+        <Image src="/images/lunch_top.webp" alt="ランチ" fill className="object-cover" sizes="358px" />
       </div>
 
       {/* gap: 384 - (167+194) = 23px */}
@@ -81,7 +81,7 @@ export default function LunchSectionSP() {
         </div>
         <div style={{ height: 30, flexShrink: 0 }} />
         <div style={{ width: 229, height: 186, overflow: "hidden", background: "#241a14", position: "relative", alignSelf: "flex-end" }}>
-          <Image src="/images/lunch_yakiniku.webp" alt="焼肉ランチ" fill className="object-cover" sizes="229px" />
+          <Image src="/images/lunch_bibimbap.webp" alt="石焼ビビンバランチ" fill className="object-cover" style={{ objectPosition: "85% center" }} sizes="229px" />
         </div>
       </div>
     </section>
