@@ -1,6 +1,13 @@
 const sans = "'Noto Sans JP', sans-serif";
 
-// 平壌亭の姉妹店（焼肉ゆらの・KOPU29）に付けるタグ
+// 平壌亭の姉妹店（焼肉ゆらの・KOPU29）の slug
+const SISTER_STORE_SLUGS = ["yurano", "heijohtei"];
+
+export function isSisterStore(slug: string): boolean {
+  return SISTER_STORE_SLUGS.includes(slug);
+}
+
+// 姉妹店に付けるタグ
 export default function SisterStoreTag({ compact = false }: { compact?: boolean }) {
   return (
     <span

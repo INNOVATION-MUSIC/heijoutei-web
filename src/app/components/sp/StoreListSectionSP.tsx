@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useRef } from "react";
 import OutlineButton from "../OutlineButton";
+import SisterStoreTag, { isSisterStore } from "../SisterStoreTag";
 import type { StoreCardData as Store } from "@/app/lib/storeListDb";
 
 const mincho = "'Shippori Mincho', serif";
@@ -82,7 +83,10 @@ function StoreCardSP({ store }: { store: Store }) {
 
       {/* 英字ラベル・金線・店名 */}
       <div style={{ display: "flex", flexDirection: "column", gap: 12, paddingTop: 28 }}>
-        <p style={{ fontFamily: sans, fontWeight: 300, fontSize: 10, letterSpacing: "3px", color: "rgba(217,184,107,0.6)", lineHeight: "normal", margin: 0 }}>{store.enLabel}</p>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <p style={{ fontFamily: sans, fontWeight: 300, fontSize: 10, letterSpacing: "3px", color: "rgba(217,184,107,0.6)", lineHeight: "normal", margin: 0 }}>{store.enLabel}</p>
+          {isSisterStore(store.slug) && <SisterStoreTag />}
+        </div>
         <div style={{ width: 32, height: 1, background: "rgba(217,184,107,0.45)" }} />
         <p style={{ fontFamily: mincho, fontWeight: 800, fontSize: 26, letterSpacing: "2px", color: "#fff", lineHeight: "normal", margin: 0 }}>{store.name}</p>
       </div>

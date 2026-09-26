@@ -4,6 +4,7 @@ import { type ReactNode, useState } from "react";
 import Image from "next/image";
 import PageHeader from "./PageHeader";
 import OutlineButton from "./OutlineButton";
+import SisterStoreTag, { isSisterStore } from "./SisterStoreTag";
 import { type StoreDetail } from "@/app/lib/storeDetailData";
 import { SECTION_LINKS } from "@/app/lib/navLinks";
 
@@ -171,7 +172,10 @@ export default function StoreDetailSection({ store, onOpenModal, height }: Props
         <div style={{ width: 535, flexShrink: 0, paddingTop: 144, display: "flex", flexDirection: "column" }}>
           {/* 英字ラベル・金線・店名（gap12 でまとめる） */}
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            <p style={{ fontFamily: sans, fontWeight: 300, fontSize: 10, letterSpacing: "3px", color: "rgba(217,184,107,0.6)", whiteSpace: "pre", margin: 0 }}>{store.enLabel}</p>
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <p style={{ fontFamily: sans, fontWeight: 300, fontSize: 10, letterSpacing: "3px", color: "rgba(217,184,107,0.6)", whiteSpace: "pre", margin: 0 }}>{store.enLabel}</p>
+              {isSisterStore(store.slug) && <SisterStoreTag />}
+            </div>
             <div style={{ width: 32, height: 1, background: "rgba(217,184,107,0.6)" }} />
             <p style={{ fontFamily: mincho, fontWeight: 800, fontSize: 32, letterSpacing: "2px", color: "#fff", whiteSpace: "pre", margin: 0 }}>{store.name}</p>
           </div>

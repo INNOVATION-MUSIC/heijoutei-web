@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { type StoreDetail } from "@/app/lib/storeDetailData";
+import SisterStoreTag, { isSisterStore } from "../SisterStoreTag";
+import { layoutStoreName } from "@/app/lib/storeName";
 import { SECTION_LINKS } from "@/app/lib/navLinks";
 
 const mincho = "'Shippori Mincho', serif";
@@ -183,6 +185,8 @@ export default function StoreDetailSectionSP({ store, height, onOpenModal, onMea
   const mapSrc = `https://maps.google.com/maps?q=${encodeURIComponent(store.address)}&z=16&output=embed`;
 
   const contentRef = useRef<HTMLDivElement>(null);
+  // 長い店名は最後の空白で2行に（例「ホルモン 韓国料理」/「KOPU29」）
+  const nameLayout = layoutStoreName(store.name, " ", 350, 28, 2, 28);
   useEffect(() => {
     const el = contentRef.current;
     if (!el || !onMeasured) return;
@@ -202,9 +206,16 @@ export default function StoreDetailSectionSP({ store, height, onOpenModal, onMea
       <div ref={contentRef} style={{ display: "flex", flexDirection: "column", paddingLeft: 20, paddingRight: 20, paddingBottom: 149 }}>
         {/* 英字ラベル・金線・店名 */}
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          <p style={{ fontFamily: sans, fontWeight: 300, fontSize: 10, letterSpacing: "3px", color: "rgba(217,184,107,0.6)", whiteSpace: "pre", margin: 0 }}>{store.enLabel}</p>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <p style={{ fontFamily: sans, fontWeight: 300, fontSize: 10, letterSpacing: "3px", color: "rgba(217,184,107,0.6)", whiteSpace: "pre", margin: 0 }}>{store.enLabel}</p>
+            {isSisterStore(store.slug) && <SisterStoreTag />}
+          </div>
           <div style={{ width: 32, height: 1, background: "rgba(217,184,107,0.6)" }} />
-          <p style={{ fontFamily: mincho, fontWeight: 800, fontSize: 28, letterSpacing: "2px", color: "#fff", whiteSpace: "pre", margin: 0 }}>{store.name}</p>
+          <p style={{ fontFamily: mincho, fontWeight: 800, fontSize: nameLayout.fontSize, letterSpacing: "2px", color: "#fff", whiteSpace: "pre", margin: 0, lineHeight: nameLayout.lines.length > 1 ? 1.35 : undefined }}>
+            {nameLayout.lines.map((line, i) => (
+              <span key={i} style={{ display: "block" }}>{line}</span>
+            ))}
+          </p>
         </div>
 
         {/* 説明文 */}
