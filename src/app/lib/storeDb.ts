@@ -79,9 +79,11 @@ export async function fetchStoreDetail(slug: string): Promise<StoreDetail | unde
 // トップページの LINE バー/モーダル用：LINE URL が登録済みの店舗のみ返す（未登録は非表示）。
 export type StoreLineLink = { name: string; href: string };
 
-// LINE バー/モーダルの表示名（"平壌亭 亀岡店" → "亀岡店"、"焼肉ゆらの" はそのまま）
+// LINE バー/モーダルの表示名（"平壌亭 亀岡店" → "亀岡店"、"焼肉ゆらの" はそのまま）。
+// ボタン幅は約200px固定のため、空白を含む長い店名は最後の語だけ（"ホルモン 韓国料理 KOPU29" → "KOPU29"）
 function lineBarName(name: string): string {
-  return name.replace(/^平壌亭\s*/, "");
+  const words = name.replace(/^平壌亭\s*/, "").trim().split(/\s+/);
+  return words[words.length - 1];
 }
 
 export async function fetchStoreLineLinks(): Promise<StoreLineLink[]> {

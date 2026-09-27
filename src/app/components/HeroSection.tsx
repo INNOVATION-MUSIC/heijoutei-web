@@ -13,6 +13,7 @@ const LINE_BTN_WIDTHS: Record<string, number> = {
   "園部店": 185,
   "福知山店": 192,
   "焼肉ゆらの": 200,
+  "KOPU29": 198,
 };
 
 const mincho = "'Shippori Mincho', serif";
