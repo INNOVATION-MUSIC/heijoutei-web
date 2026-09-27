@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { compressImage } from '@/lib/compressImage'
 
 interface Props {
   value: string[]
@@ -24,11 +25,12 @@ export default function GalleryUploader({ value, onChange, label = 'ギャラリ
     const uploaded: string[] = []
     try {
       for (const file of files) {
-        const ext = file.name.split('.').pop()
+        const upload = await compressImage(file)
+        const ext = upload.name.split('.').pop()
         const filename = `${crypto.randomUUID()}.${ext}`
         const { data, error } = await supabase.storage
           .from('media')
-          .upload(filename, file, { contentType: file.type, upsert: false })
+          .upload(filename, upload, { contentType: upload.type, upsert: false })
         if (error) {
           setError(`アップロード失敗: ${error.message}`)
           continue

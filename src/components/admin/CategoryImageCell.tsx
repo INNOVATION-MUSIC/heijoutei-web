@@ -2,6 +2,7 @@
 
 import { useRef, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { compressImage } from '@/lib/compressImage'
 
 // カテゴリ管理テーブル内のコンパクトなカード画像アップロード。
 // ブラウザから直接 Supabase Storage（media バケット）へ上げ、公開URLを onChange で返す。
@@ -22,11 +23,12 @@ export default function CategoryImageCell({
     setUploading(true)
     try {
       const supabase = createClient()
-      const ext = file.name.split('.').pop()
+      const upload = await compressImage(file)
+      const ext = upload.name.split('.').pop()
       const filename = `${crypto.randomUUID()}.${ext}`
       const { data, error } = await supabase.storage
         .from('media')
-        .upload(filename, file, { contentType: file.type, upsert: false })
+        .upload(filename, upload, { contentType: upload.type, upsert: false })
       if (!error && data) {
         const {
           data: { publicUrl },

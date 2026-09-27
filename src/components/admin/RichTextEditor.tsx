@@ -6,6 +6,7 @@ import { Image as TiptapImage } from '@tiptap/extension-image'
 import { Link as TiptapLink } from '@tiptap/extension-link'
 import { useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { compressImage } from '@/lib/compressImage'
 
 function ToolbarButton({ active, onClick, children }: { active?: boolean; onClick: () => void; children: React.ReactNode }) {
   return (
@@ -28,9 +29,10 @@ function Toolbar({ editor }: { editor: Editor }) {
     const file = e.target.files?.[0]
     if (!file) return
     const supabase = createClient()
-    const ext = file.name.split('.').pop()
+    const upload = await compressImage(file, 2000)
+    const ext = upload.name.split('.').pop()
     const filename = `${crypto.randomUUID()}.${ext}`
-    const { data, error } = await supabase.storage.from('media').upload(filename, file, { contentType: file.type })
+    const { data, error } = await supabase.storage.from('media').upload(filename, upload, { contentType: upload.type })
     if (!error && data) {
       const { data: { publicUrl } } = supabase.storage.from('media').getPublicUrl(data.path)
       editor.chain().focus().setImage({ src: publicUrl }).run()
