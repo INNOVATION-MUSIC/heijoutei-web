@@ -7,6 +7,14 @@ export const metadata: Metadata = {
   title: "平壌亭 | 本格焼肉",
   description: SITE_DESCRIPTION,
   alternates: { canonical: "/" },
+  // アイコンは public/ の静的ファイル（app/ に置くと毎回 Worker 経由・キャッシュ無しで配信され、Workers のリクエスト数を大きく消費するため）
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.png", type: "image/png" },
+    ],
+    apple: "/apple-icon.png",
+  },
   openGraph: {
     type: "website",
     siteName: SITE_NAME,
