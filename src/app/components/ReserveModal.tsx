@@ -83,7 +83,8 @@ export default function ReserveModal({ open, onClose, isMobile: isMobileProp = f
         style={{
           position: "fixed",
           inset: 0,
-          zIndex: 100,
+          // SP 固定ヘッダー・ハンバーガー(200)より上に出す
+          zIndex: 300,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -102,6 +103,8 @@ export default function ReserveModal({ open, onClose, isMobile: isMobileProp = f
             flexDirection: "column",
             alignItems: "center",
             padding: "44px 0 40px",
+            maxHeight: "calc(100dvh - 32px)",
+            overflowY: "auto",
             animation: panelAnim,
           }}
           onClick={(e) => e.stopPropagation()}
