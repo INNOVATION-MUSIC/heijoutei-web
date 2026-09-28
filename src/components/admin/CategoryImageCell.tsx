@@ -3,6 +3,7 @@
 import { useRef, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { compressImage, MENU_IMAGE_MAX_SIZE } from '@/lib/compressImage'
+import { MEDIA_CACHE_CONTROL } from '@/lib/storageCache'
 
 // カテゴリ管理テーブル内のコンパクトなカード画像アップロード。
 // ブラウザから直接 Supabase Storage（media バケット）へ上げ、公開URLを onChange で返す。
@@ -28,7 +29,7 @@ export default function CategoryImageCell({
       const filename = `${crypto.randomUUID()}.${ext}`
       const { data, error } = await supabase.storage
         .from('media')
-        .upload(filename, upload, { contentType: upload.type, upsert: false })
+        .upload(filename, upload, { contentType: upload.type, cacheControl: MEDIA_CACHE_CONTROL, upsert: false })
       if (!error && data) {
         const {
           data: { publicUrl },

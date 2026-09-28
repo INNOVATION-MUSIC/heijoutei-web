@@ -4,6 +4,7 @@ import { useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { compressImage } from '@/lib/compressImage'
+import { MEDIA_CACHE_CONTROL } from '@/lib/storageCache'
 
 export default function MediaUploadButton() {
   const router = useRouter()
@@ -19,7 +20,7 @@ export default function MediaUploadButton() {
       const upload = await compressImage(file)
       const ext = upload.name.split('.').pop()
       const filename = `${crypto.randomUUID()}.${ext}`
-      await supabase.storage.from('media').upload(filename, upload, { contentType: upload.type })
+      await supabase.storage.from('media').upload(filename, upload, { contentType: upload.type, cacheControl: MEDIA_CACHE_CONTROL })
     }
     setUploading(false)
     if (fileRef.current) fileRef.current.value = ''

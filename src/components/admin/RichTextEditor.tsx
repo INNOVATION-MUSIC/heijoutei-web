@@ -7,6 +7,7 @@ import { Link as TiptapLink } from '@tiptap/extension-link'
 import { useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { compressImage } from '@/lib/compressImage'
+import { MEDIA_CACHE_CONTROL } from '@/lib/storageCache'
 
 function ToolbarButton({ active, onClick, children }: { active?: boolean; onClick: () => void; children: React.ReactNode }) {
   return (
@@ -32,7 +33,7 @@ function Toolbar({ editor }: { editor: Editor }) {
     const upload = await compressImage(file, 2000)
     const ext = upload.name.split('.').pop()
     const filename = `${crypto.randomUUID()}.${ext}`
-    const { data, error } = await supabase.storage.from('media').upload(filename, upload, { contentType: upload.type })
+    const { data, error } = await supabase.storage.from('media').upload(filename, upload, { contentType: upload.type, cacheControl: MEDIA_CACHE_CONTROL })
     if (!error && data) {
       const { data: { publicUrl } } = supabase.storage.from('media').getPublicUrl(data.path)
       editor.chain().focus().setImage({ src: publicUrl }).run()

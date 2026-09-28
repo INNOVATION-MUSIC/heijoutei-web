@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { compressImage } from '@/lib/compressImage'
+import { MEDIA_CACHE_CONTROL } from '@/lib/storageCache'
 
 interface Props {
   value?: string
@@ -37,7 +38,7 @@ export default function ImageUploader({ value, onChange, label = '画像', maxSi
       const filename = `${crypto.randomUUID()}.${ext}`
       const { data, error } = await supabase.storage
         .from('media')
-        .upload(filename, upload, { contentType: upload.type, upsert: false })
+        .upload(filename, upload, { contentType: upload.type, cacheControl: MEDIA_CACHE_CONTROL, upsert: false })
 
       if (error) {
         setError(`アップロード失敗: ${error.message}`)

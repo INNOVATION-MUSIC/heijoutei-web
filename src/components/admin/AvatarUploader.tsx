@@ -3,6 +3,7 @@
 import { useRef, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { compressImage } from '@/lib/compressImage'
+import { MEDIA_CACHE_CONTROL } from '@/lib/storageCache'
 
 // 円形のアイコン（プロフィール画像）アップローダー。
 // ブラウザから直接 Supabase Storage（media バケット）へ上げ、公開URLを onChange で返す。
@@ -30,7 +31,7 @@ export default function AvatarUploader({
       const filename = `avatar-${crypto.randomUUID()}.${ext}`
       const { data, error } = await supabase.storage
         .from('media')
-        .upload(filename, upload, { contentType: upload.type, upsert: false })
+        .upload(filename, upload, { contentType: upload.type, cacheControl: MEDIA_CACHE_CONTROL, upsert: false })
       if (!error && data) {
         const {
           data: { publicUrl },
