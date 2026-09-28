@@ -1,8 +1,10 @@
 // 管理画面のアップロード前に、ブラウザ内で画像を縮小・WebP 化する。
-// 公開側の next/image 縮小配信（/_next/image）は毎回 Worker を通るため、保存時点で配信サイズにしておく。
+// 公開側は縮小配信せず保存した画像をそのまま表示する（next.config の images.unoptimized）ため、保存時点で配信サイズにしておく。
 // GIF（アニメーション）・SVG は変換しない。変換できない／小さくならない場合は元ファイルをそのまま返す。
 
 const DEFAULT_MAX_SIZE = 1600;
+// メニュー・テイクアウト・カテゴリの画像（表示は最大500px前後）。既存画像の作り直し時の寸法とそろえる
+export const MENU_IMAGE_MAX_SIZE = 1000;
 const WEBP_QUALITY = 0.82;
 
 export async function compressImage(file: File, maxSize = DEFAULT_MAX_SIZE): Promise<File> {

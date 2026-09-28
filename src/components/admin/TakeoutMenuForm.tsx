@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import ImageUploader from '@/components/admin/ImageUploader'
+import { MENU_IMAGE_MAX_SIZE } from '@/lib/compressImage'
 import SaveSuccessBanner from '@/components/admin/SaveSuccessBanner'
 import { createTakeoutMenu, updateTakeoutMenu, type TakeoutMenuPayload } from '@/lib/actions/takeout-menus'
 import type { Tables } from '@/types/supabase'
@@ -124,7 +125,7 @@ export default function TakeoutMenuForm({
         </div>
 
         <div className="rounded-xl border border-[#23232e] bg-[#14141a] p-5">
-          <ImageUploader label="メニュー画像" value={form.image_url ?? ''} onChange={(url) => set('image_url', url)} />
+          <ImageUploader label="メニュー画像" maxSize={MENU_IMAGE_MAX_SIZE} value={form.image_url ?? ''} onChange={(url) => set('image_url', url)} />
         </div>
 
         <div className="rounded-xl border border-[#23232e] bg-[#14141a] p-5">

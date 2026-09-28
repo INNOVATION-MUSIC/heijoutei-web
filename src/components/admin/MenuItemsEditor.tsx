@@ -1,6 +1,7 @@
 'use client'
 
 import ImageUploader from '@/components/admin/ImageUploader'
+import { MENU_IMAGE_MAX_SIZE } from '@/lib/compressImage'
 import type { MenuItemInput } from '@/lib/actions/menus'
 import type { CategoryRef } from '@/lib/actions/refs'
 
@@ -67,7 +68,7 @@ export default function MenuItemsEditor({
                 </select>
               )}
             </div>
-            <ImageUploader label="品目画像" value={it.image_url ?? ''} onChange={(url) => update(idx, { image_url: url })} />
+            <ImageUploader label="品目画像" maxSize={MENU_IMAGE_MAX_SIZE} value={it.image_url ?? ''} onChange={(url) => update(idx, { image_url: url })} />
           </div>
 
           {/* 追加メニュー（任意）: この品目に付属する追加品。フロントでは品目カード内に入れ子表示される。 */}

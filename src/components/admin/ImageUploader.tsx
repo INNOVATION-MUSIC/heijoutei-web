@@ -8,10 +8,11 @@ interface Props {
   value?: string
   onChange?: (url: string) => void
   label?: string
+  maxSize?: number
 }
 
 // Vercel の 4.5MB ボディ制限を回避するため、ブラウザから直接 Supabase Storage（media バケット）へアップロードする。
-export default function ImageUploader({ value, onChange, label = '画像' }: Props) {
+export default function ImageUploader({ value, onChange, label = '画像', maxSize }: Props) {
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   // アップロード中だけ使う一時プレビュー（objectURL）。確定画像は value を唯一の真実とする。
@@ -31,7 +32,7 @@ export default function ImageUploader({ value, onChange, label = '画像' }: Pro
 
     try {
       const supabase = createClient()
-      const upload = await compressImage(file)
+      const upload = await compressImage(file, maxSize)
       const ext = upload.name.split('.').pop()
       const filename = `${crypto.randomUUID()}.${ext}`
       const { data, error } = await supabase.storage
