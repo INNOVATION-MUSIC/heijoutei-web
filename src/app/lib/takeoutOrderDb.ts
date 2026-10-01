@@ -15,6 +15,8 @@ import {
 
 // 営業カレンダー（business_calendars.status）のうち、テイクアウトも受取不可にする休業ステータス。
 const BUSINESS_CLOSED_STATUSES = ["closed", "special_closed"];
+// 営業カレンダーは亀岡本店のみ管理画面で登録し、全店のテイクアウト受取不可日として共通適用する（全店同じ休業日の運用）。
+const BUSINESS_CALENDAR_STORE_SLUG = "kameoka";
 
 // /takeout 注文フロー用の店舗一覧（DB stores → TakeoutStore）。DB空時は静的フォールバック。
 export async function fetchTakeoutStores(): Promise<TakeoutStore[]> {
@@ -169,7 +171,7 @@ export async function fetchTakeoutSlots(): Promise<Record<string, DaySlotMap>> {
     const windowEnd = pickupWindowEndIso(iso(today.getFullYear(), today.getMonth(), today.getDate()));
     const end = windowEnd > byMonth ? windowEnd : byMonth;
 
-    const [{ data: slots, error }, { data: bizClosed }] = await Promise.all([
+    const [{ data: slots, error }, { data: bizClosed }, { data: activeStores }] = await Promise.all([
       supabase
         .from("takeout_slots")
         .select("id, store_id, available_date, is_closed, stores(slug)")
@@ -177,18 +179,20 @@ export async function fetchTakeoutSlots(): Promise<Record<string, DaySlotMap>> {
         .lte("available_date", end),
       supabase
         .from("business_calendars")
-        .select("date, stores(slug)")
+        .select("date, stores!inner(slug)")
+        .eq("stores.slug", BUSINESS_CALENDAR_STORE_SLUG)
         .in("status", BUSINESS_CLOSED_STATUSES)
         .gte("date", start)
         .lte("date", end),
+      supabase.from("stores").select("slug").eq("is_active", true),
     ]);
 
-    // 営業カレンダーの休業日（定休・臨時休業）は受付枠の設定より優先して受取不可にする。
+    // 営業カレンダーの休業日（定休・臨時休業）は受付枠の設定より優先して、全店で受取不可にする。
     const applyBusinessClosed = (result: Record<string, DaySlotMap>) => {
-      for (const b of bizClosed ?? []) {
-        const slug = (b as unknown as { stores?: { slug?: string } }).stores?.slug;
-        if (!slug) continue;
-        (result[slug] ??= {})[b.date] = { isClosed: true, timeLabels: [], fullTimeLabels: [] };
+      for (const { slug } of activeStores ?? []) {
+        for (const b of bizClosed ?? []) {
+          (result[slug] ??= {})[b.date] = { isClosed: true, timeLabels: [], fullTimeLabels: [] };
+        }
       }
       return result;
     };
@@ -273,8 +277,8 @@ export async function resolveAvailableTimes(storeId: string | null, pickupDate: 
 
   const { data: bizClosed } = await adminSupabase
     .from("business_calendars")
-    .select("id")
-    .eq("store_id", storeId)
+    .select("id, stores!inner(slug)")
+    .eq("stores.slug", BUSINESS_CALENDAR_STORE_SLUG)
     .eq("date", pickupDate)
     .in("status", BUSINESS_CLOSED_STATUSES)
     .maybeSingle();
